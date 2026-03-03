@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ game.title }}{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    {% if game.thumbnail %}
+        <img src="{{ game.thumbnail }}" alt="{{ game.title }}" style="width: 100%; height: 400px; object-fit: cover; border-radius: 0.75rem; margin-bottom: 2rem;">
+    {% endif %}
+    
+    <div class="detail-header">
+        <div>
+            <h1 style="color: var(--text-light); font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem;">{{ game.title }}</h1>
+            <p style="color: rgba(255,255,255,0.6);">by <strong style="color: var(--primary);">{{ game.developer.username }}</strong></p>
+        </div>
+        
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'games:download' game.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-primary" style="padding: 1rem 2rem; font-size: 1.125rem;">
+                    ⬇ Download & Play
+                </button>
+            </form>
+        {% else %}
+            <a href="{% url 'users:login' %}" class="btn-primary" style="text-decoration: none; padding: 1rem 2rem; font-size: 1.125rem;">Login to Play</a>
+        {% endif %}
+    </div>
+    
+    <div class="detail-meta">
+        <span class="badge" style="background: rgba(13,185,242,0.2); color: var(--primary); padding: 0.5rem 1rem;">{{ game.genre }}</span>
+        <span style="color: rgba(255,255,255,0.6);">⭐ {{ game.rating|floatformat:1 }}</span>
+        <span style="color: rgba(255,255,255,0.6);">⬇ {{ game.downloads }} downloads</span>
+        <span style="color: rgba(255,255,255,0.6);">📅 {{ game.published_at|date:"M d, Y" }}</span>
+    </div>
+    
+    <div class="detail-section">
+        <h2 style="color: var(--text-light); font-size: 1.5rem; margin-bottom: 1rem;">About This Game</h2>
+        <p style="color: rgba(255,255,255,0.8); line-height: 1.8; white-space: pre-wrap;">{{ game.description }}</p>
+    </div>
+    
+    {% if versions %}
+        <div class="detail-section">
+            <h2 style="color: var(--text-light); font-size: 1.5rem; margin-bottom: 1rem;">Version History</h2>
+            {% for version in versions %}
+                <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.5rem;">
+                    <strong style="color: var(--primary);">v{{ version.version }}</strong>
+                    <span style="color: rgba(255,255,255,0.5); font-size: 0.875rem; margin-left: 1rem;">{{ version.created_at|date:"M d, Y" }}</span>
+                    <p style="color: rgba(255,255,255,0.7); margin-top: 0.5rem;">{{ version.changelog }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <div class="detail-section">
+        <h2 style="color: var(--text-light); font-size: 1.5rem; margin-bottom: 1rem;">Reviews ({{ reviews.count }})</h2>
+        
+        {% if user.is_authenticated %}
+            <div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 2rem;">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">
+                    {% if user_review %}Edit Your Review{% else %}Write a Review{% endif %}
+                </h3>
+                <form method="post" action="{% url 'games:add_review' game.pk %}">
+                    {% csrf_token %}
+                    <div style="margin-bottom: 1rem;">
+                        <label style="color: rgba(255,255,255,0.8); display: block; margin-bottom: 0.5rem;">Rating</label>
+                        <select name="rating" required style="padding: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text-light); width: 100%;">
+                            <option value="">Select rating...</option>
+                            {% for i in "12345" %}
+                                <option value="{{ forloop.counter }}" {% if user_review and user_review.rating == forloop.counter %}selected{% endif %}>
+                                    {{ forloop.counter }} Star{% if forloop.counter > 1 %}s{% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="color: rgba(255,255,255,0.8); display: block; margin-bottom: 0.5rem;">Comment</label>
+                        <textarea name="comment" rows="4" required style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text-light);" placeholder="Share your thoughts about this game...">{% if user_review %}{{ user_review.comment }}{% endif %}</textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Submit Review</button>
+                </form>
+            </div>
+        {% endif %}
+        
+        {% for review in reviews %}
+            <div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                    <strong style="color: var(--primary);">{{ review.user.username }}</strong>
+                    <span style="color: #ffd700;">{% for i in "12345" %}{% if forloop.counter <= review.rating %}⭐{% endif %}{% endfor %}</span>
+                </div>
+                <p style="color: rgba(255,255,255,0.8); line-height: 1.6;">{{ review.comment }}</p>
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.875rem; margin-top: 0.5rem;">{{ review.created_at|date:"M d, Y" }}</p>
+            </div>
+        {% empty %}
+            <p style="color: rgba(255,255,255,0.6); text-align: center; padding: 2rem;">No reviews yet. Be the first to review!</p>
+        {% endfor %}
+    </div>
+    
+    <div class="detail-section">
+        <h2 style="color: var(--text-light); font-size: 1.5rem; margin-bottom: 1rem;">Comments</h2>
+        
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'games:add_comment' game.pk %}" style="margin-bottom: 2rem;">
+                {% csrf_token %}
+                <textarea name="content" rows="3" required style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text-light); margin-bottom: 0.5rem;" placeholder="Add a comment..."></textarea>
+                <button type="submit" class="btn-primary">Post Comment</button>
+            </form>
+        {% endif %}
+        
+        {% for comment in comments %}
+            <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                <strong style="color: var(--primary);">{{ comment.user.username }}</strong>
+                <span style="color: rgba(255,255,255,0.5); font-size: 0.875rem; margin-left: 1rem;">{{ comment.created_at|timesince }} ago</span>
+                <p style="color: rgba(255,255,255,0.8); margin-top: 0.5rem;">{{ comment.content }}</p>
+                
+                {% if comment.replies.all %}
+                    <div style="margin-left: 2rem; margin-top: 1rem;">
+                        {% for reply in comment.replies.all %}
+                            <div style="background: rgba(255,255,255,0.02); padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 0.5rem;">
+                                <strong style="color: var(--primary); font-size: 0.875rem;">{{ reply.user.username }}</strong>
+                                <p style="color: rgba(255,255,255,0.7); font-size: 0.875rem; margin-top: 0.25rem;">{{ reply.content }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p style="color: rgba(255,255,255,0.6); text-align: center; padding: 2rem;">No comments yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends 'users/dashboards/base_dashboard.html' %}
+{% block title %}Edit Asset{% endblock %}
+
+{% block sidebar %}
+<li><a href="{% url 'users:creator_dashboard' %}"><span>📊</span> Overview</a></li>
+<li><a href="{% url 'marketplace:my_assets' %}"><span>🎨</span> My Assets</a></li>
+<li><a href="{% url 'marketplace:upload' %}"><span>⬆️</span> Upload Asset</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>Edit Asset</h1>
+    <p>Update your asset details</p>
+</div>
+
+<form method="POST" enctype="multipart/form-data" style="max-width:800px">
+    {% csrf_token %}
+    
+    {% if form.errors %}
+    <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:0.5rem;padding:1rem;margin-bottom:1.5rem;color:#fca5a5">
+        <strong>Please correct the errors below:</strong>
+        <ul style="margin:0.5rem 0 0 1.5rem">
+        {% for field in form %}
+            {% for error in field.errors %}
+            <li>{{ field.label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    <div style="display:grid;gap:1.5rem">
+        <div>
+            <label style="display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.875rem">Title *</label>
+            {{ form.title }}
+        </div>
+        
+        <div>
+            <label style="display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.875rem">Description *</label>
+            {{ form.description }}
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <div>
+                <label style="display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.875rem">Asset Type *</label>
+                {{ form.asset_type }}
+            </div>
+            <div>
+                <label style="display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.875rem">File Format</label>
+                {{ form.file_format }}
+            </div>
+        </div>
+        
+        <div>
+            <label style="display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.875rem">Category</label>
+            {{ form.category }}
+        </div>
+        
+        <div>
+            <label style="display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.875rem">3D File</label>
+            {{ form.file }}
+            <p style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:0.25rem">Leave empty to keep current file</p>
+        </div>
+        
+        <div>
+            <label style="display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.875rem">Preview Image URL</label>
+            {{ form.preview_image }}
+        </div>
+        
+        <div>
+            <label style="display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.875rem">Tags</label>
+            {{ form.tags }}
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <div>
+                <label style="display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.875rem">Price (USD) *</label>
+                {{ form.price }}
+            </div>
+            <div style="display:flex;align-items:center;gap:1rem;padding-top:2rem">
+                <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
+                    {{ form.is_free }}
+                    <span style="font-size:0.875rem">Free Asset</span>
+                </label>
+            </div>
+        </div>
+        
+        <div style="background:rgba(13,185,242,0.1);border:1px solid rgba(13,185,242,0.3);border-radius:0.75rem;padding:1rem">
+            <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer">
+                {{ form.is_active }}
+                <div>
+                    <div style="font-weight:600;font-size:0.875rem">Published</div>
+                    <div style="font-size:0.75rem;color:rgba(255,255,255,0.6)">Make this asset visible in the marketplace</div>
+                </div>
+            </label>
+        </div>
+    </div>
+    
+    <div style="display:flex;gap:1rem;margin-top:2rem">
+        <button type="submit" class="btn">Save Changes</button>
+        <a href="{% url 'marketplace:my_assets' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+<style>
+input[type="text"],input[type="number"],textarea,select{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:0.5rem;padding:0.75rem;color:#fff;font-size:0.875rem}
+input[type="text"]:focus,input[type="number"]:focus,textarea:focus,select:focus{outline:none;border-color:#0db9f2;box-shadow:0 0 0 3px rgba(13,185,242,0.1)}
+input[type="file"]{width:100%;padding:0.75rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:0.5rem;color:rgba(255,255,255,0.7);font-size:0.875rem}
+input[type="checkbox"]{width:1.25rem;height:1.25rem;border-radius:0.25rem;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);cursor:pointer}
+textarea{min-height:100px;resize:vertical}
+::placeholder{color:rgba(255,255,255,0.3)}
+</style>
+{% endblock %}

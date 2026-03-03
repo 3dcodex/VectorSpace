@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Complete Payment - Vector Space{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; padding: 2rem; margin: 2rem auto;">
+    <h1 style="color: #0db9f2; margin-bottom: 2rem;">💳 Complete Your Purchase</h1>
+    
+    <div class="purchase-summary" style="background: #1a1a2e; padding: 2rem; border-radius: 12px; border: 1px solid #333; margin-bottom: 2rem;">
+        <h2 style="color: #0db9f2; margin-bottom: 1rem;">{{ asset.title }}</h2>
+        <p style="color: #888;">{{ asset.description|truncatewords:20 }}</p>
+        <p style="font-size: 2rem; color: #0db9f2; margin-top: 1rem;">${{ asset.price }}</p>
+    </div>
+    
+    <div id="payment-form" style="background: #1a1a2e; padding: 2rem; border-radius: 12px; border: 1px solid #333;">
+        <div id="card-element" style="background: #0a0e27; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+            <!-- Stripe card element will be inserted here -->
+        </div>
+        <div id="card-errors" role="alert" style="color: #ff4444; margin-bottom: 1rem;"></div>
+        <button id="submit-payment" class="btn-primary" style="width: 100%;">Pay ${{ asset.price }}</button>
+    </div>
+    
+    <p style="text-align: center; margin-top: 1rem; color: #888;">
+        <small>Secure payment powered by Stripe</small>
+    </p>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    // Initialize Stripe
+    const stripe = Stripe('{{ stripe_public_key }}');
+    const elements = stripe.elements();
+    
+    // Create card element
+    const cardElement = elements.create('card', {
+        style: {
+            base: {
+                color: '#fff',
+                fontSize: '16px',
+                '::placeholder': {
+                    color: '#888',
+                },
+            },
+            invalid: {
+                color: '#ff4444',
+            },
+        },
+    });
+    
+    cardElement.mount('#card-element');
+    
+    // Handle form submission
+    const form = document.getElementById('payment-form');
+    const submitButton = document.getElementById('submit-payment');
+    const errorElement = document.getElementById('card-errors');
+    
+    submitButton.addEventListener('click', async (event) => {
+        event.preventDefault();
+        submitButton.disabled = true;
+        submitButton.textContent = 'Processing...';
+        
+        const {error, paymentIntent} = await stripe.confirmCardPayment(
+            '{{ client_secret }}',
+            {
+                payment_method: {
+                    card: cardElement,
+                },
+            }
+        );
+        
+        if (error) {
+            errorElement.textContent = error.message;
+            submitButton.disabled = false;
+            submitButton.textContent = 'Pay ${{ asset.price }}';
+        } else {
+            // Payment successful
+            window.location.href = '{% url "marketplace:payment_success" %}';
+        }
+    });
+</script>
+
+<style>
+.btn-primary {
+    background: #0db9f2;
+    color: #0a0e27;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #0aa3d9;
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Session with {{ mentor_profile.mentor.username }}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1 style="color: var(--text-light); font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Book a Session</h1>
+    <p style="color: rgba(255,255,255,0.6); margin-bottom: 2rem;">with {{ mentor_profile.mentor.username }} • ${{ mentor_profile.hourly_rate }}/hour</p>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    
+    <form method="post" class="styled-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Session Topic *</label>
+            {{ request_form.topic }}
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">What do you want to learn? *</label>
+            {{ request_form.description }}
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Preferred Date & Time *</label>
+            {{ session_form.scheduled_at }}
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Duration *</label>
+            {{ session_form.duration_minutes }}
+        </div>
+        
+        <div class="pricing-info" style="background: rgba(13,185,242,0.1); border: 1px solid rgba(13,185,242,0.3); padding: 1rem; border-radius: 0.5rem; margin: 1.5rem 0;">
+            <p style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem;">Pricing Estimate</p>
+            <p style="color: rgba(255,255,255,0.7); font-size: 0.875rem;">
+                30 min: ${{ mentor_profile.hourly_rate|floatformat:2|add:"0"|floatformat:2|mul:0.5 }} • 
+                60 min: ${{ mentor_profile.hourly_rate }} • 
+                90 min: ${{ mentor_profile.hourly_rate|floatformat:2|mul:1.5 }} • 
+                120 min: ${{ mentor_profile.hourly_rate|floatformat:2|mul:2 }}
+            </p>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn-primary">Request Session</button>
+            <a href="{% url 'mentorship:detail' mentor_profile.pk %}" class="btn-secondary" style="text-decoration: none;">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Calculate and display price dynamically
+const durationSelect = document.querySelector('select[name="duration_minutes"]');
+const hourlyRate = {{ mentor_profile.hourly_rate }};
+
+if (durationSelect) {
+    durationSelect.addEventListener('change', function() {
+        const minutes = parseInt(this.value);
+        const cost = (minutes / 60) * hourlyRate;
+        console.log(`Estimated cost: $${cost.toFixed(2)}`);
+    });
+}
+</script>
+{% endblock %}

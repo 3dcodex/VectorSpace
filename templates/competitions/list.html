@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Competitions{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1 style="color: var(--text-light); font-size: 2.5rem; font-weight: 800;">Competitions</h1>
+            <p style="color: rgba(255,255,255,0.6);">Compete, showcase your skills, and win prizes</p>
+        </div>
+        {% if user.is_authenticated %}
+            <a href="{% url 'competitions:create' %}" class="btn-primary" style="text-decoration: none;">Create Competition</a>
+        {% endif %}
+    </div>
+    
+    <div class="filters-section">
+        <div style="display: flex; gap: 1rem;">
+            <a href="?status=upcoming" class="btn-secondary" style="text-decoration: none;">Upcoming</a>
+            <a href="?status=active" class="btn-secondary" style="text-decoration: none;">Active</a>
+            <a href="?status=ended" class="btn-secondary" style="text-decoration: none;">Ended</a>
+            <a href="{% url 'competitions:list' %}" class="btn-secondary" style="text-decoration: none;">All</a>
+        </div>
+    </div>
+    
+    <div class="competitions-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;">
+        {% for competition in competitions %}
+            <div class="competition-card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 0.75rem; padding: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                    <h3 style="color: var(--text-light); font-size: 1.25rem;">{{ competition.title }}</h3>
+                    <span class="badge status-{{ competition.status }}">{{ competition.get_status_display }}</span>
+                </div>
+                
+                <p style="color: rgba(255,255,255,0.7); margin-bottom: 1rem; line-height: 1.6;">
+                    {{ competition.description|truncatewords:25 }}
+                </p>
+                
+                <div style="margin-bottom: 1rem;">
+                    <span class="badge" style="background: rgba(13,185,242,0.2); color: var(--primary);">{{ competition.category }}</span>
+                    <span style="color: var(--primary); font-weight: 700; margin-left: 1rem;">💰 ${{ competition.prize_pool }}</span>
+                </div>
+                
+                <div style="color: rgba(255,255,255,0.6); font-size: 0.875rem; margin-bottom: 1rem;">
+                    <p>📅 Start: {{ competition.start_date|date:"M d, Y" }}</p>
+                    <p>🏁 End: {{ competition.end_date|date:"M d, Y" }}</p>
+                    <p>📊 Submissions: {{ competition.submissions.count }}</p>
+                </div>
+                
+                <div style="display: flex; gap: 0.5rem;">
+                    <a href="{% url 'competitions:detail' competition.pk %}" class="btn-small btn-primary" style="text-decoration: none; flex: 1; text-align: center;">View Details</a>
+                    <a href="{% url 'competitions:leaderboard' competition.pk %}" class="btn-small btn-secondary" style="text-decoration: none; flex: 1; text-align: center;">Leaderboard</a>
+                </div>
+            </div>
+        {% empty %}
+            <p style="color: rgba(255,255,255,0.6); text-align: center; padding: 3rem;">No competitions available.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ competition.title }}{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="detail-header">
+        <div>
+            <h1 style="color: var(--text-light); font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem;">{{ competition.title }}</h1>
+            <p style="color: rgba(255,255,255,0.6);">Organized by <strong style="color: var(--primary);">{{ competition.organizer.username }}</strong></p>
+        </div>
+        
+        {% if user.is_authenticated and competition.status == 'active' %}
+            {% if user_submission %}
+                <button class="btn-secondary" disabled>Already Submitted</button>
+            {% else %}
+                <a href="{% url 'competitions:submit' competition.pk %}" class="btn-primary" style="text-decoration: none;">Submit Entry</a>
+            {% endif %}
+        {% endif %}
+    </div>
+    
+    <div class="detail-meta">
+        <span class="badge status-{{ competition.status }}">{{ competition.get_status_display }}</span>
+        <span class="badge" style="background: rgba(13,185,242,0.2); color: var(--primary);">{{ competition.category }}</span>
+        <span style="color: var(--primary); font-weight: 700;">💰 ${{ competition.prize_pool }}</span>
+    </div>
+    
+    <div class="detail-section">
+        <h2 style="color: var(--text-light); font-size: 1.5rem; margin-bottom: 1rem;">Description</h2>
+        <p style="color: rgba(255,255,255,0.8); line-height: 1.8; white-space: pre-wrap;">{{ competition.description }}</p>
+    </div>
+    
+    <div class="detail-section">
+        <h2 style="color: var(--text-light); font-size: 1.5rem; margin-bottom: 1rem;">Timeline</h2>
+        <p style="color: rgba(255,255,255,0.7);">📅 Start: {{ competition.start_date|date:"M d, Y H:i" }}</p>
+        <p style="color: rgba(255,255,255,0.7);">🏁 End: {{ competition.end_date|date:"M d, Y H:i" }}</p>
+    </div>
+    
+    <div class="detail-section">
+        <h2 style="color: var(--text-light); font-size: 1.5rem; margin-bottom: 1rem;">Rules</h2>
+        <p style="color: rgba(255,255,255,0.8); line-height: 1.8; white-space: pre-wrap;">{{ competition.rules }}</p>
+    </div>
+    
+    <div class="detail-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2 style="color: var(--text-light); font-size: 1.5rem;">Submissions ({{ submissions.count }})</h2>
+            <a href="{% url 'competitions:leaderboard' competition.pk %}" class="btn-secondary" style="text-decoration: none;">View Leaderboard</a>
+        </div>
+        
+        <div style="display: grid; gap: 1rem;">
+            {% for submission in submissions|slice:":5" %}
+                <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 0.5rem;">
+                    <h4 style="color: var(--text-light); margin-bottom: 0.5rem;">{{ submission.title }}</h4>
+                    <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">by {{ submission.participant.username }} • Score: {{ submission.score|floatformat:1 }}</p>
+                </div>
+            {% empty %}
+                <p style="color: rgba(255,255,255,0.6);">No submissions yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

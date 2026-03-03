@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Resolve Report - Vector Space{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px; padding: 2rem; margin: 2rem auto;">
+    <h1 style="color: #0db9f2; margin-bottom: 2rem;">Resolve Report #{{ report.id }}</h1>
+    
+    <div class="report-details" style="background: #1a1a2e; padding: 2rem; border-radius: 12px; border: 1px solid #333; margin-bottom: 2rem;">
+        <h2 style="color: #0db9f2; margin-bottom: 1rem;">Report Details</h2>
+        <p><strong>Reporter:</strong> {{ report.reporter.username }}</p>
+        <p><strong>Content Type:</strong> {{ report.content_type|title }}</p>
+        <p><strong>Content ID:</strong> {{ report.content_id }}</p>
+        <p><strong>Report Type:</strong> {{ report.report_type|title }}</p>
+        <p><strong>Description:</strong></p>
+        <p style="background: #0a0e27; padding: 1rem; border-radius: 6px;">{{ report.description }}</p>
+        <p><strong>Reported:</strong> {{ report.created_at|date:"F d, Y H:i" }}</p>
+    </div>
+    
+    <form method="post" class="form-container">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="action">Moderation Action</label>
+            <select name="action" id="action" required>
+                <option value="dismiss">Dismiss Report</option>
+                <option value="warning">Issue Warning</option>
+                <option value="content_removal">Remove Content</option>
+                <option value="temporary_ban">Temporary Ban</option>
+                <option value="permanent_ban">Permanent Ban</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="notes">Moderator Notes</label>
+            <textarea name="notes" id="notes" rows="5" required placeholder="Explain your decision..."></textarea>
+        </div>
+        
+        <button type="submit" class="btn-primary">Resolve Report</button>
+        <a href="{% url 'core:moderation' %}" class="btn-secondary">Back to Dashboard</a>
+    </form>
+</div>
+
+<style>
+.form-container {
+    background: #1a1a2e;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #333;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    color: #0db9f2;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    background: #0a0e27;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #0db9f2;
+}
+
+.btn-primary {
+    background: #0db9f2;
+    color: #0a0e27;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 1rem;
+}
+
+.btn-primary:hover {
+    background: #0aa3d9;
+}
+
+.btn-secondary {
+    background: #333;
+    color: #fff;
+    padding: 0.75rem 2rem;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-secondary:hover {
+    background: #444;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ conversation.title }}{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1 style="color: var(--text-light); font-size: 2rem; font-weight: 800;">{{ conversation.title }}</h1>
+        <a href="{% url 'ai_assistant:home' %}" class="btn-secondary" style="text-decoration: none;">Back to AI Assistant</a>
+    </div>
+    
+    <div class="chat-container">
+        <div class="chat-messages">
+            {% for message in messages %}
+                <div class="{% if message.role == 'user' %}message-user{% else %}message-assistant{% endif %}">
+                    <strong style="color: var(--primary); font-size: 0.875rem; margin-bottom: 0.5rem; display: block;">
+                        {% if message.role == 'user' %}You{% else %}AI Assistant{% endif %}
+                    </strong>
+                    <p style="color: rgba(255,255,255,0.9); line-height: 1.6;">{{ message.content }}</p>
+                    <small style="color: rgba(255,255,255,0.5); font-size: 0.75rem; margin-top: 0.5rem; display: block;">{{ message.created_at|date:"M d, H:i" }}</small>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="chat-input">
+            <form method="post" action="{% url 'ai_assistant:chat' %}" style="display: flex; gap: 1rem;">
+                {% csrf_token %}
+                <input type="hidden" name="conversation_id" value="{{ conversation.pk }}">
+                <input type="text" name="content" placeholder="Continue the conversation..." style="flex: 1; padding: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text-light);">
+                <button type="submit" class="btn-primary">Send</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

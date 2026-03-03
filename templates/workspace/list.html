@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}My Workspaces{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1 style="color: var(--text-light); font-size: 2.5rem; font-weight: 800;">My Workspaces</h1>
+        <a href="{% url 'workspace:create' %}" class="btn-primary" style="text-decoration: none;">Create Workspace</a>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;">
+        {% for workspace in workspaces %}
+            <a href="{% url 'workspace:detail' workspace.pk %}" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 0.75rem; padding: 1.5rem; text-decoration: none; display: block; transition: all 0.3s;">
+                <h3 style="color: var(--text-light); margin-bottom: 0.5rem;">{{ workspace.name }}</h3>
+                <p style="color: rgba(255,255,255,0.6); margin-bottom: 1rem;">{{ workspace.description|truncatewords:20 }}</p>
+                <div style="color: rgba(255,255,255,0.5); font-size: 0.875rem;">
+                    <span>👥 {{ workspace.members.count }} members</span>
+                    <span style="margin-left: 1rem;">📁 {{ workspace.projects.count }} projects</span>
+                </div>
+            </a>
+        {% empty %}
+            <p style="color: rgba(255,255,255,0.6); text-align: center; padding: 3rem;">No workspaces yet. Create one to start collaborating!</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

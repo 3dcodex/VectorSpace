@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Project{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1 style="color: var(--text-light); font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Create Project</h1>
+    <p style="color: rgba(255,255,255,0.6); margin-bottom: 2rem;">in {{ workspace.name }}</p>
+    
+    <form method="post" class="styled-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Project Name *</label>
+            <input type="text" name="name" required style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text-light);">
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Description *</label>
+            <textarea name="description" rows="4" required style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text-light);"></textarea>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn-primary">Create Project</button>
+            <a href="{% url 'workspace:detail' workspace.pk %}" class="btn-secondary" style="text-decoration: none;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

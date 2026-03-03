@@ -1,0 +1,48 @@
+{% extends 'users/dashboards/base_dashboard.html' %}
+{% block title %}Mentor Dashboard{% endblock %}
+
+{% block sidebar %}
+<li><a href="{% url 'users:mentor_dashboard' %}" class="active"><span>📊</span> Overview</a></li>
+<li><a href="{% url 'mentorship:list' %}"><span>🎓</span> Mentorship</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>Mentor Dashboard</h1>
+    <p>Manage mentorship sessions and students</p>
+</div>
+
+{% if mentor_profile %}
+<div class="stats-grid">
+    <div class="stat-card">
+        <h2>{{ total_sessions }}</h2>
+        <p>Total Sessions</p>
+    </div>
+    <div class="stat-card">
+        <h2>${{ mentor_profile.hourly_rate }}</h2>
+        <p>Hourly Rate</p>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Upcoming Sessions</h2>
+    {% for session in upcoming_sessions %}
+    <div class="card">
+        <h3>Session with {{ session.student.username }}</h3>
+        <p>{{ session.scheduled_time|date:"M d, Y - g:i A" }}</p>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+        <h3>No Upcoming Sessions</h3>
+        <p>Your scheduled sessions will appear here</p>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <h3>Mentor Profile Not Set Up</h3>
+    <p>Create your mentor profile to start offering sessions</p>
+    <a href="{% url 'mentorship:list' %}" class="btn" style="margin-top:1rem">Set Up Profile</a>
+</div>
+{% endif %}
+{% endblock %}

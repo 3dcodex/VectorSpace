@@ -1,0 +1,83 @@
+{% extends 'users/dashboards/base_dashboard.html' %}
+{% block title %}My Assets{% endblock %}
+
+{% block sidebar %}
+<li><a href="{% url 'users:creator_dashboard' %}"><span>📊</span> Overview</a></li>
+<li><a href="{% url 'marketplace:my_assets' %}" class="active"><span>🎨</span> My Assets</a></li>
+<li><a href="{% url 'marketplace:upload' %}"><span>⬆️</span> Upload Asset</a></li>
+<li><a href="{% url 'games:list' %}"><span>🎮</span> My Games</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>My Assets</h1>
+    <p>Manage your 3D assets and track performance</p>
+</div>
+
+<div style="margin-bottom:2rem">
+    <a href="{% url 'marketplace:upload' %}" class="btn">+ Upload New Asset</a>
+</div>
+
+{% if assets %}
+<div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse">
+        <thead>
+            <tr style="background:rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.1)">
+                <th style="padding:1rem;text-align:left;font-size:0.875rem;font-weight:600">Preview</th>
+                <th style="padding:1rem;text-align:left;font-size:0.875rem;font-weight:600">Title</th>
+                <th style="padding:1rem;text-align:left;font-size:0.875rem;font-weight:600">Price</th>
+                <th style="padding:1rem;text-align:left;font-size:0.875rem;font-weight:600">Status</th>
+                <th style="padding:1rem;text-align:left;font-size:0.875rem;font-weight:600">Downloads</th>
+                <th style="padding:1rem;text-align:left;font-size:0.875rem;font-weight:600">Created</th>
+                <th style="padding:1rem;text-align:left;font-size:0.875rem;font-weight:600">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asset in assets %}
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                <td style="padding:1rem">
+                    {% if asset.preview_image %}
+                    <img src="{{ asset.preview_image }}" alt="{{ asset.title }}" style="width:60px;height:60px;object-fit:cover;border-radius:0.5rem;background:rgba(255,255,255,0.05)">
+                    {% else %}
+                    <div style="width:60px;height:60px;background:rgba(255,255,255,0.05);border-radius:0.5rem;display:flex;align-items:center;justify-content:center;font-size:1.5rem">🎨</div>
+                    {% endif %}
+                </td>
+                <td style="padding:1rem">
+                    <div style="font-weight:600">{{ asset.title }}</div>
+                    <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:0.25rem">{{ asset.asset_type }}</div>
+                </td>
+                <td style="padding:1rem">
+                    {% if asset.is_free %}
+                    <span style="color:#10b981;font-weight:600">FREE</span>
+                    {% else %}
+                    <span style="font-weight:600">${{ asset.price }}</span>
+                    {% endif %}
+                </td>
+                <td style="padding:1rem">
+                    {% if asset.is_active %}
+                    <span style="display:inline-block;padding:0.25rem 0.75rem;background:rgba(34,197,94,0.1);color:#22c55e;border-radius:9999px;font-size:0.75rem;font-weight:600">Published</span>
+                    {% else %}
+                    <span style="display:inline-block;padding:0.25rem 0.75rem;background:rgba(245,158,11,0.1);color:#f59e0b;border-radius:9999px;font-size:0.75rem;font-weight:600">Draft</span>
+                    {% endif %}
+                </td>
+                <td style="padding:1rem;color:rgba(255,255,255,0.7)">{{ asset.downloads }}</td>
+                <td style="padding:1rem;color:rgba(255,255,255,0.5);font-size:0.875rem">{{ asset.created_at|date:"M d, Y" }}</td>
+                <td style="padding:1rem">
+                    <div style="display:flex;gap:0.75rem">
+                        <a href="{% url 'marketplace:edit_asset' asset.pk %}" style="color:#0db9f2;text-decoration:none;font-size:0.875rem;font-weight:500">Edit</a>
+                        <a href="{% url 'marketplace:delete_asset' asset.pk %}" style="color:#ef4444;text-decoration:none;font-size:0.875rem;font-weight:500">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <h3>No Assets Yet</h3>
+    <p>Upload your first 3D asset to get started</p>
+    <a href="{% url 'marketplace:upload' %}" class="btn" style="margin-top:1rem">Upload Asset</a>
+</div>
+{% endif %}
+{% endblock %}

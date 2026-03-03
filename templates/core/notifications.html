@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications - Vector Space{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1 style="color: #0db9f2;">🔔 Notifications</h1>
+        {% if unread_count > 0 %}
+        <a href="{% url 'core:mark_all_read' %}" class="btn-secondary">Mark All Read</a>
+        {% endif %}
+    </div>
+    
+    {% if unread_count > 0 %}
+    <p style="color: #0db9f2; margin-bottom: 1rem;">You have {{ unread_count }} unread notification{{ unread_count|pluralize }}</p>
+    {% endif %}
+    
+    <div class="notifications-list">
+        {% for notification in notifications %}
+        <div class="notification-item {% if not notification.read %}unread{% endif %}" style="background: {% if not notification.read %}rgba(13,185,242,0.1){% else %}#1a1a2e{% endif %}; padding: 1.5rem; border-radius: 12px; border: 1px solid {% if not notification.read %}#0db9f2{% else %}#333{% endif %}; margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div style="flex: 1;">
+                    <h3 style="color: #0db9f2; margin-bottom: 0.5rem;">{{ notification.title }}</h3>
+                    <p style="color: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">{{ notification.message }}</p>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.875rem;">{{ notification.created_at|timesince }} ago</p>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    {% if notification.link %}
+                    <a href="{% url 'core:mark_notification_read' notification.id %}" class="btn-small" style="background: #0db9f2; color: #0a0e27; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-weight: 600;">View</a>
+                    {% endif %}
+                    {% if not notification.read %}
+                    <a href="{% url 'core:mark_notification_read' notification.id %}" class="btn-small" style="background: #333; color: #fff; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none;">Mark Read</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div style="text-align: center; padding: 3rem; color: rgba(255,255,255,0.6);">
+            <p style="font-size: 3rem; margin-bottom: 1rem;">📭</p>
+            <p>No notifications yet</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

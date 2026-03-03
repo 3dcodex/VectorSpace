@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Post a Job{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1 style="color: var(--text-light); font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Post a Job</h1>
+    <p style="color: rgba(255,255,255,0.6); margin-bottom: 2rem;">Find talented creators and developers for your team</p>
+    
+    <form method="post" class="styled-form">
+        {% csrf_token %}
+        
+        {% if form.errors %}
+            <div class="alert alert-error">{{ form.errors }}</div>
+        {% endif %}
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Job Title *</label>
+            {{ form.title }}
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Description *</label>
+            {{ form.description }}
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Job Type *</label>
+                {{ form.job_type }}
+            </div>
+            
+            <div class="form-group">
+                <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Location *</label>
+                {{ form.location }}
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                {{ form.remote }}
+                Remote Position
+            </label>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Salary Min (USD)</label>
+                {{ form.salary_min }}
+            </div>
+            
+            <div class="form-group">
+                <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Salary Max (USD)</label>
+                {{ form.salary_max }}
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Required Skills</label>
+            {{ form.required_skills }}
+            <small style="color: rgba(255,255,255,0.5); font-size: 0.875rem;">Comma-separated or JSON array</small>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn-primary">Post Job</button>
+            <a href="{% url 'jobs:list' %}" class="btn-secondary" style="text-decoration: none;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

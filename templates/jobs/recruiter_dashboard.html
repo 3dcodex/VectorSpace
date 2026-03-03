@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Recruiter Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <h1 style="color: var(--text-light); font-size: 2.5rem; font-weight: 800; margin-bottom: 2rem;">Recruiter Dashboard</h1>
+    
+    <div class="dashboard-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2 style="color: var(--text-light); font-size: 1.5rem;">Your Job Postings</h2>
+            <a href="{% url 'jobs:post' %}" class="btn-primary" style="text-decoration: none;">Post New Job</a>
+        </div>
+        
+        <div class="jobs-grid">
+            {% for job in jobs %}
+                <div class="job-card">
+                    <h3 style="color: var(--text-light);">{{ job.title }}</h3>
+                    <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">{{ job.applications.count }} applications</p>
+                    <div style="margin-top: 1rem;">
+                        <a href="{% url 'jobs:detail' job.pk %}" class="btn-small btn-primary" style="text-decoration: none;">View</a>
+                    </div>
+                </div>
+            {% empty %}
+                <p style="color: rgba(255,255,255,0.6);">No job postings yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="dashboard-section" style="margin-top: 3rem;">
+        <h2 style="color: var(--text-light); font-size: 1.5rem; margin-bottom: 1.5rem;">Recent Applications</h2>
+        
+        <div class="applications-list">
+            {% for application in applications %}
+                <div class="application-card">
+                    <div>
+                        <h4 style="color: var(--text-light); margin-bottom: 0.5rem;">{{ application.applicant.username }}</h4>
+                        <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">Applied for: {{ application.job.title }}</p>
+                        <p style="color: rgba(255,255,255,0.5); font-size: 0.75rem;">{{ application.applied_at|date:"M d, Y" }}</p>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="badge status-{{ application.status }}">{{ application.get_status_display }}</span>
+                        
+                        <form method="post" action="{% url 'jobs:update_status' application.pk %}" style="display: inline;">
+                            {% csrf_token %}
+                            <select name="status" onchange="this.form.submit()" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-light); padding: 0.5rem; border-radius: 0.25rem;">
+                                <option value="pending" {% if application.status == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="reviewed" {% if application.status == 'reviewed' %}selected{% endif %}>Reviewed</option>
+                                <option value="accepted" {% if application.status == 'accepted' %}selected{% endif %}>Accepted</option>
+                                <option value="rejected" {% if application.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                            </select>
+                        </form>
+                        
+                        {% if application.resume %}
+                            <a href="{{ application.resume.url }}" class="btn-small btn-secondary" style="text-decoration: none;" download>Download Resume</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <p style="color: rgba(255,255,255,0.6);">No applications yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

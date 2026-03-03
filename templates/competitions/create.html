@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Competition{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1 style="color: var(--text-light); font-size: 2rem; font-weight: 800; margin-bottom: 2rem;">Create a Competition</h1>
+    
+    <form method="post" class="styled-form">
+        {% csrf_token %}
+        
+        {% if form.errors %}
+            <div class="alert alert-error">{{ form.errors }}</div>
+        {% endif %}
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Competition Title *</label>
+            {{ form.title }}
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Description *</label>
+            {{ form.description }}
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Category *</label>
+                {{ form.category }}
+            </div>
+            
+            <div class="form-group">
+                <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Prize Pool (USD) *</label>
+                {{ form.prize_pool }}
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Start Date *</label>
+                {{ form.start_date }}
+            </div>
+            
+            <div class="form-group">
+                <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">End Date *</label>
+                {{ form.end_date }}
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Rules *</label>
+            {{ form.rules }}
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn-primary">Create Competition</button>
+            <a href="{% url 'competitions:list' %}" class="btn-secondary" style="text-decoration: none;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

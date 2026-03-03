@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit to {{ competition.title }}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1 style="color: var(--text-light); font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Submit Your Entry</h1>
+    <p style="color: rgba(255,255,255,0.6); margin-bottom: 2rem;">for {{ competition.title }}</p>
+    
+    <form method="post" enctype="multipart/form-data" class="styled-form">
+        {% csrf_token %}
+        
+        {% if form.errors %}
+            <div class="alert alert-error">{{ form.errors }}</div>
+        {% endif %}
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Submission Title *</label>
+            {{ form.title }}
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Description *</label>
+            {{ form.description }}
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Upload File *</label>
+            {{ form.file }}
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn-primary">Submit Entry</button>
+            <a href="{% url 'competitions:detail' competition.pk %}" class="btn-secondary" style="text-decoration: none;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

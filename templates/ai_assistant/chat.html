@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Chat{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <h1 style="color: var(--text-light); font-size: 2.5rem; font-weight: 800; margin-bottom: 2rem;">Start a Conversation</h1>
+    
+    <div class="form-container">
+        <form method="post" class="styled-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Ask me anything...</label>
+                <textarea name="content" rows="6" placeholder="e.g., How do I optimize my 3D models for games?" style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text-light);"></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn-primary">Send Message</button>
+                <a href="{% url 'ai_assistant:home' %}" class="btn-secondary" style="text-decoration: none;">Back</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

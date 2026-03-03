@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Publish Game{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1 style="color: var(--text-light); font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Publish Your Game</h1>
+    <p style="color: rgba(255,255,255,0.6); margin-bottom: 2rem;">Share your game with the Vector Space community</p>
+    
+    <form method="post" enctype="multipart/form-data" class="styled-form">
+        {% csrf_token %}
+        
+        {% if form.errors %}
+            <div class="alert alert-error">{{ form.errors }}</div>
+        {% endif %}
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Game Title *</label>
+            {{ form.title }}
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Description *</label>
+            {{ form.description }}
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Genre *</label>
+            {{ form.genre }}
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Game Build File * (Max 500MB)</label>
+            {{ form.build_file }}
+            <small style="color: rgba(255,255,255,0.5); font-size: 0.875rem;">Upload your game build (.zip, .exe, etc.)</small>
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Thumbnail URL</label>
+            {{ form.thumbnail }}
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn-primary">Publish Game</button>
+            <a href="{% url 'games:list' %}" class="btn-secondary" style="text-decoration: none;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ asset.title }}{% endblock %}
+
+{% block content %}
+<div class="asset-detail-container">
+    <div class="asset-detail-header">
+        <div class="asset-preview">
+            {% if asset.preview_image %}
+                <img src="{{ asset.preview_image }}" alt="{{ asset.title }}">
+            {% else %}
+                <div class="asset-placeholder-large">No Preview Available</div>
+            {% endif %}
+        </div>
+        
+        <div class="asset-details">
+            <h1>{{ asset.title }}</h1>
+            <p class="asset-seller">Created by <strong>{{ asset.seller.username }}</strong></p>
+            
+            <div class="asset-stats">
+                <span>⭐ {{ asset.rating }} Rating</span>
+                <span>⬇ {{ asset.downloads }} Downloads</span>
+                <span>📅 {{ asset.created_at|date:"M d, Y" }}</span>
+            </div>
+            
+            <div class="asset-price-section">
+                {% if asset.is_free %}
+                    <h2 class="price">FREE</h2>
+                {% else %}
+                    <h2 class="price">${{ asset.price }}</h2>
+                {% endif %}
+                
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'marketplace:purchase' asset.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary btn-large">
+                            {% if asset.is_free %}Download{% else %}Purchase{% endif %}
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'users:login' %}" class="btn btn-primary btn-large">Login to Purchase</a>
+                {% endif %}
+            </div>
+            
+            <div class="asset-meta">
+                <p><strong>Type:</strong> {{ asset.get_asset_type_display }}</p>
+                <p><strong>Version:</strong> {{ asset.version }}</p>
+                {% if asset.tags %}
+                    <p><strong>Tags:</strong> {{ asset.tags }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="asset-description">
+        <h3>Description</h3>
+        <p>{{ asset.description }}</p>
+    </div>
+    
+    <div class="asset-reviews">
+        <h3>Reviews ({{ reviews.count }})</h3>
+        {% for review in reviews %}
+            <div class="review-card">
+                <div class="review-header">
+                    <strong>{{ review.user.username }}</strong>
+                    <span>⭐ {{ review.rating }}/5</span>
+                </div>
+                <p>{{ review.comment }}</p>
+                <small>{{ review.created_at|date:"M d, Y" }}</small>
+            </div>
+        {% empty %}
+            <p>No reviews yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

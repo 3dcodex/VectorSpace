@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ workspace.name }}{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1 style="color: var(--text-light); font-size: 2.5rem; font-weight: 800;">{{ workspace.name }}</h1>
+            <p style="color: rgba(255,255,255,0.6);">{{ workspace.description }}</p>
+        </div>
+        <a href="{% url 'workspace:create_project' workspace.pk %}" class="btn-primary" style="text-decoration: none;">New Project</a>
+    </div>
+    
+    <div style="margin-bottom: 2rem;">
+        <h2 style="color: var(--text-light); font-size: 1.5rem; margin-bottom: 1rem;">Members ({{ workspace.members.count }})</h2>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            {% for member in workspace.members.all %}
+                <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(255,255,255,0.03); border-radius: 0.5rem;">
+                    <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #0a8fc7); display: flex; align-items: center; justify-content: center; color: white; font-size: 0.875rem; font-weight: 700;">
+                        {{ member.username|first|upper }}
+                    </div>
+                    <span style="color: var(--text-light);">{{ member.username }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <h2 style="color: var(--text-light); font-size: 1.5rem; margin-bottom: 1rem;">Projects</h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+        {% for project in projects %}
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 0.75rem; padding: 1.5rem;">
+                <h3 style="color: var(--text-light); margin-bottom: 0.5rem;">{{ project.name }}</h3>
+                <p style="color: rgba(255,255,255,0.6); margin-bottom: 1rem;">{{ project.description|truncatewords:15 }}</p>
+                <div style="color: rgba(255,255,255,0.5); font-size: 0.875rem;">
+                    <span>📋 {{ project.tasks.count }} tasks</span>
+                    <span style="margin-left: 1rem;">📁 {{ project.files.count }} files</span>
+                </div>
+            </div>
+        {% empty %}
+            <p style="color: rgba(255,255,255,0.6);">No projects yet. Create one to get started!</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

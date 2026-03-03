@@ -1,0 +1,66 @@
+{% extends 'users/dashboards/base_dashboard.html' %}
+{% block title %}Recruiter Dashboard{% endblock %}
+
+{% block sidebar %}
+<li><a href="{% url 'users:recruiter_dashboard' %}" class="active"><span>📊</span> Overview</a></li>
+<li><a href="{% url 'jobs:list' %}"><span>💼</span> My Jobs</a></li>
+<li><a href="{% url 'jobs:post' %}"><span>➕</span> Post Job</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>Recruiter Dashboard</h1>
+    <p>Manage job postings and applications</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <h2>{{ total_jobs }}</h2>
+        <p>Total Jobs Posted</p>
+    </div>
+    <div class="stat-card">
+        <h2>{{ active_jobs }}</h2>
+        <p>Active Jobs</p>
+    </div>
+    <div class="stat-card">
+        <h2>{{ total_applications }}</h2>
+        <p>Total Applications</p>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Quick Actions</h2>
+    <a href="{% url 'jobs:post' %}" class="btn">Post New Job</a>
+</div>
+
+<div class="section">
+    <h2>Recent Job Postings</h2>
+    {% for job in recent_jobs %}
+    <div class="card">
+        <h3>{{ job.title }}</h3>
+        <p>{{ job.location }} • {% if job.active %}Active{% else %}Closed{% endif %}</p>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+        <h3>No Jobs Posted</h3>
+        <p>Post your first job to find talented creators</p>
+        <a href="{% url 'jobs:post' %}" class="btn" style="margin-top:1rem">Post Job</a>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="section">
+    <h2>Recent Applications</h2>
+    {% for app in recent_applications %}
+    <div class="card">
+        <h3>{{ app.applicant.username }}</h3>
+        <p>Applied for: {{ app.job.title }}</p>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+        <h3>No Applications Yet</h3>
+        <p>Applications will appear here once candidates apply</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

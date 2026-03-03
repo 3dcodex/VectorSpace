@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Report Content - Vector Space{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; padding: 2rem; margin: 2rem auto;">
+    <h1 style="color: #0db9f2; margin-bottom: 2rem;">🚩 Report Content</h1>
+    
+    <form method="post" class="form-container">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="content_type">Content Type</label>
+            <select name="content_type" id="content_type" required>
+                <option value="">Select type...</option>
+                <option value="post">Post</option>
+                <option value="comment">Comment</option>
+                <option value="game">Game</option>
+                <option value="asset">Asset</option>
+                <option value="user">User</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="content_id">Content ID</label>
+            <input type="number" name="content_id" id="content_id" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="report_type">Report Reason</label>
+            <select name="report_type" id="report_type" required>
+                <option value="">Select reason...</option>
+                <option value="spam">Spam</option>
+                <option value="inappropriate">Inappropriate Content</option>
+                <option value="harassment">Harassment</option>
+                <option value="copyright">Copyright Violation</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea name="description" id="description" rows="5" required placeholder="Please provide details about why you're reporting this content..."></textarea>
+        </div>
+        
+        <button type="submit" class="btn-primary">Submit Report</button>
+        <a href="javascript:history.back()" class="btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<style>
+.form-container {
+    background: #1a1a2e;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #333;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    color: #0db9f2;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    background: #0a0e27;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #0db9f2;
+}
+
+.btn-primary {
+    background: #0db9f2;
+    color: #0a0e27;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 1rem;
+}
+
+.btn-primary:hover {
+    background: #0aa3d9;
+}
+
+.btn-secondary {
+    background: #333;
+    color: #fff;
+    padding: 0.75rem 2rem;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-secondary:hover {
+    background: #444;
+}
+</style>
+{% endblock %}

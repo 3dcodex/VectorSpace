@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}My Sessions{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <h1 style="color: var(--text-light); font-size: 2.5rem; font-weight: 800; margin-bottom: 2rem;">My Mentorship Sessions</h1>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    
+    <div class="dashboard-section">
+        <h2 style="color: var(--text-light); font-size: 1.5rem; margin-bottom: 1.5rem;">As Mentee</h2>
+        
+        <div class="sessions-list">
+            {% for request in mentee_requests %}
+                <div class="session-card">
+                    <div>
+                        <h4 style="color: var(--text-light); margin-bottom: 0.5rem;">{{ request.topic }}</h4>
+                        <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">Mentor: {{ request.mentor.username }}</p>
+                        {% for session in request.sessions.all %}
+                            <p style="color: rgba(255,255,255,0.5); font-size: 0.875rem;">
+                                📅 {{ session.scheduled_at|date:"M d, Y H:i" }} • {{ session.duration_minutes }} min
+                            </p>
+                        {% endfor %}
+                    </div>
+                    <span class="badge status-{{ request.status }}">{{ request.get_status_display }}</span>
+                </div>
+            {% empty %}
+                <p style="color: rgba(255,255,255,0.6);">No sessions booked yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="dashboard-section" style="margin-top: 3rem;">
+        <h2 style="color: var(--text-light); font-size: 1.5rem; margin-bottom: 1.5rem;">As Mentor</h2>
+        
+        <div class="sessions-list">
+            {% for request in mentor_requests %}
+                <div class="session-card">
+                    <div>
+                        <h4 style="color: var(--text-light); margin-bottom: 0.5rem;">{{ request.topic }}</h4>
+                        <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">Mentee: {{ request.mentee.username }}</p>
+                        <p style="color: rgba(255,255,255,0.7); font-size: 0.875rem; margin-top: 0.5rem;">{{ request.description|truncatewords:20 }}</p>
+                        {% for session in request.sessions.all %}
+                            <p style="color: rgba(255,255,255,0.5); font-size: 0.875rem;">
+                                📅 {{ session.scheduled_at|date:"M d, Y H:i" }} • {{ session.duration_minutes }} min
+                            </p>
+                        {% endfor %}
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end;">
+                        <span class="badge status-{{ request.status }}">{{ request.get_status_display }}</span>
+                        
+                        {% if request.status == 'pending' %}
+                            <div style="display: flex; gap: 0.5rem;">
+                                <form method="post" action="{% url 'mentorship:accept' request.pk %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-small" style="background: #28a745; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer;">Accept</button>
+                                </form>
+                                <form method="post" action="{% url 'mentorship:reject' request.pk %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-small" style="background: #dc3545; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer;">Reject</button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <p style="color: rgba(255,255,255,0.6);">No session requests yet. <a href="{% url 'mentorship:become_mentor' %}" style="color: var(--primary);">Become a mentor</a> to receive requests.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ competition.title }} - Leaderboard{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1 style="color: var(--text-light); font-size: 2.5rem; font-weight: 800;">🏆 Leaderboard</h1>
+            <p style="color: rgba(255,255,255,0.6);">{{ competition.title }}</p>
+        </div>
+        <a href="{% url 'competitions:detail' competition.pk %}" class="btn-secondary" style="text-decoration: none;">Back to Competition</a>
+    </div>
+    
+    <div style="max-width: 800px; margin: 0 auto;">
+        {% for submission in submissions %}
+            <div class="leaderboard-item">
+                <div class="leaderboard-rank">
+                    {{ forloop.counter }}
+                </div>
+                
+                <div style="flex: 1;">
+                    <h3 style="color: var(--text-light); margin-bottom: 0.25rem;">{{ submission.title }}</h3>
+                    <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">by {{ submission.participant.username }}</p>
+                </div>
+                
+                <div style="text-align: right;">
+                    <p style="color: var(--primary); font-size: 1.5rem; font-weight: 700;">{{ submission.score|floatformat:1 }}</p>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.875rem;">{{ submission.votes.count }} votes</p>
+                </div>
+            </div>
+        {% empty %}
+            <p style="color: rgba(255,255,255,0.6); text-align: center; padding: 3rem;">No submissions yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}My Applications{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <h1 style="color: var(--text-light); font-size: 2.5rem; font-weight: 800; margin-bottom: 2rem;">My Job Applications</h1>
+    
+    <div class="applications-list">
+        {% for application in applications %}
+            <div class="application-card">
+                <div>
+                    <h4 style="color: var(--text-light); margin-bottom: 0.5rem;">{{ application.job.title }}</h4>
+                    <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">at {{ application.job.recruiter.username }}</p>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.75rem;">Applied: {{ application.applied_at|date:"M d, Y" }}</p>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <span class="badge status-{{ application.status }}">{{ application.get_status_display }}</span>
+                    <a href="{% url 'jobs:detail' application.job.pk %}" class="btn-small btn-secondary" style="text-decoration: none;">View Job</a>
+                </div>
+            </div>
+        {% empty %}
+            <p style="color: rgba(255,255,255,0.6); text-align: center; padding: 3rem;">
+                No applications yet. <a href="{% url 'jobs:list' %}" style="color: var(--primary);">Browse jobs</a> to get started!
+            </p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

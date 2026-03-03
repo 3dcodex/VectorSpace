@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <h2>Welcome Back</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Log In</button>
+    </form>
+    
+    <div class="auth-links">
+        <p>Don't have an account? <a href="{% url 'users:signup' %}">Sign Up</a></p>
+        <p><a href="#">Forgot Password?</a></p>
+    </div>
+    
+    <div class="social-auth">
+        <p>Or log in with</p>
+        <button class="btn btn-social btn-google">Google</button>
+        <button class="btn btn-social btn-facebook">Facebook</button>
+    </div>
+</div>
+{% endblock %}

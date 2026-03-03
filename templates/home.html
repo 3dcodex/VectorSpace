@@ -1,0 +1,715 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #0db9f2;
+        --primary-dark: #0a8fc7;
+    }
+
+    body {
+        background: linear-gradient(180deg, #0a0e27 0%, #1a1f3a 100%);
+        color: #fff;
+    }
+
+    .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-bg {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 20% 50%, rgba(13, 185, 242, 0.15) 0%, transparent 50%);
+        animation: float 20s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    .hero-grid {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-content h1 {
+        font-size: clamp(2.5rem, 6vw, 5rem);
+        font-weight: 900;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+    }
+
+    .highlight {
+        background: linear-gradient(135deg, #0db9f2, #0a8fc7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-cta {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        padding: 1rem 2rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #0db9f2, #0a8fc7);
+        color: white;
+        box-shadow: 0 4px 20px rgba(13, 185, 242, 0.4);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(13, 185, 242, 0.6);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--primary);
+    }
+
+    .hero-stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .hero-stat-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1rem;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .hero-stat-card h3 {
+        font-size: 3rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, #0db9f2, #0a8fc7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-stat-card p {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+    }
+
+    .section {
+        padding: 6rem 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+
+    .section-header h2 {
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 900;
+        margin-bottom: 1rem;
+    }
+
+    .section-header p {
+        font-size: 1.25rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .feature-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        transition: all 0.4s;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #0db9f2, #0a8fc7);
+        transform: scaleX(0);
+        transition: transform 0.4s;
+    }
+
+    .feature-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-8px);
+        border-color: rgba(13, 185, 242, 0.5);
+        background: rgba(255, 255, 255, 0.06);
+        box-shadow: 0 20px 60px rgba(13, 185, 242, 0.2);
+    }
+
+    .feature-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1.5rem;
+        display: block;
+    }
+
+    .feature-card h3 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card p {
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+    }
+
+    .feature-link {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: gap 0.3s;
+    }
+
+    .feature-link:hover {
+        gap: 1rem;
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+    }
+
+    .content-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1rem;
+        overflow: hidden;
+        transition: all 0.4s;
+    }
+
+    .content-card:hover {
+        transform: translateY(-8px);
+        border-color: rgba(13, 185, 242, 0.5);
+        box-shadow: 0 20px 60px rgba(13, 185, 242, 0.2);
+    }
+
+    .content-card-image {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        background: rgba(13, 185, 242, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+    }
+
+    .content-card-body {
+        padding: 1.5rem;
+    }
+
+    .content-card-body h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .content-card-body p {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 2.8rem;
+    }
+
+    .content-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .price {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--primary);
+    }
+
+    .content-link {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 3rem;
+    }
+
+    .step {
+        text-align: center;
+    }
+
+    .step-number {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #0db9f2, #0a8fc7);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 900;
+        margin: 0 auto 1.5rem;
+    }
+
+    .step h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .step p {
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 1.6;
+    }
+
+    .cta-section {
+        background: linear-gradient(135deg, rgba(13, 185, 242, 0.2), rgba(10, 143, 199, 0.1));
+        border: 1px solid rgba(13, 185, 242, 0.3);
+        border-radius: 2rem;
+        padding: 5rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 50% 50%, rgba(13, 185, 242, 0.3) 0%, transparent 70%);
+        animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 0.5; }
+        50% { opacity: 1; }
+    }
+
+    .cta-content {
+        position: relative;
+        z-index: 1;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .cta-content h2 {
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 900;
+        margin-bottom: 1rem;
+    }
+
+    .cta-content p {
+        font-size: 1.25rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 2.5rem;
+    }
+
+    .empty-state {
+        max-width: 400px;
+        margin: 0 auto;
+        text-align: center;
+        padding: 3rem 2rem;
+        background: rgba(13, 185, 242, 0.05);
+        border: 2px dashed rgba(13, 185, 242, 0.3);
+        border-radius: 1rem;
+        transition: all 0.3s;
+    }
+
+    .empty-state:hover {
+        border-color: rgba(13, 185, 242, 0.5);
+        background: rgba(13, 185, 242, 0.08);
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.8;
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+    }
+
+    .empty-state p {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 968px) {
+        .hero-grid {
+            grid-template-columns: 1fr;
+            gap: 3rem;
+        }
+        .features-grid, .content-grid {
+            grid-template-columns: 1fr;
+        }
+        .section {
+            padding: 4rem 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid">
+        <div class="hero-content">
+            <h1>The Scalable Ecosystem for <span class="highlight">Creators and Gamers</span></h1>
+            <p style="font-size: 1.5rem; margin-bottom: 1rem;">Build, publish, collaborate, monetize — all in one unified digital platform.</p>
+            <p style="font-size: 1.125rem; color: rgba(255, 255, 255, 0.6);">Vector Space connects 3D artists, game developers, mentors, recruiters, and digital innovators in a professional ecosystem designed for growth.</p>
+            <div class="hero-cta">
+                <a href="{% url 'users:signup' %}" class="btn btn-primary">Join the Space</a>
+                <a href="{% url 'marketplace:list' %}" class="btn btn-secondary">Explore Marketplace</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="hero-stats-grid">
+                <div class="hero-stat-card">
+                    <h3>{{ total_assets|default:"0" }}</h3>
+                    <p>3D Assets</p>
+                </div>
+                <div class="hero-stat-card">
+                    <h3>{{ total_games|default:"0" }}</h3>
+                    <p>Games</p>
+                </div>
+                <div class="hero-stat-card">
+                    <h3>{{ total_users|default:"0" }}</h3>
+                    <p>Creators</p>
+                </div>
+                <div class="hero-stat-card">
+                    <h3>{{ total_jobs|default:"0" }}</h3>
+                    <p>Open Jobs</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Who It's For -->
+<section class="section">
+    <div class="section-header">
+        <h2>Built for the Next Generation of Digital Creators</h2>
+        <p>Whether you're creating, learning, hiring, or growing — Vector Space is your platform</p>
+    </div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <span class="feature-icon">🎮</span>
+            <h3>Game Developers</h3>
+            <p>Publish your projects, showcase demos, gather feedback, and build your gaming portfolio with our publishing platform.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">🧱</span>
+            <h3>3D Artists</h3>
+            <p>Sell optimized models, build your portfolio, earn revenue, and showcase your creative work to a global audience.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">🎓</span>
+            <h3>Mentors</h3>
+            <p>Offer structured guidance and paid mentorship sessions. Share your expertise and help the next generation of creators.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">🏢</span>
+            <h3>Recruiters</h3>
+            <p>Find skilled talent through verified portfolios and resumes. Connect with creators who match your project needs.</p>
+        </div>
+    </div>
+</section>
+
+<!-- What You Can Do -->
+<section class="section" style="background: rgba(255, 255, 255, 0.02);">
+    <div class="section-header">
+        <h2>Everything You Need to Build and Grow</h2>
+        <p>A complete toolkit for your creative career</p>
+    </div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <span class="feature-icon">🎨</span>
+            <h3>Upload & Sell 3D Assets</h3>
+            <p>Monetize your 3D models, textures, and materials with secure payment processing and instant delivery.</p>
+            <a href="{% url 'marketplace:list' %}" class="feature-link">Explore Marketplace <span>→</span></a>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">🎮</span>
+            <h3>Publish & Showcase Games</h3>
+            <p>Share your games with the community, gather feedback, and track downloads with built-in analytics.</p>
+            <a href="{% url 'games:list' %}" class="feature-link">Browse Games <span>→</span></a>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">💼</span>
+            <h3>Apply for Industry Jobs</h3>
+            <p>Access opportunities from studios worldwide. Full-time, contract, and freelance positions available.</p>
+            <a href="{% url 'jobs:list' %}" class="feature-link">View Jobs <span>→</span></a>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">💬</span>
+            <h3>Join Community Discussions</h3>
+            <p>Connect with creators, share your work, get feedback, and collaborate on projects.</p>
+            <a href="{% url 'social:feed' %}" class="feature-link">Visit Community <span>→</span></a>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">🎓</span>
+            <h3>Schedule Mentorship Sessions</h3>
+            <p>Learn from experts or offer your knowledge. Book 1-on-1 sessions and accelerate your growth.</p>
+            <a href="{% url 'mentorship:list' %}" class="feature-link">Find Mentors <span>→</span></a>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">🤖</span>
+            <h3>Get AI-Powered Assistance</h3>
+            <p>Instant help with code, 3D techniques, and career advice. Your 24/7 creative companion.</p>
+            <a href="{% url 'ai_assistant:home' %}" class="feature-link">Try AI Assistant <span>→</span></a>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="section" style="background: rgba(13, 185, 242, 0.05); border-top: 1px solid rgba(13, 185, 242, 0.2); border-bottom: 1px solid rgba(13, 185, 242, 0.2);">
+    <div class="section-header">
+        <h2>How Vector Space Works</h2>
+        <p>Get started in four simple steps</p>
+    </div>
+    <div class="steps-grid">
+        <div class="step">
+            <div class="step-number">1</div>
+            <h3>Create Your Profile</h3>
+            <p>Sign up for free and set up your professional profile with portfolio and skills.</p>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <h3>Choose Your Role</h3>
+            <p>Select your path: Creator, Developer, Mentor, or Recruiter.</p>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <h3>Upload, Connect, or Hire</h3>
+            <p>Start creating content, networking, or finding talent based on your goals.</p>
+        </div>
+        <div class="step">
+            <div class="step-number">4</div>
+            <h3>Grow Your Career</h3>
+            <p>Monetize your skills, build your reputation, and advance professionally.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Live Platform Stats -->
+<section class="section">
+    <div class="section-header">
+        <h2>Live Platform Activity</h2>
+        <p>Real-time statistics from our growing community</p>
+    </div>
+    <div class="hero-stats-grid" style="max-width: 900px; margin: 0 auto;">
+        <div class="hero-stat-card">
+            <h3>{{ total_assets|default:"0" }}</h3>
+            <p>Assets Published</p>
+        </div>
+        <div class="hero-stat-card">
+            <h3>{{ total_games|default:"0" }}</h3>
+            <p>Games Uploaded</p>
+        </div>
+        <div class="hero-stat-card">
+            <h3>{{ total_users|default:"0" }}</h3>
+            <p>Active Members</p>
+        </div>
+        <div class="hero-stat-card">
+            <h3>{{ total_jobs|default:"0" }}</h3>
+            <p>Job Opportunities</p>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Content -->
+<section class="section" style="background: rgba(255, 255, 255, 0.02);">
+    <div class="section-header">
+        <h2>Featured Content</h2>
+        <p>Explore the latest assets and games from our community</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;">
+        <!-- Assets Subsection -->
+        <div>
+            <h3 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 2rem; text-align: center;">Latest 3D Assets</h3>
+            {% if featured_assets %}
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    {% for asset in featured_assets|slice:":3" %}
+                        <div class="content-card">
+                            {% if asset.preview_image %}
+                                <img src="{{ asset.preview_image }}" alt="{{ asset.title }}" class="content-card-image">
+                            {% else %}
+                                <div class="content-card-image">🎨</div>
+                            {% endif %}
+                            <div class="content-card-body">
+                                <h3>{{ asset.title }}</h3>
+                                <p>{{ asset.description|truncatewords:15 }}</p>
+                                <div class="content-card-footer">
+                                    <span class="price">${{ asset.price }}</span>
+                                    <a href="{% url 'marketplace:detail' asset.id %}" class="content-link">View →</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <a href="{% url 'marketplace:list' %}" class="btn btn-secondary">View All Assets</a>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">🎨</div>
+                    <h3>No Assets Yet</h3>
+                    <p>Upload the first 3D asset</p>
+                    <a href="{% url 'marketplace:upload' %}" class="btn btn-primary">Upload Asset</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Games Subsection -->
+        <div>
+            <h3 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 2rem; text-align: center;">Latest Games</h3>
+            {% if featured_games %}
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    {% for game in featured_games|slice:":3" %}
+                        <div class="content-card">
+                            {% if game.thumbnail %}
+                                <img src="{{ game.thumbnail }}" alt="{{ game.title }}" class="content-card-image">
+                            {% else %}
+                                <div class="content-card-image">🎮</div>
+                            {% endif %}
+                            <div class="content-card-body">
+                                <h3>{{ game.title }}</h3>
+                                <p>{{ game.description|truncatewords:15 }}</p>
+                                <div class="content-card-footer">
+                                    <span style="color: rgba(255, 255, 255, 0.6);">🎮 {{ game.genre }}</span>
+                                    <a href="{% url 'games:detail' game.id %}" class="content-link">Play →</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <a href="{% url 'games:list' %}" class="btn btn-secondary">View All Games</a>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">🎮</div>
+                    <h3>No Games Yet</h3>
+                    <p>Publish the first game</p>
+                    <a href="{% url 'games:publish' %}" class="btn btn-primary">Publish Game</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Platform Values -->
+<section class="section" style="background: rgba(255, 255, 255, 0.02);">
+    <div class="section-header">
+        <h2>Why Choose Vector Space?</h2>
+        <p>Built on principles of security, scalability, and community</p>
+    </div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <span class="feature-icon">🔒</span>
+            <h3>Secure Transactions</h3>
+            <p>Enterprise-level encryption and protected digital asset delivery. Your work and payments are always safe.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">⚡</span>
+            <h3>Scalable Architecture</h3>
+            <p>Designed with API-first architecture for future mobile expansion. Built to grow with your needs.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">🌍</span>
+            <h3>Collaborative Community</h3>
+            <p>Forums, messaging, and project collaboration tools. Connect with creators worldwide.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">📈</span>
+            <h3>Career Growth Focus</h3>
+            <p>Jobs, mentorship, analytics, and skill visibility. Everything you need to advance professionally.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Final CTA -->
+<section class="section">
+    <div class="cta-section">
+        <div class="cta-content">
+            <h2>Ready to Build Your Digital Future?</h2>
+            <p>Join our growing community of creators and start building your career today.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="{% url 'users:signup' %}" class="btn btn-primary">Create Account</a>
+                <a href="{% url 'marketplace:list' %}" class="btn btn-secondary">Explore Platform</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

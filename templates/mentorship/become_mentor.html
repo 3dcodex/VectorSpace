@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Become a Mentor{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1 style="color: var(--text-light); font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Become a Mentor</h1>
+    <p style="color: rgba(255,255,255,0.6); margin-bottom: 2rem;">Share your knowledge and earn by mentoring others</p>
+    
+    <form method="post" class="styled-form">
+        {% csrf_token %}
+        
+        {% if form.errors %}
+            <div class="alert alert-error">{{ form.errors }}</div>
+        {% endif %}
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Your Expertise *</label>
+            {{ form.expertise }}
+            <small style="color: rgba(255,255,255,0.5); font-size: 0.875rem;">
+                Enter as: ["3D Modeling", "Animation", "Rigging"] or comma-separated
+            </small>
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Hourly Rate (USD) *</label>
+            {{ form.hourly_rate }}
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                {{ form.available }}
+                Available for sessions
+            </label>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn-primary">Create Mentor Profile</button>
+            <a href="{% url 'mentorship:list' %}" class="btn-secondary" style="text-decoration: none;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

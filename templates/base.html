@@ -1,0 +1,236 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Vector Space | The Creator Ecosystem{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Modern Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Logo Section -->
+            <div class="header-logo">
+                <a href="{% url 'home' %}" class="logo-link">
+                    <div class="logo-icon">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <path d="M16 2L4 9L16 16L28 9L16 2Z" fill="url(#gradient1)"/>
+                            <path d="M4 23L16 30L28 23L16 16L4 23Z" fill="url(#gradient2)"/>
+                            <defs>
+                                <linearGradient id="gradient1" x1="4" y1="2" x2="28" y2="16">
+                                    <stop offset="0%" stop-color="#0db9f2"/>
+                                    <stop offset="100%" stop-color="#0a8fc7"/>
+                                </linearGradient>
+                                <linearGradient id="gradient2" x1="4" y1="16" x2="28" y2="30">
+                                    <stop offset="0%" stop-color="#0a8fc7"/>
+                                    <stop offset="100%" stop-color="#0db9f2"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <span class="logo-text">Vector Space</span>
+                </a>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="header-nav">
+                <a href="{% url 'home' %}" class="nav-link">Home</a>
+                <a href="{% url 'marketplace:list' %}" class="nav-link">Marketplace</a>
+                <a href="{% url 'games:list' %}" class="nav-link">Games</a>
+                <a href="{% url 'jobs:list' %}" class="nav-link">Jobs</a>
+                <a href="{% url 'mentorship:list' %}" class="nav-link">Mentorship</a>
+                <a href="{% url 'competitions:list' %}" class="nav-link">Competitions</a>
+                <a href="{% url 'social:feed' %}" class="nav-link">Community</a>
+            </nav>
+
+            <!-- User Actions -->
+            <div class="header-actions">
+                {% if user.is_authenticated %}
+
+                    <div class="user-menu">
+                        <button class="user-avatar">
+                            {{ user.username|first|upper }}
+                        </button>
+                        <div class="user-dropdown">
+                            <a href="{% url 'users:dashboard' %}" class="dropdown-item">Dashboard</a>
+                            <a href="{% url 'marketplace:upload' %}" class="dropdown-item">Upload Asset</a>
+                            <a href="{% url 'games:publish' %}" class="dropdown-item">Publish Game</a>
+                            <a href="{% url 'workspace:list' %}" class="dropdown-item">Workspaces</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'users:logout' %}" class="dropdown-item">Logout</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'users:login' %}" class="btn-ghost">Sign In</a>
+                    <a href="{% url 'users:signup' %}" class="btn-primary">Get Started</a>
+                {% endif %}
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="{% url 'home' %}" class="mobile-menu-item">Home</a>
+            <a href="{% url 'marketplace:list' %}" class="mobile-menu-item">Marketplace</a>
+            <a href="{% url 'games:list' %}" class="mobile-menu-item">Games</a>
+            <a href="{% url 'jobs:list' %}" class="mobile-menu-item">Jobs</a>
+            <a href="{% url 'mentorship:list' %}" class="mobile-menu-item">Mentorship</a>
+            <a href="{% url 'competitions:list' %}" class="mobile-menu-item">Competitions</a>
+            <a href="{% url 'social:feed' %}" class="mobile-menu-item">Community</a>
+            {% if user.is_authenticated %}
+                <div class="mobile-menu-divider"></div>
+                            <a href="{% url 'users:dashboard' %}" class="mobile-menu-item">Dashboard</a>
+                <a href="{% url 'users:logout' %}" class="mobile-menu-item">Logout</a>
+            {% else %}
+                <div class="mobile-menu-divider"></div>
+                <a href="{% url 'users:login' %}" class="mobile-menu-item">Sign In</a>
+                <a href="{% url 'users:signup' %}" class="mobile-menu-item">Get Started</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Modern Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <!-- Footer Top -->
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <svg width="40" height="40" viewBox="0 0 32 32" fill="none">
+                            <path d="M16 2L4 9L16 16L28 9L16 2Z" fill="url(#footerGradient1)"/>
+                            <path d="M4 23L16 30L28 23L16 16L4 23Z" fill="url(#footerGradient2)"/>
+                            <defs>
+                                <linearGradient id="footerGradient1" x1="4" y1="2" x2="28" y2="16">
+                                    <stop offset="0%" stop-color="#0db9f2"/>
+                                    <stop offset="100%" stop-color="#0a8fc7"/>
+                                </linearGradient>
+                                <linearGradient id="footerGradient2" x1="4" y1="16" x2="28" y2="30">
+                                    <stop offset="0%" stop-color="#0a8fc7"/>
+                                    <stop offset="100%" stop-color="#0db9f2"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <span>Vector Space</span>
+                    </div>
+                    <p class="footer-tagline">The complete ecosystem for digital creators, gamers, and innovators.</p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link" title="Twitter">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" title="Discord">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" title="GitHub">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" title="YouTube">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Platform</h4>
+                        <a href="{% url 'marketplace:list' %}">Marketplace</a>
+                        <a href="{% url 'games:list' %}">Games</a>
+                        <a href="{% url 'competitions:list' %}">Competitions</a>
+                        <a href="{% url 'workspace:list' %}">Workspaces</a>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4>Opportunities</h4>
+                        <a href="{% url 'jobs:list' %}">Browse Jobs</a>
+                        <a href="{% url 'mentorship:list' %}">Find Mentors</a>
+                        <a href="{% url 'social:feed' %}">Community</a>
+                        <a href="{% url 'ai_assistant:home' %}">AI Assistant</a>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4>Resources</h4>
+                        <a href="#">Documentation</a>
+                        <a href="#">API Reference</a>
+                        <a href="#">Tutorials</a>
+                        <a href="#">Blog</a>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <a href="#">About Us</a>
+                        <a href="#">Careers</a>
+                        <a href="#">Contact</a>
+                        <a href="#">Support</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="footer-legal">
+                    <p>&copy; 2026 Vector Space. All rights reserved.</p>
+                    <div class="footer-legal-links">
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                        <a href="#">Cookie Policy</a>
+                    </div>
+                </div>
+                <div class="footer-badge">
+                    <span class="status-indicator"></span>
+                    <span>All systems operational</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    <script>
+        // Mobile menu toggle
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', () => {
+                mobileMenu.classList.toggle('active');
+                mobileMenuToggle.classList.toggle('active');
+            });
+        }
+
+        // User dropdown toggle
+        const userMenu = document.querySelector('.user-menu');
+        if (userMenu) {
+            const userAvatar = userMenu.querySelector('.user-avatar');
+            userAvatar.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userMenu.classList.toggle('active');
+            });
+            
+            document.addEventListener('click', () => {
+                userMenu.classList.remove('active');
+            });
+        }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

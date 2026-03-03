@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Find a Mentor{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1 style="color: var(--text-light); font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem;">Find Your Mentor</h1>
+            <p style="color: rgba(255,255,255,0.6);">Learn from experienced professionals in 3D, VFX, and game development</p>
+        </div>
+        <a href="{% url 'mentorship:become_mentor' %}" class="btn-primary" style="text-decoration: none;">Become a Mentor</a>
+    </div>
+    
+    <div class="filters-section">
+        <form method="get" class="filter-form">
+            <input type="text" name="expertise" placeholder="Search by expertise..." value="{{ request.GET.expertise }}" 
+                   style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-light); padding: 0.75rem; border-radius: 0.5rem; flex: 1;">
+            <input type="number" name="max_rate" placeholder="Max hourly rate" value="{{ request.GET.max_rate }}" 
+                   style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-light); padding: 0.75rem; border-radius: 0.5rem; width: 200px;">
+            <button type="submit" class="btn-secondary">Filter</button>
+        </form>
+    </div>
+    
+    <div class="mentors-grid">
+        {% for mentor_profile in mentors %}
+            <div class="mentor-card">
+                <div class="mentor-avatar" style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #0a8fc7); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; margin-bottom: 1rem;">
+                    {{ mentor_profile.mentor.username|first|upper }}
+                </div>
+                
+                <h3 style="color: var(--text-light); font-size: 1.25rem; margin-bottom: 0.5rem;">{{ mentor_profile.mentor.username }}</h3>
+                <p style="color: var(--primary); font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">${{ mentor_profile.hourly_rate }}/hr</p>
+                
+                <div class="mentor-stats" style="display: flex; gap: 1rem; margin-bottom: 1rem; color: rgba(255,255,255,0.6); font-size: 0.875rem;">
+                    <span>⭐ {{ mentor_profile.rating|floatformat:1 }}</span>
+                    <span>📚 {{ mentor_profile.total_sessions }} sessions</span>
+                </div>
+                
+                {% if mentor_profile.expertise %}
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+                        {% for skill in mentor_profile.expertise %}
+                            <span class="skill-tag">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <div style="display: flex; gap: 0.5rem;">
+                    <a href="{% url 'mentorship:detail' mentor_profile.pk %}" class="btn-small btn-secondary" style="text-decoration: none; flex: 1; text-align: center;">View Profile</a>
+                    <a href="{% url 'mentorship:book' mentor_profile.pk %}" class="btn-small btn-primary" style="text-decoration: none; flex: 1; text-align: center;">Book Session</a>
+                </div>
+            </div>
+        {% empty %}
+            <p style="color: rgba(255,255,255,0.6); text-align: center; padding: 3rem;">No mentors available yet. Be the first to become a mentor!</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

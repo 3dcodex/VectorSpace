@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Community Feed{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1 style="color: var(--text-light); font-size: 2.5rem; font-weight: 800;">Community Feed</h1>
+        <a href="{% url 'social:create_post' %}" class="btn-primary" style="text-decoration: none;">Create Post</a>
+    </div>
+    
+    <div class="feed-container" style="max-width: 800px; margin: 0 auto;">
+        {% for post in posts %}
+            <div class="post-card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 1.5rem;">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #0a8fc7); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">
+                        {{ post.author.username|first|upper }}
+                    </div>
+                    <div>
+                        <a href="{% url 'social:profile' post.author.pk %}" style="color: var(--text-light); font-weight: 600; text-decoration: none;">{{ post.author.username }}</a>
+                        <p style="color: rgba(255,255,255,0.5); font-size: 0.875rem;">{{ post.created_at|timesince }} ago</p>
+                    </div>
+                </div>
+                
+                <p style="color: rgba(255,255,255,0.9); line-height: 1.6; margin-bottom: 1rem;">{{ post.content }}</p>
+                
+                {% if post.media %}
+                    <img src="{{ post.media.url }}" alt="Post media" style="width: 100%; border-radius: 0.5rem; margin-bottom: 1rem;">
+                {% endif %}
+                
+                <div style="display: flex; gap: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <form method="post" action="{% url 'social:vote_post' post.pk 'upvote' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" style="background: none; border: none; color: #0db9f2; cursor: pointer; font-size: 1.2rem;">
+                                ⬆️
+                            </button>
+                        </form>
+                        <span style="color: #0db9f2; font-weight: 600; min-width: 30px; text-align: center;">{{ post.vote_score }}</span>
+                        <form method="post" action="{% url 'social:vote_post' post.pk 'downvote' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 1.2rem;">
+                                ⬇️
+                            </button>
+                        </form>
+                    </div>
+                    <form method="post" action="{% url 'social:like_post' post.pk %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" style="background: none; border: none; color: rgba(255,255,255,0.6); cursor: pointer; font-size: 0.875rem;">
+                            ❤️ {{ post.likes_count }} Likes
+                        </button>
+                    </form>
+                    <span style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">💬 {{ post.comments.count }} Comments</span>
+                </div>
+                
+                <div style="margin-top: 1rem;">
+                    {% for comment in post.comments.all|slice:":3" %}
+                        <div style="padding: 0.75rem; background: rgba(255,255,255,0.02); border-radius: 0.5rem; margin-bottom: 0.5rem;">
+                            <strong style="color: var(--primary); font-size: 0.875rem;">{{ comment.author.username }}</strong>
+                            <p style="color: rgba(255,255,255,0.8); font-size: 0.875rem;">{{ comment.content }}</p>
+                        </div>
+                    {% endfor %}
+                    
+                    <form method="post" action="{% url 'social:add_comment' post.pk %}" style="margin-top: 0.5rem;">
+                        {% csrf_token %}
+                        <input type="text" name="content" placeholder="Add a comment..." style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text-light);">
+                    </form>
+                </div>
+            </div>
+        {% empty %}
+            <p style="color: rgba(255,255,255,0.6); text-align: center; padding: 3rem;">No posts yet. Follow users to see their posts!</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
