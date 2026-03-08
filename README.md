@@ -190,6 +190,15 @@ MCP servers can be defined through:
 
 ### Custom Agents
 
+This project includes a **Vector Space Development Assistant** configured in `.github/copilot-instructions.md`. This custom agent provides:
+
+- Django and Vector Space architecture guidance
+- Role-based access patterns and URL namespacing best practices
+- Common development patterns and troubleshooting
+- Project-specific code generation and refactoring
+
+The assistant automatically loads when you work in this repository with GitHub Copilot enabled.
+
 Custom agents can be configured to:
 
 - Access project-specific documentation
