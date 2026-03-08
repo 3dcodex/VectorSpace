@@ -1,459 +1,649 @@
 {% extends 'dashboard_base.html' %}
+{% load static %}
 
-{% block title %}Social Feed - Vector Space{% endblock %}
-
-{% block extra_css %}
-<style>
-    .community-hero {
-        background: linear-gradient(135deg, rgba(13, 185, 242, 0.15), rgba(10, 143, 199, 0.08));
-        border-bottom: 1px solid rgba(13, 185, 242, 0.2);
-        padding: 4rem 2rem;
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-    .community-hero h1 {
-        font-size: 3rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, #0db9f2, #0a8fc7);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 1rem;
-    }
-    .community-hero p {
-        font-size: 1.25rem;
-        color: rgba(255,255,255,0.7);
-        margin-bottom: 2rem;
-    }
-    .hero-actions {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    .category-bar {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 1rem;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    .category-btn {
-        padding: 0.75rem 1.5rem;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 2rem;
-        color: rgba(255,255,255,0.7);
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s;
-        font-size: 0.9375rem;
-    }
-    .category-btn:hover {
-        background: rgba(13,185,242,0.1);
-        border-color: rgba(13,185,242,0.3);
-        color: white;
-        transform: translateY(-2px);
-    }
-    .category-btn.active {
-        background: linear-gradient(135deg, rgba(13,185,242,0.2), rgba(13,185,242,0.1));
-        border-color: var(--primary);
-        color: var(--primary);
-        box-shadow: 0 4px 15px rgba(13,185,242,0.3);
-    }
-    .community-layout {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 0 2rem;
-        display: grid;
-        grid-template-columns: 1fr 350px;
-        gap: 2rem;
-        align-items: start;
-    }
-    .posts-section {
-        min-height: 500px;
-    }
-    .create-post-box {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 1rem;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    .create-post-box:hover {
-        border-color: rgba(13,185,242,0.3);
-        background: rgba(255,255,255,0.05);
-    }
-    .create-post-content {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-    .post-avatar {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #0db9f2, #0a8fc7);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 700;
-        font-size: 1.125rem;
-        flex-shrink: 0;
-    }
-    .post-input-placeholder {
-        flex: 1;
-        padding: 0.875rem 1.25rem;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 2rem;
-        color: rgba(255,255,255,0.5);
-        font-size: 0.9375rem;
-    }
-    .post-card {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 1rem;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        transition: all 0.3s;
-    }
-    .post-card:hover {
-        border-color: rgba(13,185,242,0.3);
-        box-shadow: 0 8px 30px rgba(13,185,242,0.15);
-    }
-    .post-header {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1rem;
-    }
-    .post-meta {
-        flex: 1;
-    }
-    .post-author {
-        color: white;
-        font-weight: 600;
-        text-decoration: none;
-        font-size: 1rem;
-    }
-    .post-author:hover {
-        color: var(--primary);
-    }
-    .post-info {
-        display: flex;
-        gap: 0.75rem;
-        align-items: center;
-        margin-top: 0.25rem;
-        font-size: 0.875rem;
-        color: rgba(255,255,255,0.5);
-    }
-    .post-category {
-        padding: 0.25rem 0.75rem;
-        background: rgba(13,185,242,0.15);
-        border: 1px solid rgba(13,185,242,0.3);
-        border-radius: 1rem;
-        color: var(--primary);
-        font-size: 0.8125rem;
-        font-weight: 600;
-    }
-    .post-title {
-        font-size: 1.375rem;
-        font-weight: 700;
-        color: white;
-        margin-bottom: 0.75rem;
-    }
-    .post-title a {
-        color: white;
-        text-decoration: none;
-        transition: color 0.2s;
-    }
-    .post-title a:hover {
-        color: var(--primary);
-    }
-    .post-preview {
-        color: rgba(255,255,255,0.7);
-        line-height: 1.6;
-        margin-bottom: 1rem;
-    }
-    .post-stats {
-        display: flex;
-        gap: 1.5rem;
-        align-items: center;
-        padding-top: 1rem;
-        border-top: 1px solid rgba(255,255,255,0.1);
-        font-size: 0.875rem;
-        color: rgba(255,255,255,0.6);
-    }
-    .post-stat {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    .vote-score {
-        color: var(--primary);
-        font-weight: 700;
-    }
-    .sidebar {
-        position: sticky;
-        top: 100px;
-    }
-    .sidebar-card {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 1rem;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-    .sidebar-card h3 {
-        font-size: 1.125rem;
-        font-weight: 700;
-        color: white;
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    .contributor-item {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.75rem;
-        background: rgba(255,255,255,0.03);
-        border-radius: 0.5rem;
-        margin-bottom: 0.5rem;
-        transition: all 0.2s;
-    }
-    .contributor-item:hover {
-        background: rgba(13,185,242,0.1);
-    }
-    .contributor-avatar {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #0db9f2, #0a8fc7);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 700;
-        font-size: 0.875rem;
-    }
-    .contributor-info {
-        flex: 1;
-    }
-    .contributor-name {
-        color: white;
-        font-weight: 600;
-        font-size: 0.875rem;
-    }
-    .contributor-posts {
-        color: rgba(255,255,255,0.5);
-        font-size: 0.75rem;
-    }
-    .rule-item {
-        padding: 0.75rem;
-        background: rgba(255,255,255,0.03);
-        border-left: 3px solid var(--primary);
-        border-radius: 0.25rem;
-        margin-bottom: 0.75rem;
-        color: rgba(255,255,255,0.7);
-        font-size: 0.875rem;
-    }
-    .pagination {
-        display: flex;
-        justify-content: center;
-        gap: 0.5rem;
-        margin-top: 2rem;
-        padding-bottom: 2rem;
-    }
-    .page-link {
-        padding: 0.625rem 1rem;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 0.5rem;
-        color: rgba(255,255,255,0.7);
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.2s;
-    }
-    .page-link:hover {
-        background: rgba(13,185,242,0.1);
-        border-color: rgba(13,185,242,0.3);
-        color: white;
-    }
-    .page-link.active {
-        background: linear-gradient(135deg, var(--primary), #0a8fc7);
-        border-color: var(--primary);
-        color: white;
-    }
-    .empty-state {
-        text-align: center;
-        padding: 4rem 2rem;
-        background: rgba(255,255,255,0.02);
-        border: 2px dashed rgba(13,185,242,0.2);
-        border-radius: 1rem;
-    }
-    .empty-icon {
-        font-size: 4rem;
-        margin-bottom: 1rem;
-    }
-    @media (max-width: 1024px) {
-        .community-layout {
-            grid-template-columns: 1fr;
-        }
-        .sidebar {
-            position: static;
-        }
-    }
-</style>
-{% endblock %}
+{% block title %}Community Feed - Vector Space{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<div class="community-hero">
-    <h1>💬 Community Discussions</h1>
-    <p>Connect with creators, developers, and gamers. Share ideas, ask questions, and collaborate.</p>
-    <div class="hero-actions">
-        {% if user.is_authenticated %}
-            <a href="{% url 'dashboard:social_create_post' %}" class="btn-primary">💬 Start Discussion</a>
-        {% else %}
-            <a href="{% url 'users:signup' %}" class="btn-primary">Join Community</a>
-        {% endif %}
-    </div>
-</div>
+<style>
+.community-container {
+    display: grid;
+    grid-template-columns: 280px 1fr 320px;
+    gap: 1.5rem;
+    padding: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
 
-<!-- Category Filter Bar -->
-<div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
-    <div class="category-bar">
-        <a href="{% url 'social:community' %}" class="category-btn {% if not active_category %}active{% endif %}">All</a>
-        {% for category in categories %}
-            <a href="?category={{ category.slug }}" class="category-btn {% if active_category == category.slug %}active{% endif %}">
-                {{ category.icon }} {{ category.name }}
-            </a>
-        {% endfor %}
-    </div>
-</div>
+.left-sidebar, .right-sidebar {
+    position: sticky;
+    top: 80px;
+    height: fit-content;
+}
 
-<!-- Main Layout -->
-<div class="community-layout">
-    <!-- Posts Section -->
-    <div class="posts-section">
-        <!-- Create Post Box -->
-        {% if user.is_authenticated %}
-            <a href="{% url 'dashboard:social_create_post' %}" style="text-decoration: none;">
-                <div class="create-post-box">
-                    <div class="create-post-content">
-                        <div class="post-avatar">{{ user.username|first|upper }}</div>
-                        <div class="post-input-placeholder">What would you like to discuss?</div>
-                    </div>
+.profile-card, .sidebar-card, .post-card, .create-post-box {
+    background: #162C2F;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(13, 185, 242, 0.1);
+}
+
+.profile-card {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0DB9F2, #53B4EB);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 auto 1rem;
+    box-shadow: 0 4px 12px rgba(13, 185, 242, 0.3);
+}
+
+.profile-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #F5F5F6;
+    margin-bottom: 0.25rem;
+}
+
+.profile-role {
+    font-size: 0.875rem;
+    color: #76848B;
+    margin-bottom: 1rem;
+}
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 1.5rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid rgba(13, 185, 242, 0.1);
+    border-bottom: 1px solid rgba(13, 185, 242, 0.1);
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0DB9F2;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #76848B;
+    margin-top: 0.25rem;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-profile {
+    flex: 1;
+    padding: 0.625rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0DB9F2, #53B4EB);
+    color: white;
+}
+
+.btn-secondary {
+    background: rgba(13, 185, 242, 0.1);
+    color: #0DB9F2;
+    border: 1px solid rgba(13, 185, 242, 0.2);
+}
+
+.btn-profile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(13, 185, 242, 0.3);
+}
+
+.sidebar-card {
+    margin-bottom: 1.5rem;
+}
+
+.sidebar-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #F5F5F6;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-list li {
+    margin-bottom: 0.5rem;
+}
+
+.nav-list a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 0.875rem;
+    color: #76848B;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.nav-list a:hover {
+    background: rgba(13, 185, 242, 0.08);
+    color: #0DB9F2;
+}
+
+.nav-list a.active {
+    background: rgba(13, 185, 242, 0.12);
+    color: #0DB9F2;
+}
+
+.category-badge {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    background: rgba(13, 185, 242, 0.1);
+    color: #0DB9F2;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    margin: 0.25rem;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.category-badge:hover {
+    background: rgba(13, 185, 242, 0.2);
+}
+
+.create-post-box {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.create-post-box:hover {
+    border-color: rgba(13, 185, 242, 0.3);
+    box-shadow: 0 4px 12px rgba(13, 185, 242, 0.2);
+}
+
+.create-post-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0DB9F2, #53B4EB);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.create-post-input {
+    flex: 1;
+    padding: 0.875rem 1.25rem;
+    background: rgba(13, 185, 242, 0.05);
+    border: 1px solid rgba(13, 185, 242, 0.15);
+    border-radius: 2rem;
+    color: #76848B;
+    font-size: 0.875rem;
+}
+
+.post-type-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(13, 185, 242, 0.1);
+}
+
+.post-type-btn {
+    padding: 0.625rem;
+    background: rgba(13, 185, 242, 0.05);
+    border: 1px solid rgba(13, 185, 242, 0.1);
+    border-radius: 0.5rem;
+    color: #76848B;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    text-align: center;
+}
+
+.post-type-btn:hover {
+    background: rgba(13, 185, 242, 0.1);
+    color: #0DB9F2;
+    border-color: rgba(13, 185, 242, 0.2);
+}
+
+.post-card {
+    margin-bottom: 1.5rem;
+    transition: all 0.3s;
+}
+
+.post-card:hover {
+    border-color: rgba(13, 185, 242, 0.2);
+    box-shadow: 0 4px 12px rgba(13, 185, 242, 0.15);
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.post-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0DB9F2, #53B4EB);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.post-author-info {
+    flex: 1;
+}
+
+.post-author-name {
+    font-weight: 700;
+    color: #F5F5F6;
+    font-size: 0.9375rem;
+}
+
+.post-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: #76848B;
+    margin-top: 0.25rem;
+}
+
+.post-type-badge {
+    padding: 0.25rem 0.625rem;
+    background: rgba(13, 185, 242, 0.1);
+    color: #0DB9F2;
+    border-radius: 0.375rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+}
+
+.post-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #F5F5F6;
+    margin-bottom: 0.75rem;
+}
+
+.post-content {
+    color: #76848B;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.post-image {
+    width: 100%;
+    border-radius: 0.75rem;
+    margin: 1rem 0;
+}
+
+.post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.post-tag {
+    padding: 0.375rem 0.75rem;
+    background: rgba(13, 185, 242, 0.05);
+    color: #0DB9F2;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+}
+
+.post-actions {
+    display: flex;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(13, 185, 242, 0.1);
+}
+
+.post-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(13, 185, 242, 0.05);
+    border: 1px solid rgba(13, 185, 242, 0.1);
+    border-radius: 0.5rem;
+    color: #76848B;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.post-action-btn:hover {
+    background: rgba(13, 185, 242, 0.1);
+    color: #0DB9F2;
+    border-color: rgba(13, 185, 242, 0.2);
+}
+
+.trending-item, .creator-item, .event-item {
+    padding: 0.75rem;
+    background: rgba(13, 185, 242, 0.05);
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.trending-item:hover, .creator-item:hover, .event-item:hover {
+    background: rgba(13, 185, 242, 0.1);
+}
+
+.trending-topic {
+    font-weight: 600;
+    color: #F5F5F6;
+    font-size: 0.875rem;
+}
+
+.trending-count {
+    font-size: 0.75rem;
+    color: #76848B;
+    margin-top: 0.25rem;
+}
+
+.creator-name {
+    font-weight: 600;
+    color: #F5F5F6;
+    font-size: 0.875rem;
+}
+
+.creator-role {
+    font-size: 0.75rem;
+    color: #76848B;
+    margin-top: 0.25rem;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(13, 185, 242, 0.05);
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.leaderboard-rank {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0DB9F2;
+}
+
+.leaderboard-info {
+    flex: 1;
+}
+
+.leaderboard-name {
+    font-weight: 600;
+    color: #F5F5F6;
+    font-size: 0.875rem;
+}
+
+.leaderboard-points {
+    font-size: 0.75rem;
+    color: #76848B;
+}
+
+@media (max-width: 1200px) {
+    .community-container {
+        grid-template-columns: 1fr;
+    }
+    .left-sidebar, .right-sidebar {
+        display: none;
+    }
+}
+</style>
+
+<div class="community-container">
+    <!-- LEFT SIDEBAR -->
+    <aside class="left-sidebar">
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <div class="profile-avatar">{{ request.user.username.0|upper }}</div>
+            <div class="profile-name">{{ request.user.username }}</div>
+            <div class="profile-role">{{ request.user.role|default:"Member" }}</div>
+            
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <div class="stat-value">{{ user_posts_count }}</div>
+                    <div class="stat-label">Posts</div>
                 </div>
-            </a>
-        {% endif %}
-
-        <!-- Posts Feed -->
-        {% if posts %}
-            {% for post in posts %}
-                <div class="post-card">
-                    <div class="post-header">
-                        <div class="post-avatar">{{ post.author.username|first|upper }}</div>
-                        <div class="post-meta">
-                            <a href="{% url 'social:profile' post.author.pk %}" class="post-author">{{ post.author.username }}</a>
-                            <div class="post-info">
-                                {% if post.category %}
-                                    <span class="post-category">{{ post.category.name }}</span>
-                                {% endif %}
-                                <span>{{ post.created_at|timesince }} ago</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {% if post.title %}
-                        <h2 class="post-title">
-                            <a href="{% url 'social:post_detail' post.pk %}">{{ post.title }}</a>
-                        </h2>
-                    {% endif %}
-                    
-                    <div class="post-preview">
-                        {{ post.content|truncatewords:30 }}
-                    </div>
-                    
-                    <div class="post-stats">
-                        <div class="post-stat">
-                            <span>⬆</span>
-                            <span class="vote-score">{{ post.vote_score }}</span>
-                        </div>
-                        <div class="post-stat">
-                            <span>💬</span>
-                            <span>{{ post.comment_count }} comments</span>
-                        </div>
-                        <a href="{% url 'social:post_detail' post.pk %}" style="color: var(--primary); text-decoration: none; font-weight: 600;">Read more →</a>
-                    </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ user_followers_count }}</div>
+                    <div class="stat-label">Followers</div>
                 </div>
-            {% endfor %}
-
-            <!-- Pagination -->
-            {% if posts.has_other_pages %}
-                <div class="pagination">
-                    {% if posts.has_previous %}
-                        <a href="?page={{ posts.previous_page_number }}{% if active_category %}&category={{ active_category }}{% endif %}" class="page-link">← Previous</a>
-                    {% endif %}
-                    
-                    {% for num in posts.paginator.page_range %}
-                        {% if posts.number == num %}
-                            <span class="page-link active">{{ num }}</span>
-                        {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
-                            <a href="?page={{ num }}{% if active_category %}&category={{ active_category }}{% endif %}" class="page-link">{{ num }}</a>
-                        {% endif %}
-                    {% endfor %}
-                    
-                    {% if posts.has_next %}
-                        <a href="?page={{ posts.next_page_number }}{% if active_category %}&category={{ active_category }}{% endif %}" class="page-link">Next →</a>
-                    {% endif %}
+                <div class="stat-item">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Assets</div>
                 </div>
-            {% endif %}
-        {% else %}
-            <div class="empty-state">
-                <div class="empty-icon">💬</div>
-                <h3>No discussions yet.</h3>
-                <p>Start the first conversation and help shape the community.</p>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard:social_create_post' %}" class="btn-primary" style="margin-top: 1rem;">Start Discussion</a>
-                {% else %}
-                    <a href="{% url 'users:signup' %}" class="btn-primary" style="margin-top: 1rem;">Join to Post</a>
-                {% endif %}
             </div>
-        {% endif %}
-    </div>
-
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <!-- Top Contributors -->
+            
+            <div class="profile-actions">
+                <a href="{% url 'dashboard:social_my_profile' %}" class="btn-profile btn-primary">View Profile</a>
+                <a href="{% url 'dashboard:social_edit_profile' %}" class="btn-profile btn-secondary">Edit</a>
+            </div>
+        </div>
+        
+        <!-- Quick Navigation -->
         <div class="sidebar-card">
-            <h3>🏆 Top Contributors</h3>
-            {% for contributor in top_contributors %}
-                <div class="contributor-item">
-                    <div class="contributor-avatar">{{ contributor.username|first|upper }}</div>
-                    <div class="contributor-info">
-                        <div class="contributor-name">{{ contributor.username }}</div>
-                        <div class="contributor-posts">{{ contributor.post_count }} posts</div>
+            <div class="sidebar-title">Quick Navigation</div>
+            <ul class="nav-list">
+                <li><a href="{% url 'dashboard:social_feed' %}" class="active">🏠 Home Feed</a></li>
+                <li><a href="{% url 'dashboard:marketplace_dashboard' %}">🛒 Marketplace</a></li>
+                <li><a href="{% url 'dashboard:games_my_games' %}">🎮 Games</a></li>
+                <li><a href="{% url 'dashboard:jobs_board' %}">💼 Jobs</a></li>
+                <li><a href="{% url 'dashboard:mentorship_my_sessions' %}">🎓 Mentorship</a></li>
+                <li><a href="{% url 'dashboard:competitions_my_competitions' %}">🏆 Competitions</a></li>
+            </ul>
+        </div>
+        
+        <!-- Categories -->
+        <div class="sidebar-card">
+            <div class="sidebar-title">Categories</div>
+            <div>
+                <span class="category-badge">Game Development</span>
+                <span class="category-badge">3D Modeling</span>
+                <span class="category-badge">Unreal Engine</span>
+                <span class="category-badge">Unity</span>
+                <span class="category-badge">Jobs</span>
+                <span class="category-badge">Showcase</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN FEED -->
+    <main class="main-feed">
+        <!-- Create Post Box -->
+        <a href="{% url 'dashboard:social_create_post' %}" style="text-decoration: none;">
+            <div class="create-post-box">
+                <div class="create-post-avatar">{{ request.user.username.0|upper }}</div>
+                <div class="create-post-input">What would you like to share today?</div>
+            </div>
+        </a>
+        
+        <div class="post-type-buttons">
+            <a href="{% url 'dashboard:social_create_post' %}" class="post-type-btn">📝 Post Update</a>
+            <a href="{% url 'dashboard:jobs_board' %}" class="post-type-btn">❓ Ask Question</a>
+            <a href="{% url 'dashboard:marketplace_upload' %}" class="post-type-btn">🎨 Showcase Project</a>
+            <a href="{% url 'dashboard:marketplace_upload' %}" class="post-type-btn">📦 Share Asset</a>
+        </div>
+        
+        <!-- Posts Feed -->
+        {% for post in posts %}
+        <div class="post-card">
+            <div class="post-header">
+                <div class="post-avatar">{{ post.author.username.0|upper }}</div>
+                <div class="post-author-info">
+                    <div class="post-author-name">{{ post.author.username }}</div>
+                    <div class="post-meta">
+                        <span class="post-type-badge">Post</span>
+                        <span>•</span>
+                        <span>{{ post.created_at|timesince }} ago</span>
                     </div>
                 </div>
+            </div>
+            
+            {% if post.title %}
+            <h3 class="post-title">{{ post.title }}</h3>
+            {% endif %}
+            <div class="post-content">{{ post.content|truncatewords:30 }}</div>
+            
+            <div class="post-actions">
+                <a href="{% url 'dashboard:social_like_post' post.id %}" class="post-action-btn">
+                    👍 {{ post.likes_count }} Likes
+                </a>
+                <span class="post-action-btn">💬 {{ post.comments.count }} Comments</span>
+                <span class="post-action-btn">🔖 Save</span>
+                <span class="post-action-btn">🔗 Share</span>
+            </div>
+        </div>
+        {% empty %}
+        <div class="post-card" style="text-align: center; padding: 4rem 2rem; min-height: 400px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div style="font-size: 3rem; margin-bottom: 1.5rem; opacity: 0.3;">📝</div>
+            <h3 style="color: #F5F5F6; margin-bottom: 0.75rem; font-size: 1.25rem;">No posts yet</h3>
+            <p style="color: #76848B; margin-bottom: 1.5rem;">Be the first to share something with the community!</p>
+            <a href="{% url 'dashboard:social_create_post' %}" class="btn-profile btn-primary" style="padding: 0.75rem 1.5rem; text-decoration: none;">Create First Post</a>
+        </div>
+        {% endfor %}
+    </main>
+    
+    <!-- RIGHT SIDEBAR -->
+    <aside class="right-sidebar">
+        <!-- Trending Topics -->
+        <div class="sidebar-card">
+            <div class="sidebar-title">🔥 Trending Topics</div>
+            {% for trend in trending %}
+            <div class="trending-item">
+                <div class="trending-topic">{{ trend.category__name|default:"General" }}</div>
+                <div class="trending-count">{{ trend.count }} posts</div>
+            </div>
+            {% empty %}
+            <div class="trending-item">
+                <div class="trending-topic">Unreal Engine Optimization</div>
+            </div>
+            <div class="trending-item">
+                <div class="trending-topic">Procedural World Generation</div>
+            </div>
+            <div class="trending-item">
+                <div class="trending-topic">AI-Assisted Development</div>
+            </div>
             {% endfor %}
         </div>
-
-        <!-- Community Rules -->
+        
+        <!-- Top Creators -->
         <div class="sidebar-card">
-            <h3>📜 Community Rules</h3>
-            <div class="rule-item">✓ Be respectful</div>
-            <div class="rule-item">✓ No spam</div>
-            <div class="rule-item">✓ Credit original creators</div>
-            <div class="rule-item">✓ No piracy</div>
+            <div class="sidebar-title">🌟 Top Creators</div>
+            {% for creator in top_contributors %}
+            <div class="creator-item">
+                <div class="creator-name">{{ creator.author__username }}</div>
+                <div class="creator-role">{{ creator.total_likes }} likes</div>
+            </div>
+            {% empty %}
+            <div class="creator-item">
+                <div class="creator-name">Nova Assets</div>
+                <div class="creator-role">Environment Artist</div>
+            </div>
+            <div class="creator-item">
+                <div class="creator-name">Mythic Studios</div>
+                <div class="creator-role">Character Designer</div>
+            </div>
+            <div class="creator-item">
+                <div class="creator-name">PixelForge</div>
+                <div class="creator-role">Weapon Artist</div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Upcoming Events -->
+        <div class="sidebar-card">
+            <div class="sidebar-title">📅 Upcoming Events</div>
+            <div class="event-item">
+                <div class="trending-topic">Game Development Game Jam</div>
+                <div class="trending-count">Starting in 3 days</div>
+            </div>
+            <div class="event-item">
+                <div class="trending-topic">3D Asset Creation Challenge</div>
+                <div class="trending-count">Starting in 1 week</div>
+            </div>
+            <div class="event-item">
+                <div class="trending-topic">Community Q&A with Mentors</div>
+                <div class="trending-count">Starting in 2 weeks</div>
+            </div>
+        </div>
+        
+        <!-- Leaderboard -->
+        <div class="sidebar-card">
+            <div class="sidebar-title">🏆 Top Contributors</div>
+            <div class="leaderboard-item">
+                <div class="leaderboard-rank">1️⃣</div>
+                <div class="leaderboard-info">
+                    <div class="leaderboard-name">NovaArtist</div>
+                    <div class="leaderboard-points">240 points</div>
+                </div>
+            </div>
+            <div class="leaderboard-item">
+                <div class="leaderboard-rank">2️⃣</div>
+                <div class="leaderboard-info">
+                    <div class="leaderboard-name">DevLogic</div>
+                    <div class="leaderboard-points">210 points</div>
+                </div>
+            </div>
+            <div class="leaderboard-item">
+                <div class="leaderboard-rank">3️⃣</div>
+                <div class="leaderboard-info">
+                    <div class="leaderboard-name">PixelForge</div>
+                    <div class="leaderboard-points">198 points</div>
+                </div>
+            </div>
         </div>
     </aside>
 </div>

@@ -1,0 +1,38 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Create Post{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1 style="color: var(--text-light); font-size: 2rem; font-weight: 800; margin-bottom: 2rem;">💬 Start a Discussion</h1>
+    
+    <form method="post" enctype="multipart/form-data" class="styled-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Title</label>
+            {{ form.title }}
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Category</label>
+            {{ form.category }}
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Content</label>
+            {{ form.content }}
+        </div>
+        
+        <div class="form-group">
+            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Add Media (Optional)</label>
+            {{ form.media }}
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn-primary">Post Discussion</button>
+            <a href="{% url 'social:community' %}" class="btn-secondary" style="text-decoration: none;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

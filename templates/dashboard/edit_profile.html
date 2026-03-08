@@ -3,34 +3,76 @@
 
 {% block extra_css %}
 <style>
+  .edit-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
   .edit-header {
-    margin-bottom: 2rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+  }
+
+  .edit-header::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(13, 185, 242, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: -1;
   }
 
   .edit-title {
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: 800;
-    color: #fff;
-    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #0DB9F2, #53B4EB);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.75rem;
   }
 
   .edit-subtitle {
-    color: rgba(255,255,255,0.6);
+    color: #76848B;
+    font-size: 1.125rem;
   }
 
   .form-section {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 16px;
-    padding: 2rem;
+    background: #162C2F;
+    border: 1px solid rgba(13, 185, 242, 0.15);
+    border-radius: 1.25rem;
+    padding: 2.5rem;
     margin-bottom: 2rem;
+    transition: all 0.3s ease;
+  }
+
+  .form-section:hover {
+    border-color: rgba(13, 185, 242, 0.3);
+    box-shadow: 0 8px 24px rgba(13, 185, 242, 0.1);
   }
 
   .section-title {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    color: #fff;
-    margin-bottom: 1.5rem;
+    color: #F5F5F6;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-title::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background: linear-gradient(135deg, #0DB9F2, #53B4EB);
+    border-radius: 2px;
   }
 
   .form-grid {
@@ -45,195 +87,287 @@
 
   .form-label {
     display: block;
-    color: rgba(255,255,255,0.8);
+    color: #F5F5F6;
     font-weight: 600;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.9375rem;
   }
 
-  .form-input, .form-textarea, .form-select {
+  .form-input, .form-textarea {
     width: 100%;
-    padding: 0.75rem 1rem;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 8px;
-    color: #fff;
-    font-size: 0.95rem;
+    padding: 0.875rem 1.25rem;
+    background: #0F1F22;
+    border: 1px solid rgba(13, 185, 242, 0.2);
+    border-radius: 0.75rem;
+    color: #F5F5F6;
+    font-size: 0.9375rem;
+    transition: all 0.3s ease;
+  }
+
+  .form-select {
+    width: 100%;
+    padding: 0.875rem 1.25rem;
+    padding-right: 3rem;
+    background: #0F1F22;
+    border: 1px solid rgba(13, 185, 242, 0.2);
+    border-radius: 0.75rem;
+    color: #F5F5F6;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%230DB9F2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1.25rem center;
+  }
+
+  .form-select option {
+    background: #162C2F;
+    color: #F5F5F6;
+    padding: 0.75rem;
   }
 
   .form-textarea {
-    min-height: 120px;
+    min-height: 140px;
     resize: vertical;
+    font-family: inherit;
   }
 
   .form-input:focus, .form-textarea:focus, .form-select:focus {
     outline: none;
-    border-color: #0db9f2;
-    background: rgba(255,255,255,0.08);
+    border-color: #0DB9F2;
+    background: #0A1517;
+    box-shadow: 0 0 0 3px rgba(13, 185, 242, 0.1);
   }
 
-  .skills-input-wrapper {
+  .form-input::placeholder, .form-textarea::placeholder {
+    color: #76848B;
+  }
+
+  .file-upload-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .file-upload-btn {
     display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-top: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    background: rgba(13, 185, 242, 0.08);
+    border: 2px dashed rgba(13, 185, 242, 0.3);
+    border-radius: 0.75rem;
+    color: #0DB9F2;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
   }
 
-  .skill-tag {
-    padding: 0.5rem 1rem;
-    background: rgba(13,185,242,0.15);
-    border: 1px solid rgba(13,185,242,0.3);
-    border-radius: 20px;
-    color: #0db9f2;
-    font-weight: 600;
-    font-size: 0.85rem;
+  .file-upload-btn:hover {
+    background: rgba(13, 185, 242, 0.15);
+    border-color: #0DB9F2;
+  }
+
+  .file-upload-wrapper input[type="file"] {
+    position: absolute;
+    left: -9999px;
+  }
+
+  .current-file {
+    color: #76848B;
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
   }
 
-  .skill-remove {
-    cursor: pointer;
-    font-weight: 700;
-  }
-
   .btn-group {
     display: flex;
     gap: 1rem;
-    margin-top: 2rem;
+    margin-top: 3rem;
+    justify-content: center;
   }
 
   .btn {
-    padding: 0.75rem 2rem;
-    border-radius: 10px;
+    padding: 1rem 2.5rem;
+    border-radius: 0.75rem;
     font-weight: 600;
+    font-size: 1rem;
     cursor: pointer;
     border: none;
     transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, #0db9f2, #a855f7);
-    color: #fff;
+    background: linear-gradient(135deg, #0DB9F2, #53B4EB);
+    color: white;
+    box-shadow: 0 4px 12px rgba(13, 185, 242, 0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(13, 185, 242, 0.4);
   }
 
   .btn-secondary {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.15);
-    color: #fff;
+    background: rgba(13, 185, 242, 0.1);
+    border: 1px solid rgba(13, 185, 242, 0.3);
+    color: #0DB9F2;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(13, 185, 242, 0.15);
+    transform: translateY(-2px);
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="edit-header">
-  <h1 class="edit-title">Edit Profile</h1>
-  <p class="edit-subtitle">Update your personal and professional information</p>
+<div class="edit-container">
+  <div class="edit-header">
+    <h1 class="edit-title">Edit Profile</h1>
+    <p class="edit-subtitle">Update your personal and professional information</p>
+  </div>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <div class="form-section">
+      <h2 class="section-title">Personal Information</h2>
+      <div class="form-group">
+        <label class="form-label">Profile Picture</label>
+        <div class="file-upload-wrapper">
+          <label for="avatar-upload" class="file-upload-btn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Choose Profile Picture
+          </label>
+          <input type="file" id="avatar-upload" name="avatar" accept="image/*">
+        </div>
+        {% if user.avatar %}
+        <p class="current-file">✓ Current avatar uploaded</p>
+        {% endif %}
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" name="full_name" class="form-input" value="{{ user.get_full_name }}" placeholder="John Doe">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input type="text" name="username" class="form-input" value="{{ user.username }}" placeholder="johndoe">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Bio</label>
+        <textarea name="bio" class="form-textarea" placeholder="Tell us about yourself...">{{ user.bio }}</textarea>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Location</label>
+          <input type="text" name="location" class="form-input" value="{{ user.profile.location }}" placeholder="San Francisco, CA">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Portfolio URL</label>
+          <input type="url" name="portfolio_url" class="form-input" value="{{ user.portfolio_url }}" placeholder="https://yourportfolio.com">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2 class="section-title">Professional Information</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Professional Role</label>
+          <select name="user_type" class="form-select">
+            <option value="developer" {% if user.user_type == 'developer' %}selected{% endif %}>Developer</option>
+            <option value="artist" {% if user.user_type == 'artist' %}selected{% endif %}>3D Artist</option>
+            <option value="vfx" {% if user.user_type == 'vfx' %}selected{% endif %}>VFX Designer</option>
+            <option value="recruiter" {% if user.user_type == 'recruiter' %}selected{% endif %}>Recruiter</option>
+            <option value="mentor" {% if user.user_type == 'mentor' %}selected{% endif %}>Mentor</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Experience Level</label>
+          <select name="experience_years" class="form-select">
+            <option value="0" {% if user.profile.experience_years == 0 %}selected{% endif %}>Beginner</option>
+            <option value="2" {% if user.profile.experience_years == 2 %}selected{% endif %}>Intermediate</option>
+            <option value="5" {% if user.profile.experience_years == 5 %}selected{% endif %}>Professional</option>
+            <option value="10" {% if user.profile.experience_years >= 10 %}selected{% endif %}>Industry Expert</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Skills (comma-separated)</label>
+        <input type="text" name="skills" class="form-input" value="{{ user.skills|join:', ' }}" placeholder="Unreal Engine, Blender, C++">
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2 class="section-title">Social Links</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">GitHub</label>
+          <input type="url" name="github" class="form-input" value="{{ user.profile.github }}" placeholder="https://github.com/username">
+        </div>
+        <div class="form-group">
+          <label class="form-label">LinkedIn</label>
+          <input type="url" name="linkedin" class="form-input" value="{{ user.profile.linkedin }}" placeholder="https://linkedin.com/in/username">
+        </div>
+        <div class="form-group">
+          <label class="form-label">ArtStation</label>
+          <input type="url" name="artstation" class="form-input" value="{{ user.profile.artstation }}" placeholder="https://artstation.com/username">
+        </div>
+        <div class="form-group">
+          <label class="form-label">YouTube</label>
+          <input type="url" name="youtube" class="form-input" value="{{ user.profile.youtube }}" placeholder="https://youtube.com/@username">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2 class="section-title">Resume</h2>
+      <div class="form-group">
+        <label class="form-label">Upload Resume (PDF) - Optional</label>
+        <div class="file-upload-wrapper">
+          <label for="resume-upload" class="file-upload-btn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 2L6 12M6 12L3 9M6 12L9 9M14 8V18M10 18H18M10 2H12C13.1046 2 14 2.89543 14 4V8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Choose Resume File
+          </label>
+          <input type="file" id="resume-upload" name="resume" accept=".pdf">
+        </div>
+        {% if user.profile.resume %}
+        <p class="current-file">📄 {{ user.profile.resume.name }}</p>
+        {% endif %}
+        <p style="color: #76848B; margin-top: 1rem; font-size: 0.875rem;">💡 You can also use the Resume Builder to create your resume</p>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button type="submit" class="btn btn-primary">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 5L7.5 13.5L4 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Save Changes
+      </button>
+      <a href="{% url 'dashboard:social_profile' user.id %}" class="btn btn-secondary">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Cancel
+      </a>
+    </div>
+  </form>
 </div>
-
-<form method="post" enctype="multipart/form-data">
-  {% csrf_token %}
-  
-  <div class="form-section">
-    <h2 class="section-title">Personal Information</h2>
-    <div class="form-group">
-      <label class="form-label">Profile Picture</label>
-      <input type="file" name="avatar" class="form-input" accept="image/*">
-      {% if user.avatar %}
-      <p style="color: rgba(255,255,255,0.6); margin-top: 0.5rem; font-size: 0.85rem;">Current avatar uploaded</p>
-      {% endif %}
-    </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Full Name</label>
-        <input type="text" name="full_name" class="form-input" value="{{ user.get_full_name }}" placeholder="John Doe">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Username</label>
-        <input type="text" name="username" class="form-input" value="{{ user.username }}" placeholder="johndoe">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Bio</label>
-      <textarea name="bio" class="form-textarea" placeholder="Tell us about yourself...">{{ user.bio }}</textarea>
-    </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Location</label>
-        <input type="text" name="location" class="form-input" value="{{ user.profile.location }}" placeholder="San Francisco, CA">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Portfolio URL</label>
-        <input type="url" name="portfolio_url" class="form-input" value="{{ user.portfolio_url }}" placeholder="https://yourportfolio.com">
-      </div>
-    </div>
-  </div>
-
-  <div class="form-section">
-    <h2 class="section-title">Professional Information</h2>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Professional Role</label>
-        <select name="user_type" class="form-select">
-          <option value="developer" {% if user.user_type == 'developer' %}selected{% endif %}>Developer</option>
-          <option value="artist" {% if user.user_type == 'artist' %}selected{% endif %}>3D Artist</option>
-          <option value="vfx" {% if user.user_type == 'vfx' %}selected{% endif %}>VFX Designer</option>
-          <option value="recruiter" {% if user.user_type == 'recruiter' %}selected{% endif %}>Recruiter</option>
-          <option value="mentor" {% if user.user_type == 'mentor' %}selected{% endif %}>Mentor</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Experience Level</label>
-        <select name="experience_years" class="form-select">
-          <option value="0" {% if user.profile.experience_years == 0 %}selected{% endif %}>Beginner</option>
-          <option value="2" {% if user.profile.experience_years == 2 %}selected{% endif %}>Intermediate</option>
-          <option value="5" {% if user.profile.experience_years == 5 %}selected{% endif %}>Professional</option>
-          <option value="10" {% if user.profile.experience_years >= 10 %}selected{% endif %}>Industry Expert</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Skills (comma-separated)</label>
-      <input type="text" name="skills" class="form-input" value="{{ user.skills|join:', ' }}" placeholder="Unreal Engine, Blender, C++">
-    </div>
-  </div>
-
-  <div class="form-section">
-    <h2 class="section-title">Social Links</h2>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">GitHub</label>
-        <input type="url" name="github" class="form-input" value="{{ user.profile.github }}" placeholder="https://github.com/username">
-      </div>
-      <div class="form-group">
-        <label class="form-label">LinkedIn</label>
-        <input type="url" name="linkedin" class="form-input" value="{{ user.profile.linkedin }}" placeholder="https://linkedin.com/in/username">
-      </div>
-      <div class="form-group">
-        <label class="form-label">ArtStation</label>
-        <input type="url" name="artstation" class="form-input" value="{{ user.profile.artstation }}" placeholder="https://artstation.com/username">
-      </div>
-      <div class="form-group">
-        <label class="form-label">YouTube</label>
-        <input type="url" name="youtube" class="form-input" value="{{ user.profile.youtube }}" placeholder="https://youtube.com/@username">
-      </div>
-    </div>
-  </div>
-
-  <div class="form-section">
-    <h2 class="section-title">Resume</h2>
-    <div class="form-group">
-      <label class="form-label">Upload Resume (PDF)</label>
-      <input type="file" name="resume" class="form-input" accept=".pdf">
-      {% if user.profile.resume %}
-      <p style="color: rgba(255,255,255,0.6); margin-top: 0.5rem; font-size: 0.85rem;">Current: {{ user.profile.resume.name }}</p>
-      {% endif %}
-    </div>
-  </div>
-
-  <div class="btn-group">
-    <button type="submit" class="btn btn-primary">Save Changes</button>
-    <a href="{% url 'dashboard:social_profile' user.id %}" class="btn btn-secondary">Cancel</a>
-  </div>
-</form>
 {% endblock %}

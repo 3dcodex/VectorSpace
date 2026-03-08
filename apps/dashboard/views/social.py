@@ -11,12 +11,22 @@ from apps.users.models import User
 @login_required
 def feed(request):
     """Personal feed with posts from followed users"""
-    following_ids = Follow.objects.filter(follower=request.user).values_list('following_id', flat=True)
-    posts = Post.objects.filter(
-        Q(author__in=following_ids) | Q(author=request.user)
-    ).order_by('-created_at').select_related('author')
+    posts = Post.objects.select_related('author').order_by('-created_at')[:20]
     
-    return render(request, 'social/feed.html', {'posts': posts})
+    user_posts_count = Post.objects.filter(author=request.user).count()
+    user_followers_count = Follow.objects.filter(following=request.user).count()
+    
+    trending = []
+    top_contributors = []
+    
+    context = {
+        'posts': posts,
+        'user_posts_count': user_posts_count,
+        'user_followers_count': user_followers_count,
+        'trending': trending,
+        'top_contributors': top_contributors,
+    }
+    return render(request, 'social/feed.html', context)
 
 @login_required
 def my_posts(request):

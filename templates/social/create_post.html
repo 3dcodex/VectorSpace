@@ -1,38 +1,284 @@
 {% extends 'dashboard_base.html' %}
 
-{% block title %}Create Post{% endblock %}
+{% block title %}Create Post - Vector Space{% endblock %}
 
 {% block content %}
-<div class="form-container">
-    <h1 style="color: var(--text-light); font-size: 2rem; font-weight: 800; margin-bottom: 2rem;">💬 Start a Discussion</h1>
-    
-    <form method="post" enctype="multipart/form-data" class="styled-form">
-        {% csrf_token %}
-        
-        <div class="form-group">
-            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Title</label>
-            {{ form.title }}
-        </div>
-        
-        <div class="form-group">
-            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Category</label>
-            {{ form.category }}
-        </div>
-        
-        <div class="form-group">
-            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Content</label>
-            {{ form.content }}
-        </div>
-        
-        <div class="form-group">
-            <label style="color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; display: block;">Add Media (Optional)</label>
-            {{ form.media }}
-        </div>
-        
-        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-            <button type="submit" class="btn-primary">Post Discussion</button>
-            <a href="{% url 'social:community' %}" class="btn-secondary" style="text-decoration: none;">Cancel</a>
-        </div>
-    </form>
+<style>
+.create-post-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1.5rem;
+    background: rgba(13, 185, 242, 0.1);
+    border: 1px solid rgba(13, 185, 242, 0.2);
+    border-radius: 0.75rem;
+    color: #0DB9F2;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    margin-bottom: 2rem;
+    font-size: 0.9375rem;
+}
+
+.back-btn svg {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s;
+}
+
+.back-btn:hover {
+    background: rgba(13, 185, 242, 0.2);
+    transform: translateX(-4px);
+    box-shadow: 0 4px 12px rgba(13, 185, 242, 0.2);
+}
+
+.back-btn:hover svg {
+    transform: translateX(-4px);
+}
+
+.hero-section {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.hero-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #0DB9F2, #53B4EB);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.75rem;
+}
+
+.hero-subtitle {
+    font-size: 1.125rem;
+    color: #76848B;
+}
+
+.form-card {
+    background: linear-gradient(135deg, rgba(13, 185, 242, 0.05), rgba(13, 185, 242, 0.02));
+    border: 1px solid rgba(13, 185, 242, 0.2);
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.form-group {
+    margin-bottom: 2rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 700;
+    color: #F5F5F6;
+    margin-bottom: 0.75rem;
+    font-size: 0.9375rem;
+}
+
+.form-input, .form-textarea, .form-select {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: #0F1F22;
+    border: 2px solid rgba(13, 185, 242, 0.2);
+    border-radius: 1rem;
+    color: #F5F5F6;
+    font-size: 1rem;
+    transition: all 0.3s;
+    font-family: inherit;
+}
+
+.form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%230DB9F2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 20px;
+    padding-right: 3rem;
+}
+
+.form-select option {
+    background: #0F1F22;
+    color: #F5F5F6;
+    padding: 0.75rem;
+}
+
+.form-input:focus, .form-textarea:focus, .form-select:focus {
+    outline: none;
+    border-color: #0DB9F2;
+    background: #0A1517;
+    box-shadow: 0 0 0 4px rgba(13, 185, 242, 0.15), 0 8px 24px rgba(13, 185, 242, 0.2);
+    transform: translateY(-2px);
+}
+
+.form-input::placeholder, .form-textarea::placeholder {
+    color: #4A5B62;
+}
+
+.form-textarea {
+    min-height: 180px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.form-file {
+    position: relative;
+    width: 100%;
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.form-file::file-selector-button {
+    display: none;
+}
+
+.file-upload-wrapper {
+    position: relative;
+    width: 100%;
+    padding: 2.5rem;
+    background: linear-gradient(135deg, rgba(13, 185, 242, 0.05), rgba(13, 185, 242, 0.02));
+    border: 2px dashed rgba(13, 185, 242, 0.3);
+    border-radius: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.file-upload-wrapper:hover {
+    border-color: #0DB9F2;
+    background: linear-gradient(135deg, rgba(13, 185, 242, 0.1), rgba(13, 185, 242, 0.05));
+    transform: translateY(-2px);
+}
+
+.file-upload-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.6;
+}
+
+.file-upload-text {
+    color: #76848B;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.file-upload-hint {
+    color: #4A5B62;
+    font-size: 0.875rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2.5rem;
+}
+
+.btn-submit {
+    flex: 1;
+    padding: 1.25rem 2rem;
+    background: linear-gradient(135deg, #0DB9F2, #53B4EB);
+    color: white;
+    border: none;
+    border-radius: 1rem;
+    font-weight: 700;
+    font-size: 1.125rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 8px 24px rgba(13, 185, 242, 0.3);
+}
+
+.btn-submit:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(13, 185, 242, 0.5);
+}
+
+.btn-cancel {
+    padding: 1.25rem 2rem;
+    background: rgba(13, 185, 242, 0.1);
+    color: #0DB9F2;
+    border: 2px solid rgba(13, 185, 242, 0.2);
+    border-radius: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s;
+}
+
+.btn-cancel:hover {
+    background: rgba(13, 185, 242, 0.2);
+    transform: translateY(-4px);
+}
+</style>
+
+<div class="create-post-container">
+    <a href="{% url 'dashboard:social_feed' %}" class="back-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back to Feed
+    </a>
+
+    <div class="hero-section">
+        <div class="hero-icon">💬</div>
+        <h1 class="hero-title">Create New Post</h1>
+        <p class="hero-subtitle">Share your thoughts with the community</p>
+    </div>
+
+    <div class="form-card">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">📝 Title</label>
+                {{ form.title }}
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">🏷️ Category</label>
+                {{ form.category }}
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">✍️ Content</label>
+                {{ form.content }}
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">📎 Media (Optional)</label>
+                <div class="file-upload-wrapper" onclick="document.getElementById('id_media').click()">
+                    <div class="file-upload-icon">📁</div>
+                    <div class="file-upload-text">Click to upload image or file</div>
+                    <div class="file-upload-hint">Supports: JPG, PNG, GIF, MP4 (Max 10MB)</div>
+                </div>
+                <div style="display: none;">{{ form.media }}</div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">🚀 Publish Post</button>
+                <a href="{% url 'dashboard:social_feed' %}" class="btn-cancel">Cancel</a>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

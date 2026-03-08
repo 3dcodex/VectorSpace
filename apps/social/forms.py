@@ -6,8 +6,10 @@ class PostForm(forms.ModelForm):
         model = Post
         fields = ['title', 'content', 'category', 'media']
         widgets = {
-            'title': forms.TextInput(attrs={'placeholder': 'Post title...'}),
-            'content': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Share your thoughts...'}),
+            'title': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Give your post an engaging title...'}),
+            'content': forms.Textarea(attrs={'class': 'form-textarea', 'rows': 8, 'placeholder': 'Share your thoughts, ideas, or questions with the community...'}),
+            'category': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'e.g., Game Development, 3D Modeling, Unity...'}),
+            'media': forms.FileInput(attrs={'class': 'form-file'}),
         }
 
 class CommentForm(forms.ModelForm):
