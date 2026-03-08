@@ -1,0 +1,366 @@
+/* =============================================
+   LOADING SYSTEM - OVERLAYS & INDICATORS
+   ============================================= */
+
+
+/* Global Page Loading Overlay */
+
+.page-loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 14, 39, 0.95);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.page-loading-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(13, 185, 242, 0.2);
+    border-top-color: #0db9f2;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.loading-text {
+    margin-top: 1.5rem;
+    color: #fff;
+    font-size: 1.125rem;
+    font-weight: 600;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.loading-progress {
+    margin-top: 1rem;
+    width: 200px;
+    height: 4px;
+    background: rgba(13, 185, 242, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.loading-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #0db9f2, #06b6d4);
+    width: 0%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+    animation: shimmer 1.5s ease-in-out infinite;
+}
+
+
+/* Button Loading States */
+
+.btn.loading,
+.btn-primary.loading,
+.btn-submit.loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.btn.loading::before,
+.btn-primary.loading::before,
+.btn-submit.loading::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #fff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.btn.loading span,
+.btn-primary.loading span,
+.btn-submit.loading span {
+    opacity: 0;
+}
+
+
+/* Inline Spinner */
+
+.spinner-inline {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(13, 185, 242, 0.3);
+    border-top-color: #0db9f2;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+}
+
+
+/* Form Loading Overlay */
+
+.form-loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 14, 39, 0.9);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: inherit;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.form-loading-overlay.active {
+    opacity: 1;
+    visibility: hidden;
+}
+
+
+/* File Upload Loading */
+
+.upload-loading {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 14, 39, 0.95);
+    backdrop-filter: blur(6px);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.upload-loading.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.upload-progress-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(13, 185, 242, 0.2), rgba(13, 185, 242, 0.05));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.upload-progress-circle::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 4px solid transparent;
+    border-top-color: #0db9f2;
+    animation: spin 1s linear infinite;
+}
+
+.upload-progress-percent {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0db9f2;
+}
+
+.upload-status-text {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.upload-status-detail {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.875rem;
+}
+
+
+/* Skeleton Loaders */
+
+.skeleton {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+    border-radius: 8px;
+}
+
+.skeleton-text {
+    height: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-title {
+    height: 1.5rem;
+    width: 60%;
+    margin-bottom: 1rem;
+}
+
+.skeleton-image {
+    height: 200px;
+    width: 100%;
+}
+
+.skeleton-card {
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+}
+
+
+/* Pulse Animation for Loading Elements */
+
+.loading-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+
+/* Dots Loading Animation */
+
+.loading-dots::after {
+    content: '';
+    animation: loading-dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes loading-dots {
+    0%,
+    20% {
+        content: '';
+    }
+    40% {
+        content: '.';
+    }
+    60% {
+        content: '..';
+    }
+    80%,
+    100% {
+        content: '...';
+    }
+}
+
+
+/* Spin Animation */
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* Shimmer Animation */
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% center;
+    }
+    100% {
+        background-position: 200% center;
+    }
+}
+
+
+/* Skeleton Loading Animation */
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+
+/* Pulse Animation */
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+
+/* Payment Processing Indicator */
+
+.payment-processing {
+    text-align: center;
+    padding: 3rem;
+}
+
+.payment-processing-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    border: 4px solid rgba(13, 185, 242, 0.2);
+    border-top-color: #0db9f2;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.payment-processing-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.payment-processing-detail {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9375rem;
+}
+
+
+/* Search Loading Indicator */
+
+.search-loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background: rgba(13, 185, 242, 0.1);
+    border: 1px solid rgba(13, 185, 242, 0.2);
+    color: #0db9f2;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+
+/* Content Loading Placeholder */
+
+.content-loading {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 2rem;
+}

@@ -59,6 +59,9 @@
         submitButton.disabled = true;
         submitButton.textContent = 'Processing...';
         
+        // Show payment processing overlay
+        window.LoadingManager.showPaymentProcessing();
+        
         const {error, paymentIntent} = await stripe.confirmCardPayment(
             '{{ client_secret }}',
             {
@@ -72,6 +75,7 @@
             errorElement.textContent = error.message;
             submitButton.disabled = false;
             submitButton.textContent = 'Pay ${{ asset.price }}';
+            window.LoadingManager.hide();
         } else {
             // Payment successful
             window.location.href = '{% url "marketplace:payment_success" %}';

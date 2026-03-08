@@ -97,7 +97,7 @@
         {% endif %}
 
         <div class="upload-grid">
-            <form method="POST" enctype="multipart/form-data" class="upload-main">
+            <form method="POST" enctype="multipart/form-data" class="upload-main" id="uploadForm">
                 {% csrf_token %}
                 
                 <div class="glass-card">
@@ -253,4 +253,24 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Handle file upload with progress tracking
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('uploadForm');
+    const fileInput = form.querySelector('input[type="file"]');
+    
+    if (fileInput && form) {
+        form.addEventListener('submit', function(e) {
+            if (fileInput.files.length > 0) {
+                // Show upload loading with file name
+                const fileName = fileInput.files[0].name;
+                window.LoadingManager.showUploadLoading(fileName);
+            }
+        });
+    }
+});
+</script>
 {% endblock %}
