@@ -38,7 +38,7 @@ cd VectorSpace
 
 ### 2. Create virtual environment and install dependencies
 
-Windows PowerShell:
+#### Windows (PowerShell)
 
 ```powershell
 python -m venv venv
@@ -46,13 +46,38 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-Linux/macOS:
+#### macOS
+
+**Prerequisites**: Ensure Python 3.12+ is installed. Install via Homebrew if needed:
+
+```bash
+brew install python@3.12
+```
+
+**Setup**:
 
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
+
+**macOS-specific notes**:
+- If you encounter SSL certificate errors, run: `/Applications/Python\ 3.12/Install\ Certificates.command`
+- For Pillow installation issues, install image libraries: `brew install libjpeg libpng`
+- For PostgreSQL support (optional), install: `brew install postgresql`
+
+#### Linux
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+**Linux-specific notes**:
+- For Pillow and other image support: `sudo apt-get install python3-dev libjpeg-dev zlib1g-dev`
+- For PostgreSQL support: `sudo apt-get install libpq-dev`
 
 ### 3. Apply migrations
 
@@ -75,6 +100,12 @@ python manage.py runserver
 Open: `http://127.0.0.1:8000/`
 
 ## Quick Start (Docker Compose)
+
+**Prerequisites**:
+- **Windows/macOS**: Install [Docker Desktop](https://www.docker.com/products/docker-desktop)
+- **Linux**: Install Docker Engine and Docker Compose
+
+**Run**:
 
 ```bash
 docker-compose up --build
