@@ -1,28 +1,41 @@
 // Vector Space - Main JavaScript
 
-// Header scroll behavior
-let lastScroll = 0;
+// ===== 🌟 ENHANCED FLOATING HEADER BEHAVIOR =====
 const header = document.querySelector('.main-header');
+let ticking = false;
 
-window.addEventListener('scroll', () => {
+// Smooth scroll detection with requestAnimationFrame
+if (header) {
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                handleHeaderScroll();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+}
+
+function handleHeaderScroll() {
     const currentScroll = window.pageYOffset;
-    
+
+    // Show header at top of page
     if (currentScroll <= 0) {
-        header.classList.remove('scroll-up');
+        header.classList.remove('scroll-up', 'scroll-down', 'scrolled');
         return;
     }
-    
-    if (currentScroll > lastScroll && !header.classList.contains('scroll-down')) {
-        // Scrolling down
-        header.classList.remove('scroll-up');
-        header.classList.add('scroll-down');
-    } else if (currentScroll < lastScroll && header.classList.contains('scroll-down')) {
-        // Scrolling up
-        header.classList.remove('scroll-down');
-        header.classList.add('scroll-up');
+
+    // Add scrolled class for additional styling
+    if (currentScroll > 100) {
+        header.classList.add('scrolled');
+    } else {
+        header.classList.remove('scrolled');
     }
-    lastScroll = currentScroll;
-});
+
+    // Note: Header stays visible (doesn't hide on scroll down)
+    // We keep it floating and visible at all times
+}
 
 // Mobile menu toggle
 const mobileMenuToggle = document.getElementById('mobileMenuToggle');
@@ -43,7 +56,7 @@ if (userMenu) {
         e.stopPropagation();
         userMenu.classList.toggle('active');
     });
-    
+
     document.addEventListener('click', () => {
         userMenu.classList.remove('active');
     });
@@ -51,7 +64,7 @@ if (userMenu) {
 
 // Smooth scroll for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
+    anchor.addEventListener('click', function(e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
@@ -85,9 +98,9 @@ function showToast(message, type = 'info') {
     toast.className = `toast toast-${type}`;
     toast.textContent = message;
     document.body.appendChild(toast);
-    
+
     setTimeout(() => toast.classList.add('show'), 100);
-    
+
     setTimeout(() => {
         toast.classList.remove('show');
         setTimeout(() => toast.remove(), 300);
@@ -98,7 +111,7 @@ function showToast(message, type = 'info') {
 function validateForm(formElement) {
     const inputs = formElement.querySelectorAll('input[required], textarea[required], select[required]');
     let isValid = true;
-    
+
     inputs.forEach(input => {
         if (!input.value.trim()) {
             input.classList.add('error');
@@ -107,7 +120,7 @@ function validateForm(formElement) {
             input.classList.remove('error');
         }
     });
-    
+
     return isValid;
 }
 
@@ -168,7 +181,7 @@ function formatNumber(num) {
 // Time ago helper
 function timeAgo(date) {
     const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-    
+
     const intervals = {
         year: 31536000,
         month: 2592000,
@@ -178,14 +191,14 @@ function timeAgo(date) {
         minute: 60,
         second: 1
     };
-    
+
     for (const [unit, secondsInUnit] of Object.entries(intervals)) {
         const interval = Math.floor(seconds / secondsInUnit);
         if (interval >= 1) {
             return `${interval} ${unit}${interval > 1 ? 's' : ''} ago`;
         }
     }
-    
+
     return 'just now';
 }
 
@@ -196,14 +209,14 @@ document.querySelectorAll('[data-tooltip]').forEach(element => {
         tooltip.className = 'tooltip';
         tooltip.textContent = e.target.dataset.tooltip;
         document.body.appendChild(tooltip);
-        
+
         const rect = e.target.getBoundingClientRect();
         tooltip.style.top = `${rect.top - tooltip.offsetHeight - 10}px`;
         tooltip.style.left = `${rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2)}px`;
-        
+
         e.target._tooltip = tooltip;
     });
-    
+
     element.addEventListener('mouseleave', (e) => {
         if (e.target._tooltip) {
             e.target._tooltip.remove();
@@ -220,7 +233,7 @@ document.addEventListener('keydown', (e) => {
         const searchInput = document.querySelector('input[type="search"]');
         if (searchInput) searchInput.focus();
     }
-    
+
     // Escape to close modals/dropdowns
     if (e.key === 'Escape') {
         document.querySelectorAll('.user-menu.active').forEach(menu => {

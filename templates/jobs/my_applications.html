@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'dashboard_base.html' %}
 
 {% block title %}My Applications{% endblock %}
 
@@ -17,12 +17,12 @@
                 
                 <div style="display: flex; align-items: center; gap: 1rem;">
                     <span class="badge status-{{ application.status }}">{{ application.get_status_display }}</span>
-                    <a href="{% url 'jobs:detail' application.job.pk %}" class="btn-small btn-secondary" style="text-decoration: none;">View Job</a>
+                    <a href="{% url 'dashboard:jobs_detail' application.job.pk %}" class="btn-small btn-secondary" style="text-decoration: none;">View Job</a>
                 </div>
             </div>
         {% empty %}
             <p style="color: rgba(255,255,255,0.6); text-align: center; padding: 3rem;">
-                No applications yet. <a href="{% url 'jobs:list' %}" style="color: var(--primary);">Browse jobs</a> to get started!
+                No applications yet. <a href="{% url 'dashboard:jobs_board' %}" style="color: var(--primary);">Browse jobs</a> to get started!
             </p>
         {% endfor %}
     </div>

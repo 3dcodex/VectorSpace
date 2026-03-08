@@ -1,0 +1,548 @@
+{% extends 'dashboard_base.html' %}
+{% block title %}{{ profile_user.username }} | Vector Space{% endblock %}
+
+{% block extra_css %}
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .profile-header {
+    background: linear-gradient(135deg, rgba(13,185,242,0.1), rgba(168,85,247,0.1));
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 3rem 2rem;
+    margin: -2rem -2rem 2rem -2rem;
+  }
+
+  .header-content {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0db9f2, #a855f7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    border: 4px solid rgba(255,255,255,0.1);
+  }
+
+  .profile-info {
+    flex: 1;
+  }
+
+  .profile-name {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .profile-role {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 1rem;
+  }
+
+  .profile-bio {
+    color: rgba(255,255,255,0.8);
+    line-height: 1.6;
+    max-width: 700px;
+    margin-bottom: 1rem;
+  }
+
+  .profile-meta {
+    display: flex;
+    gap: 2rem;
+    color: rgba(255,255,255,0.6);
+    font-size: 0.95rem;
+  }
+
+  .profile-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .profile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #0db9f2, #a855f7);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(13,185,242,0.4);
+  }
+
+  .btn-secondary {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255,255,255,0.1);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #0db9f2, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 1.5rem;
+  }
+
+  .skills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .skill-tag {
+    padding: 0.6rem 1.2rem;
+    background: rgba(13,185,242,0.15);
+    border: 1px solid rgba(13,185,242,0.3);
+    border-radius: 20px;
+    color: #0db9f2;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .portfolio-item {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .portfolio-item:hover {
+    transform: translateY(-8px);
+    border-color: #0db9f2;
+    box-shadow: 0 12px 40px rgba(13,185,242,0.2);
+  }
+
+  .portfolio-image {
+    height: 200px;
+    background: linear-gradient(135deg, rgba(13,185,242,0.15), rgba(168,85,247,0.15));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+  }
+
+  .portfolio-content {
+    padding: 1.25rem;
+  }
+
+  .portfolio-title {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .portfolio-desc {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .resume-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .resume-icon {
+    font-size: 4rem;
+  }
+
+  .resume-info {
+    flex: 1;
+  }
+
+  .resume-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .resume-desc {
+    color: rgba(255,255,255,0.7);
+  }
+
+  .activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .activity-item {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .activity-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .activity-content {
+    flex: 1;
+  }
+
+  .activity-text {
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 0.5rem;
+  }
+
+  .activity-time {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+  }
+
+  .reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .review-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .review-author {
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .review-rating {
+    color: #fbbf24;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .review-asset {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .review-text {
+    color: rgba(255,255,255,0.8);
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+  }
+
+  .review-time {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.8rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: rgba(255,255,255,0.6);
+    border: 2px dashed rgba(255,255,255,0.1);
+    border-radius: 16px;
+  }
+
+  .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+  }
+
+  @media (max-width: 768px) {
+    .header-content {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+    .profile-avatar {
+      margin: 0 auto;
+    }
+    .profile-meta {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .profile-actions {
+      width: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+  <div class="header-content">
+    <div class="profile-avatar">👤</div>
+    <div class="profile-info">
+      <h1 class="profile-name">{{ profile_user.get_full_name|default:profile_user.username }}</h1>
+      <div class="profile-role">{{ profile_user.get_user_type_display|default:"Community Member" }}</div>
+      {% if profile_user.bio %}
+      <p class="profile-bio">{{ profile_user.bio }}</p>
+      {% endif %}
+      <div class="profile-meta">
+        {% if profile_user.profile.location %}
+        <span>📍 {{ profile_user.profile.location }}</span>
+        {% endif %}
+        {% if profile_user.portfolio_url %}
+        <span>🔗 <a href="{{ profile_user.portfolio_url }}" target="_blank" style="color: #0db9f2;">Portfolio</a></span>
+        {% endif %}
+        <span>📅 Joined {{ profile_user.date_joined|date:"M Y" }}</span>
+      </div>
+      <div class="social-links" style="display: flex; gap: 1rem; margin-top: 1rem;">
+        {% if profile_user.profile.github %}
+        <a href="{{ profile_user.profile.github }}" target="_blank" style="color: rgba(255,255,255,0.7); font-size: 1.5rem; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">🐙</a>
+        {% endif %}
+        {% if profile_user.profile.linkedin %}
+        <a href="{{ profile_user.profile.linkedin }}" target="_blank" style="color: rgba(255,255,255,0.7); font-size: 1.5rem; transition: color 0.3s;" onmouseover="this.style.color='#0db9f2'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">💼</a>
+        {% endif %}
+        {% if profile_user.profile.artstation %}
+        <a href="{{ profile_user.profile.artstation }}" target="_blank" style="color: rgba(255,255,255,0.7); font-size: 1.5rem; transition: color 0.3s;" onmouseover="this.style.color='#0db9f2'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">🎨</a>
+        {% endif %}
+        {% if profile_user.profile.youtube %}
+        <a href="{{ profile_user.profile.youtube }}" target="_blank" style="color: rgba(255,255,255,0.7); font-size: 1.5rem; transition: color 0.3s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">📺</a>
+        {% endif %}
+      </div>
+    </div>
+    {% if user != profile_user %}
+    <div class="profile-actions">
+      <form method="post" action="{% url 'dashboard:social_follow' profile_user.id %}" style="margin: 0;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">
+          {% if is_following %}Following{% else %}Follow{% endif %}
+        </button>
+      </form>
+      <a href="{% url 'dashboard:social_conversation' profile_user.id %}" class="btn btn-secondary">Message</a>
+    </div>
+    {% else %}
+    <div class="profile-actions">
+      <a href="{% url 'dashboard:social_edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+      <a href="{% url 'dashboard:social_settings' %}" class="btn btn-secondary">Settings</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-number">{{ profile_user.assets.count }}</div>
+    <div class="stat-label">Assets Published</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">{{ profile_user.games.count }}</div>
+    <div class="stat-label">Games Published</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">{{ profile_user.posts.count }}</div>
+    <div class="stat-label">Community Posts</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">{{ profile_user.profile.followers_count|default:0 }}</div>
+    <div class="stat-label">Followers</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">{{ profile_user.rating|floatformat:1|default:"0.0" }}</div>
+    <div class="stat-label">Average Rating</div>
+  </div>
+</div>
+
+{% if profile_user.skills %}
+<section class="section">
+  <h2 class="section-title">Skills</h2>
+  <div class="skills-grid">
+    {% for skill in profile_user.skills %}
+    <span class="skill-tag">{{ skill }}</span>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="section">
+  <h2 class="section-title">Portfolio</h2>
+  <div class="portfolio-grid">
+    {% for asset in profile_user.assets.all|slice:":6" %}
+    <div class="portfolio-item" onclick="window.location.href='{% url 'marketplace:detail' asset.pk %}'">
+      <div class="portfolio-image">
+        {% if asset.preview_image %}
+        <img src="{{ asset.preview_image }}" alt="{{ asset.title }}" style="width:100%;height:100%;object-fit:cover;">
+        {% else %}
+        🎨
+        {% endif %}
+      </div>
+      <div class="portfolio-content">
+        <h3 class="portfolio-title">{{ asset.title }}</h3>
+        <p class="portfolio-desc">{{ asset.description|truncatewords:15 }}</p>
+      </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+      <div class="empty-icon">📁</div>
+      <p>No portfolio items yet</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section-title">Resume</h2>
+  <div class="resume-card">
+    <div class="resume-icon">📄</div>
+    <div class="resume-info">
+      <h3 class="resume-title">Professional Resume</h3>
+      {% if profile_user.profile.resume %}
+      <p class="resume-desc">Download {{ profile_user.username }}'s resume to view their work experience, education, and qualifications.</p>
+      <a href="{{ profile_user.profile.resume.url }}" download class="btn btn-primary" style="display: inline-block; margin-top: 1rem;">Download Resume</a>
+      {% else %}
+      <p class="resume-desc">No resume uploaded yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section-title">Recent Activity</h2>
+  <div class="activity-list">
+    {% for post in profile_user.posts.all|slice:":5" %}
+    <div class="activity-item">
+      <div class="activity-icon">💬</div>
+      <div class="activity-content">
+        <div class="activity-text">Posted in community: <strong>{{ post.title|default:post.content|truncatewords:10 }}</strong></div>
+        <div class="activity-time">{{ post.created_at|timesince }} ago</div>
+      </div>
+    </div>
+    {% endfor %}
+    {% for game in profile_user.games.all|slice:":3" %}
+    <div class="activity-item">
+      <div class="activity-icon">🎮</div>
+      <div class="activity-content">
+        <div class="activity-text">Published game: <strong>{{ game.title }}</strong></div>
+        <div class="activity-time">{{ game.created_at|timesince }} ago</div>
+      </div>
+    </div>
+    {% endfor %}
+    {% for asset in profile_user.assets.all|slice:":3" %}
+    <div class="activity-item">
+      <div class="activity-icon">🎨</div>
+      <div class="activity-content">
+        <div class="activity-text">Uploaded asset: <strong>{{ asset.title }}</strong></div>
+        <div class="activity-time">{{ asset.created_at|timesince }} ago</div>
+      </div>
+    </div>
+    {% endfor %}
+    {% if not profile_user.posts.all and not profile_user.games.all and not profile_user.assets.all %}
+    <div class="empty-state">
+      <div class="empty-icon">📊</div>
+      <p>No recent activity</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section-title">Reviews & Ratings</h2>
+  <div class="reviews-list">
+    {% for asset in profile_user.assets.all %}
+      {% for review in asset.reviews.all|slice:":5" %}
+      <div class="review-card">
+        <div class="review-header">
+          <a href="{% url 'dashboard:social_profile' review.user.id %}" style="color: #fff; font-weight: 700; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#0db9f2'" onmouseout="this.style.color='#fff'">{{ review.user.username }}</a>
+          <span class="review-rating">⭐ {{ review.rating }}/5</span>
+        </div>
+        <div class="review-asset">On: <strong>{{ asset.title }}</strong></div>
+        <p class="review-text">{{ review.comment }}</p>
+        <div class="review-time">{{ review.created_at|timesince }} ago</div>
+      </div>
+      {% endfor %}
+    {% endfor %}
+    {% if not profile_user.assets.all %}
+    <div class="empty-state">
+      <div class="empty-icon">⭐</div>
+      <p>No reviews yet</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

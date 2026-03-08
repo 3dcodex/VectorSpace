@@ -1,0 +1,191 @@
+{% load static %} 
+{% load recommendations %}
+
+<div class="recommendation-widget mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="widget-title">{{ title }}</h4>
+        {% if recommendations|length > 5 %}
+            <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+        {% endif %}
+    </div>
+    
+    {% if recommendations %}
+        <div class="recommendations-grid">
+            {% for rec in recommendations %}
+                <div class="recommendation-item border rounded p-3 mb-3" 
+                     data-recommendation-item 
+                     data-content-type="{{ content_type }}" 
+                     data-content-id="{{ rec.content_id }}">
+                     
+                    {% if content_type == 'asset' %}
+                        <div class="row">
+                            <div class="col-md-4">
+                                {% if rec.asset.preview_image %}
+                                    <img src="{{ rec.asset.preview_image }}" 
+                                         alt="{{ rec.asset.title }}" 
+                                         class="img-fluid rounded">
+                                {% else %}
+                                    <div class="placeholder-image bg-light rounded d-flex align-items-center justify-content-center" 
+                                         style="height: 100px;">
+                                        <span class="text-muted">No Preview</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-8">
+                                <h6 class="mb-1">
+                                    <a href="/marketplace/asset/{{ rec.asset.id }}/" class="text-decoration-none">
+                                        {{ rec.asset.title }}
+                                    </a>
+                                </h6>
+                                <p class="text-muted small mb-2">{{ rec.asset.description|truncatechars:80 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="price fw-bold">
+                                        {% if rec.asset.is_free %}
+                                            <span class="text-success">Free</span>
+                                        {% else %}
+                                            ${{ rec.asset.price }}
+                                        {% endif %}
+                                    </span>
+                                    <div class="item-stats">
+                                        <small class="text-muted">
+                                            ⭐ {{ rec.asset.rating|floatformat:1 }}
+                                            📥 {{ rec.asset.downloads }}
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="recommendation-reason mt-2">
+                                    <small class="text-info">
+                                        {{ rec.reason|recommendation_reason_icon }} {{ rec.reason }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    
+                    {% elif content_type == 'game' %}
+                        <div class="row">
+                            <div class="col-md-4">
+                                {% if rec.game.thumbnail %}
+                                    <img src="{{ rec.game.thumbnail }}" 
+                                         alt="{{ rec.game.title }}" 
+                                         class="img-fluid rounded">
+                                {% else %}
+                                    <div class="placeholder-image bg-light rounded d-flex align-items-center justify-content-center" 
+                                         style="height: 100px;">
+                                        <span class="text-muted">No Thumbnail</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-8">
+                                <h6 class="mb-1">
+                                    <a href="/games/game/{{ rec.game.id }}/" class="text-decoration-none">
+                                        {{ rec.game.title }}
+                                    </a>
+                                </h6>
+                                <p class="text-muted small mb-2">{{ rec.game.description|truncatechars:80 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-secondary">{{ rec.game.genre }}</span>
+                                    <div class="item-stats">
+                                        <small class="text-muted">
+                                            ⭐ {{ rec.game.rating|floatformat:1 }}
+                                            📥 {{ rec.game.downloads }}
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="recommendation-reason mt-2">
+                                    <small class="text-info">
+                                        {{ rec.reason|recommendation_reason_icon }} {{ rec.reason }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    
+                    {% elif content_type == 'job' %}
+                        <div class="job-item">
+                            <h6 class="mb-1">
+                                <a href="/jobs/job/{{ rec.job.id }}/" class="text-decoration-none">
+                                    {{ rec.job.title }}
+                                </a>
+                            </h6>
+                            <p class="text-muted mb-2">{{ rec.job.company_name }}</p>
+                            <div class="job-details mb-2">
+                                <span class="badge bg-primary me-1">{{ rec.job.job_type|title }}</span>
+                                <span class="badge bg-info me-1">{{ rec.job.experience_level|title }}</span>
+                                {% if rec.job.remote %}
+                                    <span class="badge bg-success me-1">Remote</span>
+                                {% endif %}
+                            </div>
+                            <div class="recommendation-reason">
+                                <small class="text-info">
+                                    {{ rec.reason|recommendation_reason_icon }} {{ rec.reason }}
+                                </small>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Show user preferences link if available -->
+        {% if user.is_authenticated %}
+            <div class="text-center mt-3">
+                <a href="/dashboard/preferences/recommendations/" 
+                   class="btn btn-sm btn-outline-secondary">
+                    ⚙️ Customize Recommendations
+                </a>
+            </div>
+        {% endif %}
+        
+    {% else %}
+        <div class="no-recommendations text-center p-4">
+            <p class="text-muted">No recommendations available yet.</p>
+            {% if user.is_authenticated %}
+                <p class="small">Interact with more content to get personalized recommendations!</p>
+            {% else %}
+                <a href="/accounts/login/" class="btn btn-primary btn-sm">Login for Recommendations</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.recommendation-widget {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.recommendation-item {
+    background: white;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.recommendation-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.placeholder-image {
+    min-height: 100px;
+}
+
+.recommendation-reason {
+    font-style: italic;
+}
+
+.recommendations-grid {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    .recommendation-item .row {
+        flex-direction: column;
+    }
+    .recommendation-item .col-md-4,
+    .recommendation-item .col-md-8 {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+</style>

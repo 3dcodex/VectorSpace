@@ -5,6 +5,10 @@ from .views import (
     MentorProfileViewSet, PostViewSet, MessageViewSet,
     CompetitionViewSet, SubmissionViewSet
 )
+from .recommendation_views import (
+    RecommendationsAPIView, TrackInteractionAPIView,
+    SimilarContentAPIView, UserPreferencesAPIView
+)
 
 router = DefaultRouter()
 router.register(r'assets', AssetViewSet, basename='asset')
@@ -20,4 +24,10 @@ router.register(r'submissions', SubmissionViewSet, basename='submission')
 urlpatterns = [
     path('', include(router.urls)),
     path('auth/', include('rest_framework.urls')),
+    
+    # Recommendation endpoints
+    path('recommendations/', RecommendationsAPIView.as_view(), name='recommendations'),
+    path('track-interaction/', TrackInteractionAPIView.as_view(), name='track-interaction'),
+    path('similar/<str:content_type>/<int:content_id>/', SimilarContentAPIView.as_view(), name='similar-content'),
+    path('preferences/', UserPreferencesAPIView.as_view(), name='user-preferences'),
 ]

@@ -1,0 +1,300 @@
+{% extends 'dashboard_base.html' %}
+{% block title %}Dashboard | Vector Space{% endblock %}
+
+{% block extra_css %}
+<style>
+.welcome-section {
+  background: linear-gradient(135deg, rgba(13,185,242,0.1), rgba(168,85,247,0.1));
+  border: 1px solid rgba(13,185,242,0.2);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+.welcome-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+.welcome-text {
+  color: rgba(255,255,255,0.7);
+  line-height: 1.6;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.stat-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s;
+}
+.stat-card:hover {
+  border-color: rgba(13,185,242,0.5);
+  transform: translateY(-2px);
+}
+.stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0db9f2;
+  margin-bottom: 0.25rem;
+}
+.stat-label {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.875rem;
+}
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.action-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: #fff;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.action-card:hover {
+  background: rgba(13,185,242,0.1);
+  border-color: rgba(13,185,242,0.5);
+  transform: translateY(-2px);
+}
+.action-icon {
+  font-size: 2rem;
+}
+.action-text h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+.action-text p {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.6);
+}
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+.activity-list {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+.activity-item {
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.activity-item:last-child {
+  border-bottom: none;
+}
+.activity-item a {
+  color: #0db9f2;
+  text-decoration: none;
+}
+.activity-item a:hover {
+  text-decoration: underline;
+}
+.competition-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+.competition-card h3 {
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+.competition-card p {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+.tips-section {
+  background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(13,185,242,0.1));
+  border: 1px solid rgba(16,185,129,0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+.tips-list {
+  list-style: none;
+  padding: 0;
+}
+.tips-list li {
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  color: rgba(255,255,255,0.8);
+}
+.tips-list li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-weight: 700;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #0db9f2, #a855f7);
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13,185,242,0.4);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="welcome-section">
+  <h1 class="welcome-title">Welcome back, {{ user.username }}! 👋</h1>
+  <p class="welcome-text">Continue building your portfolio, explore new opportunities, and connect with the community. Your activity and updates are displayed below to help you stay engaged and productive.</p>
+</div>
+
+<h2 class="section-title">Quick Statistics</h2>
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-value">{{ assets_count }}</div>
+    <div class="stat-label">Assets Published</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ games_count }}</div>
+    <div class="stat-label">Games Published</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ posts_count }}</div>
+    <div class="stat-label">Community Posts</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ applications_count }}</div>
+    <div class="stat-label">Job Applications</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ entries_count }}</div>
+    <div class="stat-label">Competition Entries</div>
+  </div>
+</div>
+
+<h2 class="section-title">Quick Actions</h2>
+<div class="actions-grid">
+  <a href="{% url 'dashboard:marketplace_my_assets' %}" class="action-card">
+    <div class="action-icon">📦</div>
+    <div class="action-text">
+      <h3>My Assets</h3>
+      <p>Manage your marketplace items</p>
+    </div>
+  </a>
+  <a href="{% url 'dashboard:games_my_games' %}" class="action-card">
+    <div class="action-icon">🎮</div>
+    <div class="action-text">
+      <h3>My Games</h3>
+      <p>View your published games</p>
+    </div>
+  </a>
+  <a href="{% url 'dashboard:social_feed' %}" class="action-card">
+    <div class="action-icon">💬</div>
+    <div class="action-text">
+      <h3>Social Feed</h3>
+      <p>View community posts</p>
+    </div>
+  </a>
+  <a href="{% url 'dashboard:competitions_my_competitions' %}" class="action-card">
+    <div class="action-icon">🏆</div>
+    <div class="action-text">
+      <h3>Competitions</h3>
+      <p>View active competitions</p>
+    </div>
+  </a>
+  <a href="{% url 'dashboard:jobs_board' %}" class="action-card">
+    <div class="action-icon">💼</div>
+    <div class="action-text">
+      <h3>Browse Jobs</h3>
+      <p>Explore opportunities</p>
+    </div>
+  </a>
+</div>
+
+<h2 class="section-title">Recent Activity</h2>
+<div class="activity-list">
+  {% if recent_assets %}
+    {% for asset in recent_assets %}
+    <div class="activity-item">
+      You uploaded: <a href="{% url 'dashboard:marketplace_my_assets' %}">{{ asset.title }}</a>
+    </div>
+    {% endfor %}
+  {% endif %}
+  {% if recent_games %}
+    {% for game in recent_games %}
+    <div class="activity-item">
+      You published: <a href="{% url 'dashboard:games_my_games' %}">{{ game.title }}</a>
+    </div>
+    {% endfor %}
+  {% endif %}
+  {% if recent_posts %}
+    {% for post in recent_posts|slice:":3" %}
+    <div class="activity-item">
+      You posted: <a href="{% url 'dashboard:social_feed' %}">{{ post.content|truncatewords:10 }}</a>
+    </div>
+    {% endfor %}
+  {% endif %}
+  {% if not recent_assets and not recent_games and not recent_posts %}
+  <div class="activity-item" style="text-align:center;color:rgba(255,255,255,0.5);">
+    No recent activity. Start creating!
+  </div>
+  {% endif %}
+</div>
+
+{% if assets_count > 0 %}
+<h2 class="section-title">Marketplace Performance</h2>
+<div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  <div class="stat-card">
+    <div class="stat-value">{{ total_sales }}</div>
+    <div class="stat-label">Total Downloads</div>
+  </div>
+</div>
+{% endif %}
+
+{% if active_competitions %}
+<h2 class="section-title">Upcoming Competitions</h2>
+{% for comp in active_competitions %}
+<div class="competition-card">
+  <h3>{{ comp.title }}</h3>
+  <p>{{ comp.description|truncatewords:20 }}</p>
+  <a href="{% url 'dashboard:competitions_my_competitions' %}" class="btn-primary">View Details</a>
+</div>
+{% endfor %}
+{% endif %}
+
+<h2 class="section-title">Tips for Growing on the Platform</h2>
+<div class="tips-section">
+  <ul class="tips-list">
+    <li>Upload high-quality assets to increase marketplace visibility</li>
+    <li>Participate in community discussions to build your network</li>
+    <li>Enter competitions to showcase your skills</li>
+    <li>Keep your portfolio updated for recruiters</li>
+    <li>Engage with other creators and provide feedback</li>
+  </ul>
+</div>
+{% endblock %}

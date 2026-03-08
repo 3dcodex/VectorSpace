@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'dashboard_base.html' %}
 
 {% block title %}Chat with {{ other_user.username }}{% endblock %}
 
@@ -6,7 +6,7 @@
 <div class="page-container">
     <div class="page-header">
         <h1 style="color: var(--text-light); font-size: 2rem; font-weight: 800;">Chat with {{ other_user.username }}</h1>
-        <a href="{% url 'social:messages' %}" class="btn-secondary" style="text-decoration: none;">Back to Messages</a>
+        <a href="{% url 'dashboard:social_messages' %}" class="btn-secondary" style="text-decoration: none;">Back to Messages</a>
     </div>
     
     <div class="chat-container">

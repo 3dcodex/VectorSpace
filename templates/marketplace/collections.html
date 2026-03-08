@@ -1,0 +1,104 @@
+{% extends 'dashboard_base.html' %}
+{% block title %}My Collections{% endblock %}
+
+{% block content %}
+<div class="page-header" style="margin-bottom: 2.5rem;">
+    <div>
+        <h1 class="page-title" style="display: flex; align-items: center; gap: 1rem;">
+            <span style="font-size: 2.5rem;">📚</span>
+            <span style="background: linear-gradient(135deg, #8b5cf6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">My Collections</span>
+        </h1>
+        <p class="page-subtitle" style="font-size: 1.125rem; margin-top: 0.75rem;">Organize your favorite assets into collections</p>
+    </div>
+    <div style="display: flex; gap: 1rem;">
+        <a href="{% url 'dashboard:marketplace_wishlist' %}" class="btn btn-secondary" style="white-space: nowrap;">💝 My Wishlist</a>
+        <a href="{% url 'dashboard:marketplace_create_collection' %}" class="btn" style="white-space: nowrap;">➕ Create Collection</a>
+    </div>
+</div>
+
+<!-- Search -->
+{% if collections or search_query %}
+<div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
+    <form method="GET" style="display: flex; gap: 1rem;">
+        <input type="text" name="q" value="{{ search_query }}" placeholder="Search collections..." style="flex: 1; padding: 0.75rem 1rem; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 0.75rem; color: var(--text-primary); font-size: 1rem;">
+        <button type="submit" class="btn" style="padding: 0.75rem 1.5rem;">Search</button>
+    </form>
+</div>
+{% endif %}
+
+{% if collections %}
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
+    {% for collection in collections %}
+    <div class="card" style="padding: 0; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 20px 40px rgba(0, 0, 0, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='';">
+        <!-- Collection Header -->
+        <div style="padding: 1.5rem; background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.15));">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); flex: 1; margin-right: 0.5rem;">
+                    <a href="{% url 'dashboard:marketplace_collection_detail' username=collection.owner.username slug=collection.slug %}" style="color: inherit; text-decoration: none;">{{ collection.name }}</a>
+                </h3>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    {% if collection.is_public %}
+                    <span style="font-size: 1.25rem" title="Public Collection">🌐</span>
+                    {% else %}
+                    <span style="font-size: 1.25rem" title="Private Collection">🔒</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if collection.description %}
+            <p style="font-size: 0.9375rem; color: var(--text-muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                {{ collection.description }}
+            </p>
+            {% else %}
+            <p style="font-size: 0.9375rem; color: var(--text-muted); font-style: italic;">No description</p>
+            {% endif %}
+        </div>
+        
+        <div style="padding: 1.5rem;">
+            <!-- Stats -->
+            <div style="display: flex; gap: 1.5rem; margin-bottom: 1.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.03); border-radius: 0.5rem;">
+                <div>
+                    <div style="font-size: 1.875rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ collection.asset_count }}</div>
+                    <div style="font-size: 0.8125rem; color: var(--text-muted);">Asset{{ collection.asset_count|pluralize }}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">Last updated</div>
+                    <div style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary);">{{ collection.updated_at|timesince }} ago</div>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div style="display: flex; gap: 0.75rem;">
+                <a href="{% url 'dashboard:marketplace_collection_detail' username=collection.owner.username slug=collection.slug %}" class="btn" style="flex: 1; text-align: center; font-size: 0.875rem; padding: 0.625rem;">View Collection</a>
+                <a href="{% url 'dashboard:marketplace_edit_collection' username=collection.owner.username slug=collection.slug %}" class="btn-secondary" style="padding: 0.625rem; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); border-radius: 0.75rem; text-decoration: none; font-size: 1.25rem; display: flex; align-items: center; justify-content: center;">✏️</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div style="margin-top: 2rem; text-align: center; color: var(--text-muted);">
+    {{ collections|length }} collection{{ collections|length|pluralize }}
+</div>
+
+{% else %}
+<div class="card" style="padding: 4rem 2rem; text-align: center;">
+    <div style="font-size: 5rem; margin-bottom: 1.5rem; opacity: 0.5;">📚</div>
+    <h2 style="font-size: 1.875rem; font-weight: 700; margin-bottom: 1rem; background: linear-gradient(135deg, var(--primary), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">No Collections Yet</h2>
+    <p style="font-size: 1.125rem; color: var(--text-muted); margin-bottom: 2rem;">
+        {% if search_query %}
+        No collections match your search. Try a different search term.
+        {% else %}
+        Create collections to organize your favorite assets into themed groups!
+        {% endif %}
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: center;">
+        {% if search_query %}
+        <a href="{% url 'dashboard:marketplace_my_collections' %}" class="btn btn-secondary">Clear Search</a>
+        {% endif %}
+        <a href="{% url 'dashboard:marketplace_create_collection' %}" class="btn">Create Your First Collection</a>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,11 +1,11 @@
 from rest_framework import serializers
 from apps.users.models import User, UserProfile
-from apps.marketplace.models import Asset, Purchase, Review
+from apps.marketplace.models import Asset, Review
 from apps.games.models import Game, GameVersion
 from apps.jobs.models import Job, Application
-from apps.mentorship.models import MentorProfile, MentorshipRequest, Session
-from apps.social.models import Post, Comment, Follow, Message
-from apps.competitions.models import Competition, Submission, Vote
+from apps.mentorship.models import MentorProfile, Session
+from apps.social.models import Post, Comment, Message
+from apps.competitions.models import Competition, Submission
 
 # User Serializers
 class UserSerializer(serializers.ModelSerializer):

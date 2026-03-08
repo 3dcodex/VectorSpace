@@ -1,0 +1,34 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}{{ job.title }}{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header" style="margin-bottom: 1.5rem;">
+        <div>
+            <h1 style="color: var(--text-light); font-size: 2rem; font-weight: 800; margin-bottom: .4rem;">{{ job.title }}</h1>
+            <p style="color: rgba(255,255,255,0.6);">{{ job.company_name|default:job.recruiter.username }} • {{ job.location }} • {{ job.get_job_type_display }}</p>
+        </div>
+        <a href="{% url 'dashboard:jobs_board' %}" class="btn-secondary" style="text-decoration:none;">← Back to Jobs</a>
+    </div>
+
+    <div class="card" style="padding: 1.5rem; margin-bottom: 1rem;">
+        <h3 style="margin:0 0 .8rem 0;">Description</h3>
+        <p style="color: rgba(255,255,255,0.8); line-height:1.7;">{{ job.description }}</p>
+    </div>
+
+    <div class="card" style="padding: 1.5rem; margin-bottom: 1rem;">
+        <h3 style="margin:0 0 .8rem 0;">Details</h3>
+        <p style="color: rgba(255,255,255,0.75);">Posted {{ job.created_at|timesince }} ago {% if job.salary_min and job.salary_max %}• Salary: ${{ job.salary_min|floatformat:0 }} - ${{ job.salary_max|floatformat:0 }}{% endif %}</p>
+    </div>
+
+    <div style="display:flex; gap:.75rem;">
+        {% if has_applied %}
+            <button class="btn-secondary" disabled>✓ Already Applied</button>
+        {% else %}
+            <a href="{% url 'dashboard:jobs_apply' job.pk %}" class="btn-primary" style="text-decoration:none;">Apply Now</a>
+        {% endif %}
+        <a href="{% url 'dashboard:jobs_applications' %}" class="btn-secondary" style="text-decoration:none;">My Applications</a>
+    </div>
+</div>
+{% endblock %}

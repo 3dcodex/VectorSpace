@@ -1,0 +1,71 @@
+{% extends 'dashboard_base.html' %}
+{% block title %}Create Collection{% endblock %}
+
+{% block content %}
+<div class="page-header" style="margin-bottom: 2.5rem;">
+    <div>
+        <h1 class="page-title" style="display: flex; align-items: center; gap: 1rem;">
+            <span style="font-size: 2.5rem;">➕</span>
+            <span style="background: linear-gradient(135deg, #8b5cf6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Create Collection</span>
+        </h1>
+        <p class="page-subtitle" style="font-size: 1.125rem; margin-top: 0.75rem;">Organize your favorite assets into a themed collection</p>
+    </div>
+    <a href="{% url 'dashboard:marketplace_my_collections' %}" class="btn btn-secondary">← Back to Collections</a>
+</div>
+
+<div class="card" style="max-width: 800px; margin: 0 auto; padding: 2.5rem;">
+    <form method="POST" style="display: flex; flex-direction: column; gap: 2rem;">
+        {% csrf_token %}
+        
+        <!-- Collection Name -->
+        <div>
+            <label for="name" style="display: block; margin-bottom: 0.75rem; color: var(--text-primary); font-size: 1rem; font-weight: 700;">Collection Name *</label>
+            <input type="text" id="name" name="name" required maxlength="100" placeholder="e.g., Sci-Fi Assets, Medieval Pack, My Favorites..." style="width: 100%; padding: 1rem 1.25rem; background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 0.75rem; color: var(--text-primary); font-size: 1.0625rem; transition: all 0.2s;" onfocus="this.style.borderColor='var(--primary)'; this.style.background='rgba(255, 255, 255, 0.08)';" onblur="this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.background='rgba(255, 255, 255, 0.05)';">
+            <p style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-muted);">Give your collection a memorable name</p>
+        </div>
+        
+        <!-- Description -->
+        <div>
+            <label for="description" style="display: block; margin-bottom: 0.75rem; color: var(--text-primary); font-size: 1rem; font-weight: 700;">Description</label>
+            <textarea id="description" name="description" rows="4" placeholder="Describe what this collection is about..." style="width: 100%; padding: 1rem 1.25rem; background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 0.75rem; color: var(--text-primary); font-size: 1rem; line-height: 1.6; transition: all 0.2s; resize: vertical;" onfocus="this.style.borderColor='var(--primary)'; this.style.background='rgba(255, 255, 255, 0.08)';" onblur="this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.background='rgba(255, 255, 255, 0.05)';"></textarea>
+            <p style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-muted);">Optional: Help others understand your collection's theme</p>
+        </div>
+        
+        <!-- Privacy Setting -->
+        <div style="padding: 1.5rem; background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 0.75rem;">
+            <div style="display: flex; align-items: start; gap: 1rem;">
+                <input type="checkbox" id="is_public" name="is_public" style="width: 20px; height: 20px; margin-top: 0.25rem; accent-color: var(--primary); cursor: pointer;">
+                <div style="flex: 1;">
+                    <label for="is_public" style="display: block; color: var(--text-primary); font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; cursor: pointer;">🌐 Make this collection public</label>
+                    <p style="font-size: 0.9375rem; color: var(--text-secondary); line-height: 1.5;">
+                        Public collections can be discovered and viewed by other users. Private collections are only visible to you.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Info Box -->
+        <div style="padding: 1.25rem; background: linear-gradient(135deg, rgba(13, 185, 242, 0.05), rgba(139, 92, 246, 0.05)); border: 1px solid rgba(13, 185, 242, 0.2); border-radius: 0.75rem;">
+            <div style="font-size: 1.125rem; font-weight: 700; color: var(--primary); margin-bottom: 0.75rem;">💡 Pro Tip</div>
+            <p style="font-size: 0.9375rem; color: var(--text-secondary); line-height: 1.6; margin: 0;">
+                After creating your collection, you can add assets from the marketplace or your wishlist. You can also reorder items and add personal notes to each asset.
+            </p>
+        </div>
+        
+        <!-- Actions -->
+        <div style="display: flex; gap: 1rem; padding-top: 1rem;">
+            <button type="submit" class="btn" style="flex: 1; padding: 1rem; font-size: 1.0625rem; font-weight: 700;">✨ Create Collection</button>
+            <a href="{% url 'dashboard:marketplace_my_collections' %}" class="btn btn-secondary" style="flex: 1; padding: 1rem; font-size: 1.0625rem; text-align: center; text-decoration: none;">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% if messages %}
+<script>
+    {% for message in messages %}
+    alert('{{ message }}');
+    {% endfor %}
+</script>
+{% endif %}
+
+{% endblock %}

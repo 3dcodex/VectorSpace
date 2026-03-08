@@ -1,123 +1,785 @@
 {% extends 'base.html' %}
-{% block title %}3D Asset Marketplace - Vector Space{% endblock %}
-{% block content %}
+{% block title %}Marketplace | Vector Space{% endblock %}
+
+{% block extra_css %}
 <style>
-.mp-wrapper{min-height:100vh;background:linear-gradient(135deg,#0a0e27 0%,#1a1f3a 100%)}
-.mp-container{max-width:1400px;margin:0 auto;padding:2rem}
-.mp-header{text-align:center;margin-bottom:2rem}
-.mp-header h1{font-size:2.5rem;font-weight:700;margin-bottom:0.5rem}
-.mp-header p{color:rgba(255,255,255,0.6);font-size:1rem}
-.filter-bar{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:1rem;padding:1.5rem;margin-bottom:2rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:1rem;align-items:end}
-.filter-bar input,.filter-bar select{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:0.5rem;padding:0.75rem 1rem;color:#fff;font-size:0.875rem}
-.filter-bar input:focus,.filter-bar select:focus{outline:none;border-color:#0db9f2}
-.filter-bar input::placeholder{color:rgba(255,255,255,0.3)}
-.filter-bar label{font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:0.25rem;display:block}
-.filter-group{display:flex;flex-direction:column}
-.asset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;margin-bottom:3rem}
-.asset-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:1rem;overflow:hidden;transition:all 0.3s;cursor:pointer}
-.asset-card:hover{border-color:#0db9f2;transform:translateY(-4px);box-shadow:0 8px 32px rgba(13,185,242,0.2)}
-.asset-img{aspect-ratio:4/3;background:rgba(255,255,255,0.05);position:relative;overflow:hidden}
-.asset-img img{width:100%;height:100%;object-fit:cover}
-.asset-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem}
-.asset-badge{position:absolute;top:0.75rem;right:0.75rem;background:#10b981;color:#fff;padding:0.25rem 0.75rem;border-radius:0.5rem;font-size:0.75rem;font-weight:700}
-.asset-body{padding:1rem}
-.asset-body h3{font-size:1rem;font-weight:700;margin-bottom:0.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.asset-creator{font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:0.75rem}
-.asset-footer{display:flex;align-items:center;justify-content:space-between;padding-top:0.75rem;border-top:1px solid rgba(255,255,255,0.05)}
-.asset-price{font-size:1.125rem;font-weight:700;color:#0db9f2}
-.asset-meta{font-size:0.75rem;color:rgba(255,255,255,0.4)}
-.pagination{display:flex;justify-content:center;align-items:center;gap:0.5rem;margin-top:3rem}
-.pagination a,.pagination span{padding:0.5rem 1rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:0.5rem;color:#fff;text-decoration:none;transition:all 0.2s}
-.pagination a:hover{background:#0db9f2;border-color:#0db9f2;color:#0a0e27}
-.pagination .current{background:#0db9f2;border-color:#0db9f2;color:#0a0e27;font-weight:700}
-.empty-state{text-align:center;padding:4rem 2rem;grid-column:1/-1}
-.empty-state h3{font-size:1.5rem;margin-bottom:0.5rem}
-.empty-state p{color:rgba(255,255,255,0.5);margin-bottom:1.5rem}
-@media(max-width:768px){.filter-bar{grid-template-columns:1fr;gap:1rem}}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .hero {
+    background: linear-gradient(135deg, rgba(13,185,242,0.1), rgba(168,85,247,0.1));
+    padding: 4rem 2rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .hero h1 {
+    font-size: 3.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #0db9f2, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+  }
+
+  .hero p {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.7);
+    max-width: 800px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 2rem;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #0db9f2;
+  }
+
+  .stat-label {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  .section {
+    margin-bottom: 4rem;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .view-all {
+    color: #0db9f2;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: gap 0.3s ease;
+  }
+
+  .view-all:hover {
+    gap: 0.8rem;
+  }
+
+  .categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .category-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .category-card:hover {
+    transform: translateY(-8px);
+    border-color: #0db9f2;
+    background: rgba(13,185,242,0.1);
+  }
+
+  .category-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .category-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .category-desc {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .search-filter-bar {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .search-input {
+    flex: 1;
+    min-width: 300px;
+    padding: 0.9rem 1rem 0.9rem 3rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1rem;
+    position: relative;
+  }
+
+  .search-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 300px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.5);
+    font-size: 1.2rem;
+  }
+
+  .filter-select {
+    padding: 0.9rem 1rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+
+  .assets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .asset-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .asset-card:hover {
+    transform: translateY(-8px);
+    border-color: #0db9f2;
+    box-shadow: 0 12px 40px rgba(13,185,242,0.2);
+  }
+
+  .asset-image {
+    height: 220px;
+    background: linear-gradient(135deg, rgba(13,185,242,0.15), rgba(168,85,247,0.15));
+    position: relative;
+    overflow: hidden;
+  }
+
+  .asset-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .asset-card:hover .asset-image img {
+    transform: scale(1.05);
+  }
+
+  .asset-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+  }
+
+  .asset-badges {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .badge {
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    backdrop-filter: blur(10px);
+  }
+
+  .badge-free {
+    background: rgba(34,197,94,0.9);
+    color: #fff;
+  }
+
+  .badge-featured {
+    background: rgba(251,191,36,0.9);
+    color: #000;
+  }
+
+  .wishlist-btn {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    width: 40px;
+    height: 40px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+  }
+
+  .wishlist-btn:hover {
+    background: rgba(0,0,0,0.9);
+    transform: scale(1.1);
+  }
+
+  .wishlist-btn.active {
+    background: rgba(239,68,68,0.9);
+  }
+
+  .wishlist-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2;
+  }
+
+  .wishlist-btn.active svg {
+    fill: #fff;
+  }
+
+  .asset-content {
+    padding: 1.25rem;
+  }
+
+  .asset-title {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .asset-author {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .asset-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .asset-price {
+    font-size: 1.3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #0db9f2, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .asset-stats {
+    display: flex;
+    gap: 1rem;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+  }
+
+  .featured-creator {
+    background: linear-gradient(135deg, rgba(13,185,242,0.1), rgba(168,85,247,0.1));
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 3rem;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .creator-avatar {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0db9f2, #a855f7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    border: 4px solid rgba(255,255,255,0.1);
+  }
+
+  .creator-info h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .creator-badge {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    background: rgba(251,191,36,0.2);
+    border: 1px solid rgba(251,191,36,0.5);
+    border-radius: 20px;
+    color: #fbbf24;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .creator-desc {
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .creator-assets {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .creator-asset-tag {
+    padding: 0.5rem 1rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.8);
+    font-size: 0.9rem;
+  }
+
+  .benefits {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .benefit-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .benefit-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .benefit-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .benefit-desc {
+    color: rgba(255,255,255,0.6);
+    line-height: 1.6;
+  }
+
+  .cta-section {
+    background: linear-gradient(135deg, rgba(13,185,242,0.15), rgba(168,85,247,0.15));
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 3rem;
+    text-align: center;
+  }
+
+  .cta-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+
+  .cta-desc {
+    color: rgba(255,255,255,0.7);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    background: linear-gradient(135deg, #0db9f2, #a855f7);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+  }
+
+  .cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(13,185,242,0.4);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: rgba(255,255,255,0.6);
+    border: 2px dashed rgba(255,255,255,0.1);
+    border-radius: 16px;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+  }
+
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 2.5rem; }
+    .hero-stats { flex-direction: column; gap: 1.5rem; }
+    .featured-creator { grid-template-columns: 1fr; text-align: center; }
+    .creator-avatar { margin: 0 auto; }
+    .search-filter-bar { flex-direction: column; }
+    .search-wrapper { min-width: 100%; }
+    .section-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  }
 </style>
+{% endblock %}
 
-<div class="mp-wrapper">
-    <div class="mp-container">
-        <div class="mp-header">
-            <h1>3D Asset Marketplace</h1>
-            <p>Discover production-ready models from talented creators</p>
-        </div>
-
-        <form method="GET" class="filter-bar">
-            <div class="filter-group">
-                <label>Search Assets</label>
-                <input type="text" name="q" placeholder="Search by title or description..." value="{{ request.GET.q }}">
-            </div>
-            
-            <div class="filter-group">
-                <label>Min Price ($)</label>
-                <input type="number" name="min_price" placeholder="0" value="{{ request.GET.min_price }}" min="0">
-            </div>
-            
-            <div class="filter-group">
-                <label>Max Price ($)</label>
-                <input type="number" name="max_price" placeholder="1000" value="{{ request.GET.max_price }}" min="0">
-            </div>
-            
-            <div class="filter-group">
-                <label>Sort By</label>
-                <select name="sort">
-                    <option value="">Newest</option>
-                    <option value="popular" {% if request.GET.sort == 'popular' %}selected{% endif %}>Most Popular</option>
-                    <option value="price_low" {% if request.GET.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
-                    <option value="price_high" {% if request.GET.sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
-                </select>
-            </div>
-            
-            <button type="submit" class="btn btn-primary">Apply</button>
-        </form>
-
-        <div class="asset-grid">
-            {% for asset in page_obj %}
-            <div class="asset-card" onclick="window.location.href='{% url 'marketplace:asset_detail' asset.pk %}'">
-                <div class="asset-img">
-                    {% if asset.preview_image %}
-                    <img src="{{ asset.preview_image.url }}" alt="{{ asset.title }}">
-                    {% else %}
-                    <div class="asset-placeholder">🎨</div>
-                    {% endif %}
-                    {% if asset.is_free %}<span class="asset-badge">FREE</span>{% endif %}
-                </div>
-                <div class="asset-body">
-                    <h3>{{ asset.title }}</h3>
-                    <p class="asset-creator">by {{ asset.seller.username }}</p>
-                    <div class="asset-footer">
-                        <span class="asset-price">{% if asset.is_free %}FREE{% else %}\${{ asset.price }}{% endif %}</span>
-                        <span class="asset-meta">⭐ {{ asset.rating|default:"0.0" }} • ⬇ {{ asset.downloads }}</span>
-                    </div>
-                </div>
-            </div>
-            {% empty %}
-            <div class="empty-state">
-                <h3>No Assets Found</h3>
-                <p>Try adjusting your search or filters</p>
-                {% if user.is_authenticated %}
-                <a href="{% url 'marketplace:upload' %}" class="btn btn-primary">Upload First Asset</a>
-                {% endif %}
-            </div>
-            {% endfor %}
-        </div>
-
-        {% if page_obj.has_other_pages %}
-        <div class="pagination">
-            {% if page_obj.has_previous %}
-            <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">First</a>
-            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Previous</a>
-            {% endif %}
-            
-            <span class="current">{{ page_obj.number }}</span>
-            
-            {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Next</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Last</a>
-            {% endif %}
-        </div>
-        {% endif %}
+{% block content %}
+<div class="hero">
+  <h1>Vector Space Marketplace</h1>
+  <p>A digital hub where creators buy and sell high-quality assets for game development, animation, and visual effects. Access production-ready resources to accelerate your projects.</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-number">{{ page_obj.paginator.count }}+</div>
+      <div class="stat-label">Assets Available</div>
     </div>
+    <div class="stat">
+      <div class="stat-number">500+</div>
+      <div class="stat-label">Active Creators</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">10K+</div>
+      <div class="stat-label">Downloads</div>
+    </div>
+  </div>
 </div>
+
+<div class="container">
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Browse by Category</h2>
+    </div>
+    <div class="categories">
+      <div class="category-card" onclick="filterByType('3d_model')">
+        <div class="category-icon">🎭</div>
+        <div class="category-name">Characters</div>
+        <div class="category-desc">Fully rigged and animated characters for games and films</div>
+      </div>
+      <div class="category-card" onclick="filterByType('texture')">
+        <div class="category-icon">🏞️</div>
+        <div class="category-name">Environment Packs</div>
+        <div class="category-desc">Modular assets for landscapes, cities, and interiors</div>
+      </div>
+      <div class="category-card" onclick="filterByType('plugin')">
+        <div class="category-icon">🎨</div>
+        <div class="category-name">Props & Objects</div>
+        <div class="category-desc">Game-ready furniture, tools, weapons, and decorative items</div>
+      </div>
+      <div class="category-card" onclick="filterByType('vfx')">
+        <div class="category-icon">✨</div>
+        <div class="category-name">Visual Effects</div>
+        <div class="category-desc">Particle effects, spells, explosions, and environmental FX</div>
+      </div>
+      <div class="category-card" onclick="filterByType('animation')">
+        <div class="category-icon">🎬</div>
+        <div class="category-name">Animations</div>
+        <div class="category-desc">Character movement, combat, and cinematic motion packs</div>
+      </div>
+      <div class="category-card" onclick="filterByType('script')">
+        <div class="category-icon">⚙️</div>
+        <div class="category-name">Scripts & Tools</div>
+        <div class="category-desc">Development tools and automation scripts</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">All Assets</h2>
+    </div>
+    
+    <div class="search-filter-bar">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search assets, creators, or tags..." value="{{ request.GET.q }}">
+      </div>
+      <select class="filter-select" id="typeFilter" onchange="applyFilters()">
+        <option value="">All Types</option>
+        <option value="3d_model" {% if '3d_model' in request.GET.getlist.type %}selected{% endif %}>3D Models</option>
+        <option value="texture" {% if 'texture' in request.GET.getlist.type %}selected{% endif %}>Textures</option>
+        <option value="plugin" {% if 'plugin' in request.GET.getlist.type %}selected{% endif %}>Plugins</option>
+        <option value="script" {% if 'script' in request.GET.getlist.type %}selected{% endif %}>Scripts</option>
+        <option value="vfx" {% if 'vfx' in request.GET.getlist.type %}selected{% endif %}>VFX</option>
+        <option value="animation" {% if 'animation' in request.GET.getlist.type %}selected{% endif %}>Animations</option>
+      </select>
+      <select class="filter-select" id="priceFilter" onchange="applyFilters()">
+        <option value="">All Prices</option>
+        <option value="free" {% if request.GET.free == 'true' %}selected{% endif %}>Free Only</option>
+        <option value="paid">Paid Only</option>
+      </select>
+      <select class="filter-select" id="sortSelect" onchange="applyFilters()">
+        <option value="newest" {% if request.GET.sort == 'newest' or not request.GET.sort %}selected{% endif %}>Newest</option>
+        <option value="popular" {% if request.GET.sort == 'popular' %}selected{% endif %}>Most Popular</option>
+        <option value="price_low" {% if request.GET.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+        <option value="price_high" {% if request.GET.sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+        <option value="rating" {% if request.GET.sort == 'rating' %}selected{% endif %}>Highest Rated</option>
+      </select>
+    </div>
+
+    <div class="assets-grid">
+      {% for asset in page_obj %}
+      <div class="asset-card" onclick="window.location.href='{% url 'marketplace:detail' asset.pk %}'">
+        <div class="asset-image">
+          {% if user.is_authenticated %}
+          <button class="wishlist-btn {% if asset.id in user_wishlist_ids %}active{% endif %}" 
+                  onclick="event.stopPropagation(); toggleWishlist(this, {{ asset.id }})">
+            <svg viewBox="0 0 24 24">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+          {% endif %}
+          <div class="asset-badges">
+            {% if asset.is_free %}<span class="badge badge-free">FREE</span>{% endif %}
+            {% if asset.featured %}<span class="badge badge-featured">⭐ FEATURED</span>{% endif %}
+          </div>
+          {% if asset.preview_image %}
+          <img src="{{ asset.preview_image }}" alt="{{ asset.title }}" loading="lazy">
+          {% else %}
+          <div class="asset-placeholder">🎨</div>
+          {% endif %}
+        </div>
+        <div class="asset-content">
+          <h3 class="asset-title">{{ asset.title }}</h3>
+          <div class="asset-author">by {{ asset.seller.username }}</div>
+          <div class="asset-footer">
+            <div class="asset-price">{% if asset.is_free %}FREE{% else %}<span>${{ asset.price }}</span>{% endif %}</div>
+            <div class="asset-stats">
+              <span>⭐ {{ asset.rating|floatformat:1|default:"0.0" }}</span>
+              <span>⬇ {{ asset.downloads|default:0 }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <h3>No assets found</h3>
+        <p>Try adjusting your search or filters</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Featured Creator</h2>
+    </div>
+    <div class="featured-creator">
+      <div class="creator-avatar">🚀</div>
+      <div class="creator-info">
+        <h3>Nova Assets Studio</h3>
+        <span class="creator-badge">⭐ Featured Creator</span>
+        <p class="creator-desc">Nova Assets is known for creating high-quality sci-fi environments optimized for real-time rendering. Their assets are widely used by indie developers building futuristic worlds and cyberpunk-themed games.</p>
+        <div class="creator-assets">
+          <span class="creator-asset-tag">🌃 Cyberpunk City Environment Pack</span>
+          <span class="creator-asset-tag">🛸 Space Station Modular Kit</span>
+          <span class="creator-asset-tag">💡 Neon Street Props Collection</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Why Use the Marketplace</h2>
+    </div>
+    <div class="benefits">
+      <div class="benefit-card">
+        <div class="benefit-icon">⚡</div>
+        <div class="benefit-title">Faster Development</div>
+        <div class="benefit-desc">Access production-ready assets and accelerate your project timeline significantly</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">💎</div>
+        <div class="benefit-title">Professional Quality</div>
+        <div class="benefit-desc">All assets are created by experienced artists and optimized for modern pipelines</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">💰</div>
+        <div class="benefit-title">Cost-Effective</div>
+        <div class="benefit-desc">Save time and money compared to creating every asset from scratch</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🤝</div>
+        <div class="benefit-title">Creator Economy</div>
+        <div class="benefit-desc">Support independent creators while monetizing your own work</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="cta-section">
+      <h2 class="cta-title">Start Selling Your Assets</h2>
+      <p class="cta-desc">Join our community of creators and monetize your work. Upload your assets, set your pricing, and reach thousands of developers worldwide.</p>
+      <a href="{% url 'dashboard:marketplace_upload' %}" class="cta-btn">Upload Your First Asset</a>
+    </div>
+  </section>
+</div>
+
+<script>
+let searchTimeout;
+
+document.getElementById('searchInput')?.addEventListener('input', function() {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => applyFilters(), 500);
+});
+
+function filterByType(type) {
+  const params = new URLSearchParams(window.location.search);
+  params.set('type', type);
+  window.location.href = '?' + params.toString();
+}
+
+function applyFilters() {
+  const params = new URLSearchParams();
+  
+  const search = document.getElementById('searchInput')?.value;
+  if (search) params.set('q', search);
+  
+  const type = document.getElementById('typeFilter')?.value;
+  if (type) params.set('type', type);
+  
+  const price = document.getElementById('priceFilter')?.value;
+  if (price === 'free') params.set('free', 'true');
+  
+  const sort = document.getElementById('sortSelect')?.value;
+  if (sort) params.set('sort', sort);
+  
+  window.location.href = '?' + params.toString();
+}
+
+{% if user.is_authenticated %}
+function toggleWishlist(btn, assetId) {
+  const isActive = btn.classList.contains('active');
+  const url = isActive ? `/dashboard/marketplace/wishlist/remove/${assetId}/` : `/dashboard/marketplace/wishlist/add/${assetId}/`;
+  
+  btn.disabled = true;
+  
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': '{{ csrf_token }}',
+      'Content-Type': 'application/json',
+    },
+    credentials: 'same-origin'
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      btn.classList.toggle('active');
+      showToast(data.message || 'Wishlist updated');
+    } else {
+      showToast(data.message || 'Failed to update', 'error');
+    }
+  })
+  .catch(() => showToast('Network error', 'error'))
+  .finally(() => btn.disabled = false);
+}
+
+function showToast(msg, type = 'success') {
+  const toast = document.createElement('div');
+  toast.textContent = msg;
+  Object.assign(toast.style, {
+    position: 'fixed',
+    top: '20px',
+    right: '20px',
+    padding: '12px 24px',
+    background: type === 'error' ? '#ef4444' : '#10b981',
+    color: '#fff',
+    borderRadius: '8px',
+    fontSize: '14px',
+    fontWeight: '600',
+    zIndex: '9999',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+    animation: 'slideIn 0.3s ease'
+  });
+  
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = 'slideOut 0.3s ease';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+{% endif %}
+</script>
+
+<style>
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes slideOut {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(100%); opacity: 0; }
+}
+</style>
 {% endblock %}

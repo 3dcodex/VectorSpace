@@ -1,132 +1,91 @@
-{% extends 'base.html' %}
+{% extends 'dashboard_base.html' %}
 
 {% block title %}Moderation Dashboard - Vector Space{% endblock %}
 
 {% block content %}
-<div class="container" style="padding: 2rem;">
-    <h1 style="color: #0db9f2; margin-bottom: 2rem;">🛡️ Moderation Dashboard</h1>
-    
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-        {% for stat in report_stats %}
-        <div class="stat-card">
-            <h3>{{ stat.status|title }}</h3>
-            <p class="stat-value">{{ stat.count }}</p>
-        </div>
-        {% endfor %}
+<div class="page-header">
+    <h1 class="page-title" style="color: var(--danger);">🛡️ Moderation Dashboard</h1>
+    <p class="page-subtitle">Review reports and manage content moderation</p>
+</div>
+
+<div class="stats-grid">
+    {% for stat in report_stats %}
+    <div class="stat-card">
+        <div class="stat-label">{{ stat.status|title }}</div>
+        <div class="stat-value">{{ stat.count }}</div>
     </div>
-    
-    <div class="content-section" style="margin-bottom: 2rem;">
-        <h2>Pending Reports</h2>
-        {% if pending_reports %}
+    {% endfor %}
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+    <h3 class="card-title">Pending Reports</h3>
+    {% if pending_reports %}
+        <div style="overflow-x: auto; margin-top: 1rem;">
             <table style="width: 100%; border-collapse: collapse;">
                 <thead>
-                    <tr style="border-bottom: 2px solid #0db9f2;">
-                        <th style="padding: 1rem; text-align: left;">Reporter</th>
-                        <th style="padding: 1rem; text-align: left;">Type</th>
-                        <th style="padding: 1rem; text-align: left;">Content</th>
-                        <th style="padding: 1rem; text-align: left;">Reason</th>
-                        <th style="padding: 1rem; text-align: right;">Date</th>
-                        <th style="padding: 1rem; text-align: center;">Action</th>
+                    <tr style="border-bottom: 2px solid var(--border);">
+                        <th style="padding: 1rem; text-align: left; color: var(--text-secondary); font-weight: 600; font-size: 0.875rem;">Reporter</th>
+                        <th style="padding: 1rem; text-align: left; color: var(--text-secondary); font-weight: 600; font-size: 0.875rem;">Type</th>
+                        <th style="padding: 1rem; text-align: left; color: var(--text-secondary); font-weight: 600; font-size: 0.875rem;">Content</th>
+                        <th style="padding: 1rem; text-align: left; color: var(--text-secondary); font-weight: 600; font-size: 0.875rem;">Reason</th>
+                        <th style="padding: 1rem; text-align: right; color: var(--text-secondary); font-weight: 600; font-size: 0.875rem;">Date</th>
+                        <th style="padding: 1rem; text-align: center; color: var(--text-secondary); font-weight: 600; font-size: 0.875rem;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for report in pending_reports %}
-                    <tr style="border-bottom: 1px solid #333;">
+                    <tr style="border-bottom: 1px solid var(--border);">
                         <td style="padding: 1rem;">{{ report.reporter.username }}</td>
                         <td style="padding: 1rem;">{{ report.report_type|title }}</td>
                         <td style="padding: 1rem;">{{ report.content_type|title }} #{{ report.content_id }}</td>
-                        <td style="padding: 1rem;">{{ report.description|truncatewords:10 }}</td>
-                        <td style="padding: 1rem; text-align: right;">{{ report.created_at|date:"M d, Y" }}</td>
+                        <td style="padding: 1rem; color: var(--text-secondary); font-size: 0.875rem;">{{ report.description|truncatewords:10 }}</td>
+                        <td style="padding: 1rem; text-align: right; color: var(--text-muted); font-size: 0.875rem;">{{ report.created_at|date:"M d, Y" }}</td>
                         <td style="padding: 1rem; text-align: center;">
-                            <a href="{% url 'core:resolve_report' report.id %}" class="btn-small">Review</a>
+                            <a href="{% url 'core:resolve_report' report.id %}" class="btn" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Review</a>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        {% else %}
-            <p>No pending reports.</p>
-        {% endif %}
-    </div>
-    
-    <div class="content-section">
-        <h2>Recent Moderation Actions</h2>
-        {% if recent_actions %}
+        </div>
+    {% else %}
+        <div style="padding: 2rem; text-align: center;">
+            <p style="color: var(--text-muted);">No pending reports</p>
+        </div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h3 class="card-title">Recent Moderation Actions</h3>
+    {% if recent_actions %}
+        <div style="overflow-x: auto; margin-top: 1rem;">
             <table style="width: 100%; border-collapse: collapse;">
                 <thead>
-                    <tr style="border-bottom: 2px solid #0db9f2;">
-                        <th style="padding: 1rem; text-align: left;">Moderator</th>
-                        <th style="padding: 1rem; text-align: left;">Target User</th>
-                        <th style="padding: 1rem; text-align: left;">Action</th>
-                        <th style="padding: 1rem; text-align: left;">Reason</th>
-                        <th style="padding: 1rem; text-align: right;">Date</th>
+                    <tr style="border-bottom: 2px solid var(--border);">
+                        <th style="padding: 1rem; text-align: left; color: var(--text-secondary); font-weight: 600; font-size: 0.875rem;">Moderator</th>
+                        <th style="padding: 1rem; text-align: left; color: var(--text-secondary); font-weight: 600; font-size: 0.875rem;">Target User</th>
+                        <th style="padding: 1rem; text-align: left; color: var(--text-secondary); font-weight: 600; font-size: 0.875rem;">Action</th>
+                        <th style="padding: 1rem; text-align: left; color: var(--text-secondary); font-weight: 600; font-size: 0.875rem;">Reason</th>
+                        <th style="padding: 1rem; text-align: right; color: var(--text-secondary); font-weight: 600; font-size: 0.875rem;">Date</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for action in recent_actions %}
-                    <tr style="border-bottom: 1px solid #333;">
+                    <tr style="border-bottom: 1px solid var(--border);">
                         <td style="padding: 1rem;">{{ action.moderator.username }}</td>
                         <td style="padding: 1rem;">{{ action.target_user.username }}</td>
                         <td style="padding: 1rem;">{{ action.action_type|title }}</td>
-                        <td style="padding: 1rem;">{{ action.reason|truncatewords:10 }}</td>
-                        <td style="padding: 1rem; text-align: right;">{{ action.created_at|date:"M d, Y" }}</td>
+                        <td style="padding: 1rem; color: var(--text-secondary); font-size: 0.875rem;">{{ action.reason|truncatewords:10 }}</td>
+                        <td style="padding: 1rem; text-align: right; color: var(--text-muted); font-size: 0.875rem;">{{ action.created_at|date:"M d, Y" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        {% else %}
-            <p>No recent actions.</p>
-        {% endif %}
-    </div>
+        </div>
+    {% else %}
+        <div style="padding: 2rem; text-align: center;">
+            <p style="color: var(--text-muted);">No recent actions</p>
+        </div>
+    {% endif %}
 </div>
-
-<style>
-.stat-card {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    padding: 1.5rem;
-    border-radius: 12px;
-    border: 1px solid #0db9f2;
-    text-align: center;
-}
-
-.stat-card h3 {
-    color: #888;
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-}
-
-.stat-value {
-    color: #0db9f2;
-    font-size: 2rem;
-    font-weight: bold;
-    margin: 0;
-}
-
-.content-section {
-    background: #1a1a2e;
-    padding: 1.5rem;
-    border-radius: 12px;
-    border: 1px solid #333;
-}
-
-.content-section h2 {
-    color: #0db9f2;
-    margin-bottom: 1rem;
-    font-size: 1.3rem;
-}
-
-.btn-small {
-    background: #0db9f2;
-    color: #0a0e27;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    display: inline-block;
-}
-
-.btn-small:hover {
-    background: #0aa3d9;
-}
-</style>
 {% endblock %}

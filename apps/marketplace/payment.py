@@ -3,8 +3,6 @@ Payment Integration Module
 Supports Stripe payment processing for marketplace and mentorship
 """
 
-from django.conf import settings
-from decimal import Decimal
 import os
 
 # Stripe configuration (add to settings.py or .env)

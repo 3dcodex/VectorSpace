@@ -1,0 +1,94 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Portfolio Settings - Dashboard{% endblock %}
+
+{% block dashboard_content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <h1 style="margin-bottom: 2rem;">⚙️ Portfolio Settings</h1>
+    
+    <form method="post" style="background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 12px; border: 1px solid rgba(13, 185, 242, 0.2);">
+        {% csrf_token %}
+        
+        <!-- Visibility -->
+        <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="checkbox" name="is_public" {% if portfolio.is_public %}checked{% endif %}>
+                <strong>Make portfolio public</strong>
+            </label>
+            <small style="color: #888; margin-left: 1.5rem;">When enabled, anyone can view your portfolio</small>
+        </div>
+        
+        <!-- Custom URL -->
+        <div class="form-group">
+            <label for="custom_url"><strong>Custom Portfolio URL</strong></label>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                <span style="color: #888;">/creator/</span>
+                <input type="text" id="custom_url" name="custom_url" value="{{ portfolio.custom_url }}" class="form-control" style="flex: 1;" required>
+            </div>
+            <small style="color: #888;">Choose a unique URL slug for your portfolio</small>
+        </div>
+        
+        <!-- Tagline -->
+        <div class="form-group">
+            <label for="tagline"><strong>Professional Tagline</strong></label>
+            <input type="text" id="tagline" name="tagline" value="{{ portfolio.tagline }}" class="form-control" maxlength="200" placeholder="e.g., 3D Artist & Game Developer">
+            <small style="color: #888;">A short description that appears below your name</small>
+        </div>
+        
+        <!-- Specialties -->
+        <div class="form-group">
+            <label for="specialties"><strong>Specialties</strong></label>
+            <input type="text" id="specialties" name="specialties" value="{{ specialties_str }}" class="form-control" placeholder="3D Modeling, Animation, Game Dev">
+            <small style="color: #888;">Comma-separated list of your skills and specialties</small>
+        </div>
+        
+        <!-- Years Experience -->
+        <div class="form-group">
+            <label for="years_experience"><strong>Years of Experience</strong></label>
+            <input type="number" id="years_experience" name="years_experience" value="{{ portfolio.years_experience }}" class="form-control" min="0" max="50">
+        </div>
+        
+        <!-- Cover Image URL -->
+        <div class="form-group">
+            <label for="cover_image"><strong>Cover Image URL</strong></label>
+            <input type="url" id="cover_image" name="cover_image" value="{{ portfolio.cover_image }}" class="form-control" placeholder="https://example.com/cover.jpg">
+            <small style="color: #888;">URL to your portfolio cover/banner image</small>
+        </div>
+        
+        <!-- Primary Color -->
+        <div class="form-group">
+            <label for="primary_color"><strong>Brand Color</strong></label>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <input type="color" id="primary_color" name="primary_color" value="{{ portfolio.primary_color }}" style="width: 60px; height: 40px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer;">
+                <input type="text" id="primary_color_text" value="{{ portfolio.primary_color }}" class="form-control" style="flex: 1;" readonly>
+            </div>
+            <small style="color: #888;">Choose your brand color for portfolio accents</small>
+        </div>
+        
+        <!-- Messages -->
+        {% if messages %}
+            <div style="margin-bottom: 1rem;">
+                {% for message in messages %}
+                    <div style="padding: 1rem; border-radius: 8px; background: {% if message.tags == 'error' %}rgba(239, 68, 68, 0.2); color: #ef4444{% else %}rgba(34, 197, 94, 0.2); color: #22c55e{% endif %}; border: 1px solid {% if message.tags == 'error' %}#ef4444{% else %}#22c55e{% endif %};">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <!-- Actions -->
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">Save Changes</button>
+            <a href="{% url 'dashboard:my_portfolio' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Update color text input when color picker changes
+document.getElementById('primary_color').addEventListener('input', function(e) {
+    document.getElementById('primary_color_text').value = e.target.value;
+});
+</script>
+{% endblock %}

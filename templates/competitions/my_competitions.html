@@ -1,0 +1,28 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}My Competitions{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <h1 style="color: var(--text-light); font-size: 2.25rem; font-weight: 800; margin-bottom: 1.5rem;">My Competitions</h1>
+
+    {% if competitions %}
+        <div class="applications-list">
+            {% for competition in competitions %}
+                <div class="application-card">
+                    <div>
+                        <h4 style="color: var(--text-light); margin-bottom: 0.35rem;">{{ competition.title }}</h4>
+                        <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">{{ competition.category }}</p>
+                        <p style="color: rgba(255,255,255,0.5); font-size: 0.75rem;">Starts: {{ competition.start_date|date:'M d, Y' }}</p>
+                    </div>
+                    <div>
+                        <a href="{% url 'competitions:detail' competition.pk %}" class="btn-small btn-secondary" style="text-decoration: none;">Open</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="color: rgba(255,255,255,0.65);">No competitions created yet. <a href="{% url 'dashboard:competitions_create' %}" style="color: var(--primary);">Create one</a>.</p>
+    {% endif %}
+</div>
+{% endblock %}

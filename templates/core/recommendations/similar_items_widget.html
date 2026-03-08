@@ -1,0 +1,66 @@
+{% load static %}
+
+<div class="similar-items-widget">
+    <h5 class="mb-3">Similar Items</h5>
+    
+    {% if similar_items %}
+        <div class="row">
+            {% for item in similar_items %}
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card h-100 similar-item-card">
+                        {% if content_type == 'asset' %}
+                            {% if item.preview_image %}
+                                <img src="{{ item.preview_image }}" 
+                                     class="card-img-top" 
+                                     alt="{{ item.title }}"
+                                     style="height: 150px; object-fit: cover;">
+                            {% else %}
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                                     style="height: 150px;">
+                                    <span class="text-muted">No Preview</span>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="card-body p-2">
+                                <h6 class="card-title small mb-1">
+                                    <a href="/marketplace/asset/{{ item.id }}/" 
+                                       class="text-decoration-none"
+                                       data-recommendation-item
+                                       data-content-type="asset"
+                                       data-content-id="{{ item.id }}">
+                                        {{ item.title|truncatechars:30 }}
+                                    </a>
+                                </h6>
+                                <p class="card-text small text-muted">
+                                    {% if item.is_free %}
+                                        <span class="text-success fw-bold">Free</span>
+                                    {% else %}
+                                        ${{ item.price }}
+                                    {% endif %}
+                                </p>
+                                <div class="small text-muted">
+                                    ⭐ {{ item.rating|floatformat:1 }}
+                                    📥 {{ item.downloads }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-muted">No similar items found.</p>
+    {% endif %}
+</div>
+
+<style>
+.similar-item-card {
+    border: 1px solid #dee2e6;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.similar-item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+</style>

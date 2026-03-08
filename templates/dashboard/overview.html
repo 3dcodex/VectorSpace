@@ -1,0 +1,261 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+.dashboard-overview {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.welcome-card {
+    background: linear-gradient(135deg, rgba(13, 185, 242, 0.1), rgba(168, 85, 247, 0.1));
+    border: 1px solid rgba(13, 185, 242, 0.2);
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.welcome-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.welcome-text {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: rgba(13, 185, 242, 0.05);
+    border: 1px solid rgba(13, 185, 242, 0.15);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(13, 185, 242, 0.15);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.action-card {
+    background: rgba(13, 185, 242, 0.05);
+    border: 1px solid rgba(13, 185, 242, 0.15);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-decoration: none;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.action-card:hover {
+    background: rgba(13, 185, 242, 0.1);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.action-icon {
+    font-size: 2rem;
+}
+
+.action-text h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.action-text p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+}
+
+.activity-card {
+    background: rgba(13, 185, 242, 0.03);
+    border: 1px solid rgba(13, 185, 242, 0.1);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.activity-item {
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(13, 185, 242, 0.1);
+    color: var(--text-secondary);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-item a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.activity-item a:hover {
+    text-decoration: underline;
+}
+
+.empty-activity {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-overview">
+    <!-- Welcome Section -->
+    <div class="welcome-card">
+        <h1 class="welcome-title">Welcome back, {{ user.username }}! 👋</h1>
+        <p class="welcome-text">Continue building your portfolio, explore new opportunities, and connect with the community.</p>
+    </div>
+
+    <!-- Quick Statistics -->
+    <h2 class="section-title">Quick Statistics</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ assets_count }}</div>
+            <div class="stat-label">Assets Published</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ games_count }}</div>
+            <div class="stat-label">Games Published</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ posts_count }}</div>
+            <div class="stat-label">Community Posts</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ applications_count }}</div>
+            <div class="stat-label">Job Applications</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ entries_count }}</div>
+            <div class="stat-label">Competition Entries</div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <h2 class="section-title">Quick Actions</h2>
+    <div class="actions-grid">
+        <a href="{% url 'dashboard:marketplace_my_assets' %}" class="action-card">
+            <div class="action-icon">📦</div>
+            <div class="action-text">
+                <h3>My Assets</h3>
+                <p>Manage marketplace items</p>
+            </div>
+        </a>
+        <a href="{% url 'dashboard:games_my_games' %}" class="action-card">
+            <div class="action-icon">🎮</div>
+            <div class="action-text">
+                <h3>My Games</h3>
+                <p>View published games</p>
+            </div>
+        </a>
+        <a href="{% url 'dashboard:social_feed' %}" class="action-card">
+            <div class="action-icon">💬</div>
+            <div class="action-text">
+                <h3>Social Feed</h3>
+                <p>Community posts</p>
+            </div>
+        </a>
+        <a href="{% url 'dashboard:competitions_my_competitions' %}" class="action-card">
+            <div class="action-icon">🏆</div>
+            <div class="action-text">
+                <h3>Competitions</h3>
+                <p>Active competitions</p>
+            </div>
+        </a>
+        <a href="{% url 'dashboard:jobs_board' %}" class="action-card">
+            <div class="action-icon">💼</div>
+            <div class="action-text">
+                <h3>Browse Jobs</h3>
+                <p>Explore opportunities</p>
+            </div>
+        </a>
+    </div>
+
+    <!-- Recent Activity -->
+    <h2 class="section-title">Recent Activity</h2>
+    <div class="activity-card">
+        {% if recent_assets or recent_games or recent_posts %}
+            {% for asset in recent_assets %}
+            <div class="activity-item">
+                You uploaded: <a href="{% url 'dashboard:marketplace_my_assets' %}">{{ asset.title }}</a>
+            </div>
+            {% endfor %}
+            {% for game in recent_games %}
+            <div class="activity-item">
+                You published: <a href="{% url 'dashboard:games_my_games' %}">{{ game.title }}</a>
+            </div>
+            {% endfor %}
+            {% for post in recent_posts|slice:":3" %}
+            <div class="activity-item">
+                You posted: <a href="{% url 'dashboard:social_feed' %}">{{ post.content|truncatewords:10 }}</a>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="empty-activity">
+            No recent activity. Start creating!
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Marketplace Performance -->
+    {% if assets_count > 0 %}
+    <h2 class="section-title">Marketplace Performance</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ total_sales }}</div>
+            <div class="stat-label">Total Downloads</div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

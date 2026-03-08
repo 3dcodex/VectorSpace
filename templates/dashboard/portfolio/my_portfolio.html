@@ -1,0 +1,394 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}My Portfolio - Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .portfolio-header {
+        background: linear-gradient(135deg, {{ portfolio.primary_color }}22, #1a1a2e);
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(13, 185, 242, 0.3);
+    }
+    
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-box {
+        background: rgba(255,255,255,0.05);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid rgba(13, 185, 242, 0.2);
+    }
+    
+    .stat-box-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #0db9f2;
+    }
+    
+    .stat-box-label {
+        color: #888;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+    
+    .section-card {
+        background: rgba(255,255,255,0.05);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(13, 185, 242, 0.2);
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .featured-items-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .featured-item-card {
+        background: rgba(255,255,255,0.03);
+        border-radius: 8px;
+        padding: 1rem;
+        border: 1px solid rgba(255,255,255,0.1);
+        position: relative;
+    }
+    
+    .remove-btn {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        background: rgba(239, 68, 68, 0.8);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+    
+    .remove-btn:hover {
+        background: #ef4444;
+    }
+    
+    .add-featured-section {
+        background: rgba(13, 185, 242, 0.1);
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px dashed rgba(13, 185, 242, 0.3);
+        margin-top: 1rem;
+    }
+    
+    .item-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .selectable-item {
+        background: rgba(255,255,255,0.05);
+        padding: 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 1px solid rgba(255,255,255,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .selectable-item:hover {
+        border-color: #0db9f2;
+        background: rgba(13, 185, 242, 0.1);
+    }
+    
+    .btn-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: none;
+        font-size: 1.2rem;
+    }
+    
+    .achievements-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+    
+    .achievement-mini {
+        background: rgba(255,255,255,0.03);
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="portfolio-header">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 style="margin: 0 0 0.5rem 0;">My Portfolio</h1>
+            <p style="color: #888; margin: 0;">Manage your creator portfolio and showcase your best work</p>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <a href="{% url 'portfolio:detail' portfolio.custom_url %}" class="btn btn-secondary" target="_blank">
+                👁️ View Public Portfolio
+            </a>
+            <a href="{% url 'dashboard:edit_settings' %}" class="btn btn-primary">
+                ⚙️ Settings
+            </a>
+            <a href="{% url 'dashboard:analytics' %}" class="btn btn-primary">
+                📊 Analytics
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Overview -->
+<div class="stats-row">
+    <div class="stat-box">
+        <div class="stat-box-value">{{ portfolio.total_views|floatformat:0 }}</div>
+        <div class="stat-box-label">Total Views</div>
+        <small style="color: #22c55e;">+{{ total_views_30d }} last 30 days</small>
+    </div>
+    <div class="stat-box">
+        <div class="stat-box-value">{{ portfolio.total_projects }}</div>
+        <div class="stat-box-label">Published Projects</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-box-value">{{ portfolio.average_rating|floatformat:1 }}</div>
+        <div class="stat-box-label">Average Rating</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-box-value">${{ total_revenue_30d|floatformat:2 }}</div>
+        <div class="stat-box-label">Revenue (30 days)</div>
+    </div>
+</div>
+
+<!-- Featured Items -->
+<div class="section-card">
+    <div class="section-header">
+        <h2 style="margin: 0;">⭐ Featured Items</h2>
+        <button onclick="toggleAddFeatured()" class="btn btn-primary btn-sm">+ Add Featured Item</button>
+    </div>
+    
+    {% if featured_items %}
+        <div class="featured-items-grid">
+            {% for item in featured_items %}
+                <div class="featured-item-card">
+                    <button onclick="removeFeaturedItem({{ item.id }})" class="remove-btn" title="Remove">×</button>
+                    
+                    {% if item.is_showcase %}
+                        <span style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.7rem; display: inline-block; margin-bottom: 0.5rem;">⭐ Showcase</span>
+                    {% endif %}
+                    
+                    <h4>{{ item.get_title }}</h4>
+                    <p style="color: #888; font-size: 0.85rem;">{{ item.item_type|title }}</p>
+                    
+                    <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                        <button onclick="toggleShowcase({{ item.id }})" class="btn btn-sm btn-secondary" style="flex: 1;">
+                            Toggle Showcase
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="color: #888; text-align: center; padding: 2rem;">No featured items yet. Add your best work to showcase on your portfolio!</p>
+    {% endif %}
+    
+    <!-- Add Featured Section (hidden by default) -->
+    <div id="addFeaturedSection" class="add-featured-section" style="display: none;">
+        <h3 style="margin-top: 0;">Add Featured Item</h3>
+        
+        <div style="margin-bottom: 1rem;">
+            <label style="margin-right: 1rem;">
+                <input type="radio" name="item_type" value="asset" checked onchange="updateItemSelector()"> Assets
+            </label>
+            <label>
+                <input type="radio" name="item_type" value="game" onchange="updateItemSelector()"> Games
+            </label>
+        </div>
+        
+        <div id="assetSelector" class="item-selector">
+            {% for asset in available_assets %}
+                <div class="selectable-item" onclick="addFeaturedItem('asset', {{ asset.id }})">
+                    <h4 style="margin: 0; font-size: 0.9rem;">{{ asset.title|truncatewords:3 }}</h4>
+                    <p style="color: #888; font-size: 0.75rem; margin: 0.3rem 0 0 0;">Asset</p>
+                </div>
+            {% empty %}
+                <p style="color: #888; grid-column: 1/-1;">No available assets to feature</p>
+            {% endfor %}
+        </div>
+        
+        <div id="gameSelector" class="item-selector" style="display: none;">
+            {% for game in available_games %}
+                <div class="selectable-item" onclick="addFeaturedItem('game', {{ game.id }})">
+                    <h4 style="margin: 0; font-size: 0.9rem;">{{ game.title|truncatewords:3 }}</h4>
+                    <p style="color: #888; font-size: 0.75rem; margin: 0.3rem 0 0 0;">Game</p>
+                </div>
+            {% empty %}
+                <p style="color: #888; grid-column: 1/-1;">No available games to feature</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Achievements -->
+<div class="section-card">
+    <div class="section-header">
+        <h2 style="margin: 0;">🏆 Achievements ({{ achievements.count }})</h2>
+    </div>
+    
+    {% if achievements %}
+        <div class="achievements-list">
+            {% for achievement in achievements %}
+                <div class="achievement-mini">
+                    <div style="font-size: 2rem;">{{ achievement.icon }}</div>
+                    <h4 style="font-size: 0.9rem; margin: 0.5rem 0;">{{ achievement.title }}</h4>
+                    {% if achievement.is_rare %}
+                        <span style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.7rem;">Rare</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="color: #888; text-align: center;">Start creating to unlock achievements!</p>
+    {% endif %}
+</div>
+
+<!-- Testimonials -->
+<div class="section-card">
+    <div class="section-header">
+        <h2 style="margin: 0;">💬 Testimonials ({{ testimonials.count }})</h2>
+        <a href="{% url 'dashboard:manage_testimonials' %}" class="btn btn-primary btn-sm">Manage Testimonials</a>
+    </div>
+    
+    {% if testimonials %}
+        {% for testimonial in testimonials|slice:":3" %}
+            <div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid #0db9f2;">
+                <div style="color: #f59e0b; margin-bottom: 0.5rem;">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= testimonial.rating %}★{% else %}☆{% endif %}
+                    {% endfor %}
+                </div>
+                <p style="margin: 0.5rem 0;">{{ testimonial.content|truncatewords:30 }}</p>
+                <p style="color: #888; font-size: 0.85rem; margin: 0.5rem 0 0 0;">— {{ testimonial.author_name }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="color: #888; text-align: center;">No testimonials yet</p>
+    {% endif %}
+</div>
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function toggleAddFeatured() {
+    const section = document.getElementById('addFeaturedSection');
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
+function updateItemSelector() {
+    const itemType = document.querySelector('input[name="item_type"]:checked').value;
+    document.getElementById('assetSelector').style.display = itemType === 'asset' ? 'grid' : 'none';
+    document.getElementById('gameSelector').style.display = itemType === 'game' ? 'grid' : 'none';
+}
+
+function addFeaturedItem(itemType, itemId) {
+    const formData = new FormData();
+    formData.append('item_type', itemType);
+    formData.append('item_id', itemId);
+    
+    fetch('{% url "dashboard:add_featured" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred');
+    });
+}
+
+function removeFeaturedItem(itemId) {
+    if (!confirm('Remove this featured item?')) return;
+    
+    fetch(`/dashboard/portfolio/featured/remove/${itemId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+}
+
+function toggleShowcase(itemId) {
+    fetch(`/dashboard/portfolio/featured/showcase/${itemId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

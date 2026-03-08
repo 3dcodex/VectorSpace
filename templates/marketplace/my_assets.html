@@ -1,83 +1,177 @@
-{% extends 'users/dashboards/base_dashboard.html' %}
-{% block title %}My Assets{% endblock %}
+{% extends 'dashboard_base.html' %}
+{% load static %}
 
-{% block sidebar %}
-<li><a href="{% url 'users:creator_dashboard' %}"><span>📊</span> Overview</a></li>
-<li><a href="{% url 'marketplace:my_assets' %}" class="active"><span>🎨</span> My Assets</a></li>
-<li><a href="{% url 'marketplace:upload' %}"><span>⬆️</span> Upload Asset</a></li>
-<li><a href="{% url 'games:list' %}"><span>🎮</span> My Games</a></li>
+{% block title %}Manage Assets{% endblock %}
+
+{% block extra_css %}
+<style>
+.manage-page{padding:2rem;max-width:1600px;margin:0 auto}
+.page-hero{margin-bottom:2rem}
+.page-hero h1{font-size:2.5rem;font-weight:800;color:#fff;margin-bottom:0.5rem}
+.page-hero p{color:rgba(255,255,255,0.6);font-size:1rem;line-height:1.6}
+.header-actions{display:flex;gap:1rem;margin-top:1.5rem}
+.btn{padding:0.875rem 1.75rem;border-radius:10px;font-weight:600;font-size:0.9375rem;text-decoration:none;display:inline-flex;align-items:center;gap:0.75rem;transition:all 0.3s;border:none;cursor:pointer}
+.btn-primary{background:linear-gradient(135deg,#0DB9F2,#0891c7);color:#fff;box-shadow:0 4px 12px rgba(13,185,242,0.3)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(13,185,242,0.4)}
+.btn-secondary{background:rgba(13,185,242,0.1);color:#0DB9F2;border:1px solid rgba(13,185,242,0.3)}
+.btn-secondary:hover{background:rgba(13,185,242,0.15);transform:translateY(-2px)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-bottom:2rem}
+.stat-card{background:linear-gradient(135deg,rgba(13,185,242,0.08),rgba(13,185,242,0.03));border:1px solid rgba(13,185,242,0.2);border-radius:16px;padding:1.5rem;transition:all 0.3s}
+.stat-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(13,185,242,0.15)}
+.stat-value{font-size:2.25rem;font-weight:800;color:#fff;margin-bottom:0.25rem}
+.stat-label{color:rgba(255,255,255,0.6);font-size:0.875rem}
+.controls-bar{background:rgba(13,185,242,0.05);border:1px solid rgba(13,185,242,0.15);border-radius:16px;padding:1.5rem;margin-bottom:2rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+.search-box{flex:1;min-width:300px;position:relative}
+.search-box input{width:100%;padding:0.875rem 1rem 0.875rem 3rem;background:rgba(0,0,0,0.3);border:1px solid rgba(13,185,242,0.2);border-radius:10px;color:#fff;font-size:0.875rem}
+.search-box input:focus{outline:none;border-color:#0DB9F2;box-shadow:0 0 0 3px rgba(13,185,242,0.1)}
+.search-box svg{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:rgba(255,255,255,0.5)}
+.filter-select{padding:0.875rem 1rem;background:rgba(0,0,0,0.3);border:1px solid rgba(13,185,242,0.2);border-radius:10px;color:#fff;font-size:0.875rem;cursor:pointer;min-width:150px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%230DB9F2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:20px;padding-right:2.5rem}
+.filter-select:focus{outline:none;border-color:#0DB9F2}
+.filter-select option{background:#0a0e27;color:#fff;padding:0.75rem}
+.assets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem}
+.asset-card{background:rgba(13,185,242,0.03);border:1px solid rgba(13,185,242,0.15);border-radius:16px;overflow:hidden;transition:all 0.3s}
+.asset-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(13,185,242,0.2);border-color:rgba(13,185,242,0.3)}
+.asset-thumb{width:100%;height:200px;background:linear-gradient(135deg,rgba(13,185,242,0.1),rgba(13,185,242,0.05));object-fit:cover}
+.asset-body{padding:1.25rem}
+.asset-title{font-size:1.125rem;font-weight:700;color:#fff;margin-bottom:0.5rem}
+.asset-meta{display:flex;gap:0.75rem;margin-bottom:1rem;font-size:0.875rem}
+.meta-badge{padding:0.375rem 0.75rem;background:rgba(13,185,242,0.15);border-radius:8px;color:#0DB9F2;font-weight:600}
+.asset-stats{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;padding:1rem;background:rgba(0,0,0,0.2);border-radius:10px}
+.stat-item{text-align:center}
+.stat-item-value{font-size:1.25rem;font-weight:700;color:#0DB9F2}
+.stat-item-label{font-size:0.75rem;color:rgba(255,255,255,0.6);margin-top:0.25rem}
+.status-badge{display:inline-flex;align-items:center;gap:0.5rem;padding:0.5rem 1rem;border-radius:999px;font-size:0.8125rem;font-weight:600}
+.status-active{background:rgba(34,197,94,0.15);color:#22c55e;border:1px solid rgba(34,197,94,0.3)}
+.status-draft{background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3)}
+.asset-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem}
+.btn-sm{padding:0.625rem;border-radius:8px;font-size:0.8125rem;font-weight:600;text-align:center;text-decoration:none;transition:all 0.3s;border:1px solid}
+.btn-view{background:rgba(13,185,242,0.1);color:#0DB9F2;border-color:rgba(13,185,242,0.3)}
+.btn-view:hover{background:rgba(13,185,242,0.2)}
+.btn-edit{background:rgba(168,85,247,0.1);color:#a855f7;border-color:rgba(168,85,247,0.3)}
+.btn-edit:hover{background:rgba(168,85,247,0.2)}
+.btn-delete{background:rgba(239,68,68,0.1);color:#ef4444;border-color:rgba(239,68,68,0.3)}
+.btn-delete:hover{background:rgba(239,68,68,0.2)}
+.empty-state{text-align:center;padding:4rem 2rem;background:rgba(13,185,242,0.03);border:2px dashed rgba(13,185,242,0.2);border-radius:16px}
+.empty-state svg{width:80px;height:80px;margin-bottom:1.5rem;color:rgba(13,185,242,0.3)}
+.empty-state h3{font-size:1.5rem;color:#fff;margin-bottom:0.75rem}
+.empty-state p{color:rgba(255,255,255,0.6);margin-bottom:2rem}
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="dashboard-header">
-    <h1>My Assets</h1>
-    <p>Manage your 3D assets and track performance</p>
-</div>
+<div class="manage-page">
+    <a href="{% url 'dashboard:marketplace_dashboard' %}" style="display:inline-flex;align-items:center;gap:0.5rem;color:rgba(255,255,255,0.7);text-decoration:none;margin-bottom:1.5rem;transition:all 0.3s;font-size:0.9375rem" onmouseover="this.style.color='#0DB9F2'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Back to Dashboard
+    </a>
+    <div class="page-hero">
+        <h1>Manage Assets</h1>
+        <p>View and manage all the assets you have published on the marketplace.<br>Track performance, update files, and improve your listings.</p>
+        <div class="header-actions">
+            <a href="{% url 'dashboard:marketplace_upload' %}" class="btn btn-primary">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                Upload New Asset
+            </a>
+            <a href="{% url 'dashboard:marketplace_sales' %}" class="btn btn-secondary">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                View Sales Analytics
+            </a>
+        </div>
+    </div>
 
-<div style="margin-bottom:2rem">
-    <a href="{% url 'marketplace:upload' %}" class="btn">+ Upload New Asset</a>
-</div>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ total_assets }}</div>
+            <div class="stat-label">Total Assets</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ assets|length }}</div>
+            <div class="stat-label">Active Assets</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ total_sales }}</div>
+            <div class="stat-label">Total Sales</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ total_downloads }}</div>
+            <div class="stat-label">Total Downloads</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">${{ total_revenue|default:0|floatformat:0 }}</div>
+            <div class="stat-label">Total Revenue</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ avg_rating|floatformat:1 }}</div>
+            <div class="stat-label">Average Rating</div>
+        </div>
+    </div>
 
-{% if assets %}
-<div style="overflow-x:auto">
-    <table style="width:100%;border-collapse:collapse">
-        <thead>
-            <tr style="background:rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.1)">
-                <th style="padding:1rem;text-align:left;font-size:0.875rem;font-weight:600">Preview</th>
-                <th style="padding:1rem;text-align:left;font-size:0.875rem;font-weight:600">Title</th>
-                <th style="padding:1rem;text-align:left;font-size:0.875rem;font-weight:600">Price</th>
-                <th style="padding:1rem;text-align:left;font-size:0.875rem;font-weight:600">Status</th>
-                <th style="padding:1rem;text-align:left;font-size:0.875rem;font-weight:600">Downloads</th>
-                <th style="padding:1rem;text-align:left;font-size:0.875rem;font-weight:600">Created</th>
-                <th style="padding:1rem;text-align:left;font-size:0.875rem;font-weight:600">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for asset in assets %}
-            <tr style="border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding:1rem">
-                    {% if asset.preview_image %}
-                    <img src="{{ asset.preview_image }}" alt="{{ asset.title }}" style="width:60px;height:60px;object-fit:cover;border-radius:0.5rem;background:rgba(255,255,255,0.05)">
-                    {% else %}
-                    <div style="width:60px;height:60px;background:rgba(255,255,255,0.05);border-radius:0.5rem;display:flex;align-items:center;justify-content:center;font-size:1.5rem">🎨</div>
-                    {% endif %}
-                </td>
-                <td style="padding:1rem">
-                    <div style="font-weight:600">{{ asset.title }}</div>
-                    <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:0.25rem">{{ asset.asset_type }}</div>
-                </td>
-                <td style="padding:1rem">
-                    {% if asset.is_free %}
-                    <span style="color:#10b981;font-weight:600">FREE</span>
-                    {% else %}
-                    <span style="font-weight:600">${{ asset.price }}</span>
-                    {% endif %}
-                </td>
-                <td style="padding:1rem">
-                    {% if asset.is_active %}
-                    <span style="display:inline-block;padding:0.25rem 0.75rem;background:rgba(34,197,94,0.1);color:#22c55e;border-radius:9999px;font-size:0.75rem;font-weight:600">Published</span>
-                    {% else %}
-                    <span style="display:inline-block;padding:0.25rem 0.75rem;background:rgba(245,158,11,0.1);color:#f59e0b;border-radius:9999px;font-size:0.75rem;font-weight:600">Draft</span>
-                    {% endif %}
-                </td>
-                <td style="padding:1rem;color:rgba(255,255,255,0.7)">{{ asset.downloads }}</td>
-                <td style="padding:1rem;color:rgba(255,255,255,0.5);font-size:0.875rem">{{ asset.created_at|date:"M d, Y" }}</td>
-                <td style="padding:1rem">
-                    <div style="display:flex;gap:0.75rem">
-                        <a href="{% url 'marketplace:edit_asset' asset.pk %}" style="color:#0db9f2;text-decoration:none;font-size:0.875rem;font-weight:500">Edit</a>
-                        <a href="{% url 'marketplace:delete_asset' asset.pk %}" style="color:#ef4444;text-decoration:none;font-size:0.875rem;font-weight:500">Delete</a>
+    <div class="controls-bar">
+        <div class="search-box">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" placeholder="Search assets..." id="searchAssets">
+        </div>
+        <select class="filter-select" id="filterStatus">
+            <option value="all">All Assets</option>
+            <option value="active">Active</option>
+            <option value="draft">Draft</option>
+        </select>
+        <select class="filter-select" id="sortBy">
+            <option value="newest">Newest</option>
+            <option value="sales">Most Sales</option>
+            <option value="rating">Highest Rated</option>
+            <option value="downloads">Most Downloads</option>
+        </select>
+    </div>
+
+    {% if assets %}
+    <div class="assets-grid">
+        {% for asset in assets %}
+        <div class="asset-card">
+            {% if asset.preview_image %}
+            <img src="{{ asset.preview_image }}" alt="{{ asset.title }}" class="asset-thumb">
+            {% else %}
+            <div class="asset-thumb"></div>
+            {% endif %}
+            <div class="asset-body">
+                <h3 class="asset-title">{{ asset.title }}</h3>
+                <div class="asset-meta">
+                    <span class="meta-badge">{{ asset.get_asset_type_display }}</span>
+                    <span class="meta-badge">${{ asset.price }}</span>
+                </div>
+                <div class="asset-stats">
+                    <div class="stat-item">
+                        <div class="stat-item-value">{{ asset.downloads }}</div>
+                        <div class="stat-item-label">Downloads</div>
                     </div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                    <div class="stat-item">
+                        <div class="stat-item-value">⭐{{ asset.rating|floatformat:1 }}</div>
+                        <div class="stat-item-label">Rating</div>
+                    </div>
+                </div>
+                <div style="margin-bottom:1rem">
+                    {% if asset.is_active %}
+                    <span class="status-badge status-active">● Active</span>
+                    {% else %}
+                    <span class="status-badge status-draft">● Draft</span>
+                    {% endif %}
+                </div>
+                <div class="asset-actions">
+                    <a href="{% url 'marketplace:detail' asset.pk %}" class="btn-sm btn-view">View</a>
+                    <a href="{% url 'dashboard:marketplace_edit_asset' asset.pk %}" class="btn-sm btn-edit">Edit</a>
+                    <a href="{% url 'dashboard:marketplace_delete_asset' asset.pk %}" class="btn-sm btn-delete" onclick="return confirm('Delete this asset?')">Delete</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+        <h3>No Assets Yet</h3>
+        <p>Start building your marketplace portfolio by uploading your first asset.</p>
+        <a href="{% url 'dashboard:marketplace_upload' %}" class="btn btn-primary">Upload Your First Asset</a>
+    </div>
+    {% endif %}
 </div>
-{% else %}
-<div class="empty-state">
-    <h3>No Assets Yet</h3>
-    <p>Upload your first 3D asset to get started</p>
-    <a href="{% url 'marketplace:upload' %}" class="btn" style="margin-top:1rem">Upload Asset</a>
-</div>
-{% endif %}
 {% endblock %}

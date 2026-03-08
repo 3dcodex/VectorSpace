@@ -1,27 +1,55 @@
-{% extends 'base.html' %}
+{% extends 'dashboard_base.html' %}
 
-{% block title %}My Workspaces{% endblock %}
+{% block title %}Workspaces - Vector Space{% endblock %}
 
 {% block content %}
-<div class="page-container">
-    <div class="page-header">
-        <h1 style="color: var(--text-light); font-size: 2.5rem; font-weight: 800;">My Workspaces</h1>
+<section class="section">
+    <div class="section-header">
+        <h2 style="font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #0db9f2, #0a8fc7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">📁 My Workspaces</h2>
+        <p style="font-size: 1.125rem; color: rgba(255,255,255,0.7);">Collaborate on projects with your team</p>
+    </div>
+    <div style="text-align: center; margin-top: 2rem;">
         <a href="{% url 'workspace:create' %}" class="btn-primary" style="text-decoration: none;">Create Workspace</a>
     </div>
-    
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;">
+</section>
+
+<section class="section">
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 2rem;">
         {% for workspace in workspaces %}
-            <a href="{% url 'workspace:detail' workspace.pk %}" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 0.75rem; padding: 1.5rem; text-decoration: none; display: block; transition: all 0.3s;">
-                <h3 style="color: var(--text-light); margin-bottom: 0.5rem;">{{ workspace.name }}</h3>
-                <p style="color: rgba(255,255,255,0.6); margin-bottom: 1rem;">{{ workspace.description|truncatewords:20 }}</p>
-                <div style="color: rgba(255,255,255,0.5); font-size: 0.875rem;">
-                    <span>👥 {{ workspace.members.count }} members</span>
-                    <span style="margin-left: 1rem;">📁 {{ workspace.projects.count }} projects</span>
+            <div class="feature-card" style="padding: 2rem; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;" onclick="window.location.href='{% url 'workspace:detail' workspace.pk %}'" onmouseenter="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 20px 60px rgba(13, 185, 242, 0.25)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='';">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="width: 56px; height: 56px; border-radius: 0.75rem; background: linear-gradient(135deg, #0db9f2, #0a8fc7); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; box-shadow: 0 4px 12px rgba(13, 185, 242, 0.4);">📁</div>
+                    <div style="flex: 1;">
+                        <h3 style="color: var(--text-light); font-size: 1.375rem; font-weight: 700; margin-bottom: 0.25rem;">{{ workspace.name }}</h3>
+                        <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem; margin: 0;">Created {{ workspace.created_at|date:"M d, Y" }}</p>
+                    </div>
                 </div>
-            </a>
+                
+                <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; line-height: 1.6; font-size: 0.9375rem; min-height: 3rem;">
+                    {{ workspace.description|truncatewords:20 }}
+                </p>
+                
+                <div style="display: flex; gap: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); font-size: 0.875rem;">
+                    <span style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.125rem;">👥</span> {{ workspace.members.count }} members
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.125rem;">📂</span> {{ workspace.projects.count }} projects
+                    </span>
+                </div>
+                
+                <div style="margin-top: 1.5rem;">
+                    <a href="{% url 'workspace:detail' workspace.pk %}" style="display: block; text-align: center; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-radius: 0.5rem; font-weight: 700; font-size: 0.9375rem; text-decoration: none; box-shadow: 0 4px 12px rgba(13, 185, 242, 0.3);">Open Workspace →</a>
+                </div>
+            </div>
         {% empty %}
-            <p style="color: rgba(255,255,255,0.6); text-align: center; padding: 3rem;">No workspaces yet. Create one to start collaborating!</p>
+            <div style="grid-column: 1/-1; text-align: center; padding: 5rem 2rem; background: linear-gradient(135deg, rgba(13, 185, 242, 0.05), rgba(10, 143, 199, 0.05)); border-radius: 1.25rem; border: 1px dashed rgba(13, 185, 242, 0.2);">
+                <div style="font-size: 5rem; margin-bottom: 1.5rem; filter: drop-shadow(0 4px 12px rgba(13, 185, 242, 0.3));">📁</div>
+                <h3 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.75rem;">No Workspaces Yet</h3>
+                <p style="color: rgba(255,255,255,0.6); margin-bottom: 2rem; font-size: 1.125rem;">Create your first workspace to start collaborating with your team</p>
+                <a href="{% url 'workspace:create' %}" class="btn-primary" style="text-decoration: none;">Create Workspace</a>
+            </div>
         {% endfor %}
     </div>
-</div>
+</section>
 {% endblock %}

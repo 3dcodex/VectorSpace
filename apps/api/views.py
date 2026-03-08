@@ -1,21 +1,20 @@
-from rest_framework import viewsets, filters, status
+from rest_framework import viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 
-from apps.marketplace.models import Asset, Review
+from apps.marketplace.models import Asset
 from apps.games.models import Game
 from apps.jobs.models import Job, Application
-from apps.mentorship.models import MentorProfile, MentorshipRequest
-from apps.social.models import Post, Comment, Message
+from apps.mentorship.models import MentorProfile
+from apps.social.models import Post, Message
 from apps.competitions.models import Competition, Submission
 
 from .serializers import (
-    AssetSerializer, ReviewSerializer, GameSerializer,
-    JobSerializer, ApplicationSerializer, MentorProfileSerializer,
-    PostSerializer, CommentSerializer, MessageSerializer,
-    CompetitionSerializer, SubmissionSerializer
+    AssetSerializer, GameSerializer, JobSerializer,
+    ApplicationSerializer, MentorProfileSerializer, PostSerializer,
+    MessageSerializer, CompetitionSerializer, SubmissionSerializer
 )
 
 # Marketplace ViewSets
@@ -33,7 +32,7 @@ class AssetViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'])
     def purchase(self, request, pk=None):
-        asset = self.get_object()
+        self.get_object()
         # Implement purchase logic
         return Response({'status': 'purchased'})
 

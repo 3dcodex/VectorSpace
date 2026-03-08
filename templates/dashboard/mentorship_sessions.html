@@ -1,0 +1,151 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Mentorship Sessions - Dashboard | Vector Space{% endblock %}
+
+{% block content %}
+<div style="max-width:1200px;margin:0 auto;padding:2rem">
+  <div style="margin-bottom:3rem">
+    <h1 style="color:#fff;font-size:2.5rem;font-weight:900;margin-bottom:1rem">My Mentorship Sessions</h1>
+    <p style="color:rgba(255,255,255,0.6);font-size:1.125rem">View and manage your mentorship sessions</p>
+  </div>
+
+  <!-- Tabs -->
+  <div style="display:flex;gap:2rem;margin-bottom:2rem;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:1rem">
+    <button class="tab-btn active" onclick="showTab('mentee')">Sessions as Mentee</button>
+    {% if user.mentor_profile %}
+    <button class="tab-btn" onclick="showTab('mentor')">Requests as Mentor</button>
+    {% endif %}
+  </div>
+
+  <!-- Mentee Sessions Tab -->
+  <div id="mentee-tab" class="tab-content">
+    {% if mentee_requests %}
+      <div style="display:grid;gap:1.5rem">
+        {% for request in mentee_requests %}
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:1rem;padding:1.5rem;transition:all 0.3s ease" onmouseenter="this.style.borderColor='rgba(13,185,242,0.4)'" onmouseleave="this.style.borderColor='rgba(255,255,255,0.1)'">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start">
+            <div>
+              <h3 style="color:#fff;font-size:1.25rem;font-weight:800;margin-bottom:0.5rem">{{ request.topic }}</h3>
+              <p style="color:rgba(255,255,255,0.6);margin-bottom:1rem">Mentor: <strong style="color:#0db9f2">{{ request.mentor.username }}</strong></p>
+              <p style="color:rgba(255,255,255,0.7);line-height:1.6">{{ request.description }}</p>
+              {% if request.sessions.all %}
+              <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.1)">
+                <strong style="color:#fff;display:block;margin-bottom:0.5rem">Scheduled Sessions:</strong>
+                {% for session in request.sessions.all %}
+                <div style="font-size:0.9375rem;color:rgba(255,255,255,0.6);margin-bottom:0.5rem">
+                  📅 {{ session.scheduled_at|date:"M d, Y - g:i A" }} ({{ session.duration_minutes }} min)
+                  {% if session.completed %}<span style="color:#10b981">✓ Completed</span>{% endif %}
+                </div>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+            <div style="text-align:right">
+              <div style="display:inline-block;padding:0.5rem 1rem;border-radius:0.5rem;background:rgba(13,185,242,0.15);color:#0db9f2;font-weight:700;font-size:0.9rem;margin-bottom:1rem">{{ request.get_status_display }}</div>
+              <div style="display:flex;gap:0.75rem;flex-direction:column">
+                {% if request.status == 'pending' %}
+                <p style="color:rgba(255,255,255,0.5);font-size:0.875rem">Waiting for mentor approval...</p>
+                {% elif request.status == 'accepted' %}
+                <a href="#" style="display:block;color:#fff;background:linear-gradient(135deg,#0db9f2,#a855f7);padding:0.75rem 1.5rem;text-align:center;border-radius:0.5rem;text-decoration:none;font-weight:600;transition:all 0.3s ease" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Join Session</a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+    <div style="text-align:center;padding:3rem 2rem;background:rgba(255,255,255,0.03);border-radius:1rem;border:1px dashed rgba(255,255,255,0.2)">
+      <p style="color:rgba(255,255,255,0.6);font-size:1.125rem;margin-bottom:1rem">No active sessions yet</p>
+      <a href="{% url 'mentorship:list' %}" style="color:#0db9f2;font-weight:600;text-decoration:none">Browse mentors →</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Mentor Requests Tab -->
+  {% if user.mentor_profile %}
+  <div id="mentor-tab" class="tab-content" style="display:none">
+    {% if mentor_requests %}
+      <div style="display:grid;gap:1.5rem">
+        {% for request in mentor_requests %}
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:1rem;padding:1.5rem;transition:all 0.3s ease" onmouseenter="this.style.borderColor='rgba(13,185,242,0.4)'" onmouseleave="this.style.borderColor='rgba(255,255,255,0.1)'">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start">
+            <div>
+              <h3 style="color:#fff;font-size:1.25rem;font-weight:800;margin-bottom:0.5rem">{{ request.topic }}</h3>
+              <p style="color:rgba(255,255,255,0.6);margin-bottom:1rem">From: <strong style="color:#a855f7">{{ request.mentee.username }}</strong></p>
+              <p style="color:rgba(255,255,255,0.7);line-height:1.6">{{ request.description }}</p>
+            </div>
+            <div style="text-align:right">
+              <div style="display:inline-block;padding:0.5rem 1rem;border-radius:0.5rem;background:rgba(168,85,247,0.15);color:#a855f7;font-weight:700;font-size:0.9rem;margin-bottom:1rem">{{ request.get_status_display }}</div>
+              <div style="display:flex;gap:0.75rem;flex-direction:column">
+                {% if request.status == 'pending' %}
+                <form method="post" action="{% url 'dashboard:mentorship_accept' request.pk %}" style="display:inline">
+                  {% csrf_token %}
+                  <button type="submit" style="width:100%;padding:0.75rem 1rem;background:#10b981;color:#fff;border:none;border-radius:0.5rem;font-weight:600;cursor:pointer;transition:all 0.3s ease" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Accept</button>
+                </form>
+                <form method="post" action="{% url 'dashboard:mentorship_reject' request.pk %}" style="display:inline">
+                  {% csrf_token %}
+                  <button type="submit" style="width:100%;padding:0.75rem 1rem;background:#ef4444;color:#fff;border:none;border-radius:0.5rem;font-weight:600;cursor:pointer;transition:all 0.3s ease" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Reject</button>
+                </form>
+                {% else %}
+                <p style="color:rgba(255,255,255,0.5);font-size:0.875rem">{{ request.get_status_display|lower }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+    <div style="text-align:center;padding:3rem 2rem;background:rgba(255,255,255,0.03);border-radius:1rem;border:1px dashed rgba(255,255,255,0.2)">
+      <p style="color:rgba(255,255,255,0.6);font-size:1.125rem">No incoming session requests</p>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<style>
+.tab-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.6);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  transition: all 0.3s ease;
+  position: relative;
+}
+.tab-btn.active {
+  color: #0db9f2;
+}
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1rem;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(135deg, #0db9f2, #a855f7);
+}
+.tab-btn:hover:not(.active) {
+  color: rgba(255,255,255,0.8);
+}
+.tab-content {
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+</style>
+
+<script>
+function showTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(tabName + '-tab').style.display = 'block';
+  event.target.classList.add('active');
+}
+</script>
+{% endblock %}

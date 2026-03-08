@@ -1,0 +1,497 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  {% if query %}
+    "{{ query }}" - Search Results
+  {% else %}
+    Advanced Search
+  {% endif %}
+  - Vector Space
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .search-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .search-header {
+        margin-bottom: 2rem;
+    }
+    
+    .search-bar-large {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .search-bar-large input {
+        flex: 1;
+        padding: 1rem;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(13, 185, 242, 0.3);
+        border-radius: 8px;
+        font-size: 1rem;
+        color: #ddd;
+    }
+    
+    .search-bar-large button {
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, #0db9f2, #0ea5d4);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    
+    .search-bar-large button:hover {
+        opacity: 0.9;
+    }
+    
+    .main-content {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 2rem;
+    }
+    
+    .filters-sidebar {
+        background: rgba(255,255,255,0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid rgba(13, 185, 242, 0.2);
+        height: fit-content;
+        position: sticky;
+        top: 2rem;
+    }
+    
+    .filter-section {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .filter-section:last-child {
+        border-bottom: none;
+    }
+    
+    .filter-title {
+        font-weight: bold;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        color: #0db9f2;
+    }
+    
+    .filter-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .filter-option:hover {
+        background: rgba(13, 185, 242, 0.1);
+    }
+    
+    .filter-option input[type="checkbox"] {
+        cursor: pointer;
+    }
+    
+    .filter-label {
+        flex: 1;
+        cursor: pointer;
+        user-select: none;
+    }
+    
+    .filter-count {
+        color: #888;
+        font-size: 0.85rem;
+    }
+    
+    .price-range {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .price-range input {
+        width: 70px;
+        padding: 0.4rem;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(13, 185, 242, 0.2);
+        border-radius: 4px;
+        color: #ddd;
+    }
+    
+    .results-section {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+    
+    .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .results-count {
+        color: #888;
+        font-size: 0.95rem;
+    }
+    
+    .sort-dropdown {
+        padding: 0.5rem 1rem;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(13, 185, 242, 0.2);
+        border-radius: 6px;
+        color: #ddd;
+        cursor: pointer;
+    }
+    
+    .active-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .filter-chip {
+        background: rgba(13, 185, 242, 0.2);
+        color: #0db9f2;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .filter-chip .remove {
+        cursor: pointer;
+        font-weight: bold;
+    }
+    
+    .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .result-item {
+        background: rgba(255,255,255,0.05);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(13, 185, 242, 0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .result-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(13, 185, 242, 0.3);
+    }
+    
+    .result-image {
+        width: 100%;
+        height: 180px;
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        object-fit: cover;
+    }
+    
+    .result-content {
+        padding: 1rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .result-title {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: #fff;
+    }
+    
+    .result-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85rem;
+        color: #888;
+        margin-top: auto;
+    }
+    
+    .result-rating {
+        color: #f59e0b;
+    }
+    
+    .result-price {
+        color: #0db9f2;
+        font-weight: bold;
+    }
+    
+    .no-results {
+        text-align: center;
+        padding: 3rem;
+        color: #888;
+    }
+    
+    .no-results h3 {
+        margin-bottom: 1rem;
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 3rem;
+        flex-wrap: wrap;
+    }
+    
+    .pagination a,
+    .pagination span {
+        padding: 0.5rem 0.8rem;
+        border-radius: 6px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(13, 185, 242, 0.2);
+        color: #ddd;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    
+    .pagination a:hover {
+        background: rgba(13, 185, 242, 0.2);
+        border-color: #0db9f2;
+    }
+    
+    .pagination .current {
+        background: rgba(13, 185, 242, 0.3);
+        border-color: #0db9f2;
+        color: #0db9f2;
+    }
+    
+    @media (max-width: 768px) {
+        .main-content {
+            grid-template-columns: 1fr;
+        }
+        
+        .filters-sidebar {
+            position: relative;
+            top: auto;
+        }
+        
+        .results-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="search-container">
+    <!-- Search Header -->
+    <div class="search-header">
+        <h1 style="margin-bottom: 1rem;">🔍 Advanced Search</h1>
+        
+        <!-- Large Search Bar -->
+        <form method="get" action="{% url 'marketplace:search' %}" class="search-bar-large">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search assets, games, creators...">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+    
+    <div class="main-content">
+        <!-- Filters Sidebar -->
+        <div class="filters-sidebar">
+            <form method="get" action="{% url 'marketplace:search' %}" id="filterForm">
+                <input type="hidden" name="q" value="{{ query }}">
+                <input type="hidden" name="sort" value="{{ sort_by }}">
+                
+                <!-- Search Type Filter -->
+                <div class="filter-section">
+                    <div class="filter-title">Type</div>
+                    <div class="filter-option">
+                        <input type="radio" id="type-all" name="type" value="all" 
+                               {% if search_type == 'all' %}checked{% endif %} 
+                               onchange="document.getElementById('filterForm').submit()">
+                        <label for="type-all" class="filter-label">All</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="radio" id="type-assets" name="type" value="assets" 
+                               {% if search_type == 'assets' %}checked{% endif %} 
+                               onchange="document.getElementById('filterForm').submit()">
+                        <label for="type-assets" class="filter-label">Assets</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="radio" id="type-games" name="type" value="games" 
+                               {% if search_type == 'games' %}checked{% endif %} 
+                               onchange="document.getElementById('filterForm').submit()">
+                        <label for="type-games" class="filter-label">Games</label>
+                    </div>
+                </div>
+                
+                <!-- Category Filter -->
+                <div class="filter-section">
+                    <div class="filter-title">Category</div>
+                    {% for cat in categories %}
+                        <div class="filter-option">
+                            <input type="checkbox" id="cat-{{ cat }}" name="category" value="{{ cat }}"
+                                   {% if cat == category %}checked{% endif %}>
+                            <label for="cat-{{ cat }}" class="filter-label">{{ cat|title }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Price Range Filter -->
+                <div class="filter-section">
+                    <div class="filter-title">Price</div>
+                    <div class="price-range">
+                        <input type="number" name="min_price" value="{{ min_price }}" placeholder="Min" step="0.01">
+                        <span>-</span>
+                        <input type="number" name="max_price" value="{{ max_price }}" placeholder="Max" step="0.01">
+                    </div>
+                </div>
+                
+                <!-- Rating Filter -->
+                <div class="filter-section">
+                    <div class="filter-title">Rating</div>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <input type="number" name="min_rating" value="{{ min_rating }}" 
+                               placeholder="4.0" min="0" max="5" step="0.1" style="flex: 1; width: 60px;">
+                        <span style="color: #888;">+</span>
+                    </div>
+                </div>
+                
+                <!-- Tags Filter -->
+                <div class="filter-section">
+                    <div class="filter-title">Tags</div>
+                    <textarea name="tags" style="width: 100%; height: 60px; padding: 0.5rem; 
+                                                background: rgba(255,255,255,0.05);
+                                                border: 1px solid rgba(13, 185, 242, 0.2);
+                                                border-radius: 4px;
+                                                color: #ddd;
+                                                font-size: 0.85rem;
+                                                font-family: monospace;"
+                              placeholder="comma-separated">{{ tags }}</textarea>
+                </div>
+                
+                <!-- Apply Filters Button -->
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Apply Filters</button>
+                {% if query or category or min_price or max_price or min_rating or tags %}
+                    <a href="{% url 'marketplace:search' %}" class="btn btn-secondary" style="width: 100%; margin-top: 0.5rem; text-align: center;">Clear Filters</a>
+                {% endif %}
+            </form>
+        </div>
+        
+        <!-- Results Section -->
+        <div class="results-section">
+            <!-- Results Header -->
+            <div class="results-header">
+                <div>
+                    <h2 style="margin: 0 0 0.5rem 0;">
+                        {% if query %}
+                            Results for "{{ query }}"
+                        {% else %}
+                            All Items
+                        {% endif %}
+                    </h2>
+                    <p class="results-count">{{ results_count }} result{{ results_count|pluralize }}</p>
+                </div>
+                
+                <form method="get" style="display: flex; gap: 0.5rem;">
+                    <input type="hidden" name="q" value="{{ query }}">
+                    <input type="hidden" name="type" value="{{ search_type }}">
+                    <input type="hidden" name="category" value="{{ category }}">
+                    <input type="hidden" name="min_price" value="{{ min_price }}">
+                    <input type="hidden" name="max_price" value="{{ max_price }}">
+                    <input type="hidden" name="min_rating" value="{{ min_rating }}">
+                    <input type="hidden" name="tags" value="{{ tags }}">
+                    
+                    <select name="sort" class="sort-dropdown" onchange="this.form.submit()">
+                        <option value="relevance" {% if sort_by == 'relevance' %}selected{% endif %}>Relevance</option>
+                        <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest</option>
+                        <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>Highest Rated</option>
+                        <option value="popular" {% if sort_by == 'popular' %}selected{% endif %}>Most Popular</option>
+                    </select>
+                </form>
+            </div>
+            
+            <!-- Results Grid -->
+            {% if page_obj %}
+                <div class="results-grid">
+                    {% for item in page_obj %}
+                        {% if item.id %}
+                            <!-- It's an asset -->
+                            <a href="{% url 'marketplace:detail' item.id %}" class="result-item">
+                                {% if item.preview_image %}
+                                    <img src="{{ item.preview_image }}" alt="{{ item.title }}" class="result-image">
+                                {% else %}
+                                    <div class="result-image"></div>
+                                {% endif %}
+                                
+                                <div class="result-content">
+                                    <div class="result-title">{{ item.title }}</div>
+                                    <div class="result-meta">
+                                        <span class="result-rating">⭐ {{ item.rating|default:"0"|floatformat:1 }}</span>
+                                        <span class="result-price">
+                                            {% if item.price > 0 %}
+                                                ${{ item.price|floatformat:2 }}
+                                            {% else %}
+                                                Free
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                    <div class="pagination">
+                        {% if page_obj.has_previous %}
+                            <a href="?q={{ query }}&type={{ search_type }}&category={{ category }}&sort={{ sort_by }}&page=1">First</a>
+                            <a href="?q={{ query }}&type={{ search_type }}&category={{ category }}&sort={{ sort_by }}&page={{ page_obj.previous_page_number }}">Previous</a>
+                        {% endif %}
+                        
+                        <span style="background: rgba(13, 185, 242, 0.2);">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                        
+                        {% if page_obj.has_next %}
+                            <a href="?q={{ query }}&type={{ search_type }}&category={{ category }}&sort={{ sort_by }}&page={{ page_obj.next_page_number }}">Next</a>
+                            <a href="?q={{ query }}&type={{ search_type }}&category={{ category }}&sort={{ sort_by }}&page={{ page_obj.paginator.num_pages }}">Last</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="no-results">
+                    <h3>No Results Found</h3>
+                    <p>
+                        {% if query %}
+                            Try different keywords or adjust your filters
+                        {% else %}
+                            Start searching or browse by category
+                        {% endif %}
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

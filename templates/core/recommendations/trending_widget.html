@@ -1,0 +1,136 @@
+{% load static %}
+
+<div class="trending-widget">
+    <h5 class="mb-3">
+        📈 Trending {{ content_type|title }}s
+    </h5>
+    
+    {% if trending_items %}
+        <div class="trending-list">
+            {% for item in trending_items %}
+                <div class="trending-item d-flex align-items-center mb-3 p-2 border rounded">
+                    <div class="trending-rank me-3">
+                        <span class="badge bg-warning">{{ forloop.counter }}</span>
+                    </div>
+                    
+                    {% if content_type == 'asset' %}
+                        <div class="trending-image me-3">
+                            {% if item.preview_image %}
+                                <img src="{{ item.preview_image }}" 
+                                     alt="{{ item.title }}" 
+                                     class="rounded"
+                                     style="width: 50px; height: 50px; object-fit: cover;">
+                            {% else %}
+                                <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                                     style="width: 50px; height: 50px;">
+                                    <span class="small text-muted">📦</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="trending-content flex-grow-1">
+                            <h6 class="mb-1 small">
+                                <a href="/marketplace/asset/{{ item.id }}/" 
+                                   class="text-decoration-none"
+                                   data-recommendation-item
+                                   data-content-type="asset"
+                                   data-content-id="{{ item.id }}">
+                                    {{ item.title|truncatechars:40 }}
+                                </a>
+                            </h6>
+                            <div class="small text-muted">
+                                👁️ {{ item.view_count }} views
+                                📥 {{ item.downloads }} downloads
+                            </div>
+                        </div>
+                        
+                        <div class="trending-price">
+                            {% if item.is_free %}
+                                <span class="badge bg-success">Free</span>
+                            {% else %}
+                                <span class="small fw-bold">${{ item.price }}</span>
+                            {% endif %}
+                        </div>
+                    
+                    {% elif content_type == 'game' %}
+                        <div class="trending-image me-3">
+                            {% if item.thumbnail %}
+                                <img src="{{ item.thumbnail }}" 
+                                     alt="{{ item.title }}" 
+                                     class="rounded"
+                                     style="width: 50px; height: 50px; object-fit: cover;">
+                            {% else %}
+                                <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                                     style="width: 50px; height: 50px;">
+                                    <span class="small text-muted">🎮</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="trending-content flex-grow-1">
+                            <h6 class="mb-1 small">
+                                <a href="/games/game/{{ item.id }}/" 
+                                   class="text-decoration-none"
+                                   data-recommendation-item
+                                   data-content-type="game"
+                                   data-content-id="{{ item.id }}">
+                                    {{ item.title|truncatechars:40 }}
+                                </a>
+                            </h6>
+                            <div class="small text-muted">
+                                👁️ {{ item.view_count }} views
+                                📥 {{ item.downloads }} downloads
+                            </div>
+                        </div>
+                        
+                        <div class="trending-genre">
+                            <span class="badge bg-secondary">{{ item.genre }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-3">
+            <a href="/{{ content_type }}s/trending/" class="btn btn-sm btn-outline-primary">
+                View All Trending
+            </a>
+        </div>
+        
+    {% else %}
+        <p class="text-muted">No trending items available.</p>
+    {% endif %}
+</div>
+
+<style>
+.trending-widget {
+    background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.trending-item {
+    background: white;
+    transition: all 0.2s ease;
+}
+
+.trending-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.trending-rank .badge {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+}
+
+.trending-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+</style>

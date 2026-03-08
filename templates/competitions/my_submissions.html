@@ -1,0 +1,26 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}My Submissions{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <h1 style="color: var(--text-light); font-size: 2.25rem; font-weight: 800; margin-bottom: 1.5rem;">My Competition Submissions</h1>
+
+    {% if submissions %}
+        <div class="applications-list">
+            {% for submission in submissions %}
+                <div class="application-card">
+                    <div>
+                        <h4 style="color: var(--text-light); margin-bottom: 0.35rem;">{{ submission.title }}</h4>
+                        <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">{{ submission.competition.title }}</p>
+                        <p style="color: rgba(255,255,255,0.5); font-size: 0.75rem;">Submitted: {{ submission.submitted_at|date:'M d, Y' }}</p>
+                    </div>
+                    <div style="color: var(--primary); font-weight: 700;">Score: {{ submission.score|default:'0' }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="color: rgba(255,255,255,0.65);">No submissions yet. <a href="{% url 'competitions:list' %}" style="color: var(--primary);">Browse competitions</a>.</p>
+    {% endif %}
+</div>
+{% endblock %}

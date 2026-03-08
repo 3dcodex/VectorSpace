@@ -1,16 +1,14 @@
-{% extends 'users/dashboards/base_dashboard.html' %}
+{% extends 'dashboard_base.html' %}
 {% block title %}Edit Asset{% endblock %}
 
-{% block sidebar %}
-<li><a href="{% url 'users:creator_dashboard' %}"><span>📊</span> Overview</a></li>
-<li><a href="{% url 'marketplace:my_assets' %}"><span>🎨</span> My Assets</a></li>
-<li><a href="{% url 'marketplace:upload' %}"><span>⬆️</span> Upload Asset</a></li>
-{% endblock %}
-
 {% block content %}
-<div class="dashboard-header">
-    <h1>Edit Asset</h1>
-    <p>Update your asset details</p>
+<div class="page-header">
+    <a href="{% url 'dashboard:marketplace_my_assets' %}" style="display:inline-flex;align-items:center;gap:0.5rem;color:rgba(255,255,255,0.7);text-decoration:none;margin-bottom:1rem;transition:all 0.3s;font-size:0.9375rem" onmouseover="this.style.color='#0DB9F2'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Back to My Assets
+    </a>
+    <h1 class="page-title">Edit Asset</h1>
+    <p class="page-subtitle">Update your asset details</p>
 </div>
 
 <form method="POST" enctype="multipart/form-data" style="max-width:800px">
@@ -98,7 +96,7 @@
     
     <div style="display:flex;gap:1rem;margin-top:2rem">
         <button type="submit" class="btn">Save Changes</button>
-        <a href="{% url 'marketplace:my_assets' %}" class="btn btn-secondary">Cancel</a>
+        <a href="/dashboard/assets/" class="btn btn-secondary">Cancel</a>
     </div>
 </form>
 

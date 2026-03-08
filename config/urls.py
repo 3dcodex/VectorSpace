@@ -5,20 +5,31 @@ from django.conf.urls.static import static
 from .views import home
 
 urlpatterns = [
+    # Public Pages
     path('', home, name='home'),
     path('admin/', admin.site.urls),
     
-    # Web URLs
-    path('users/', include('apps.users.urls')),
+    # Authentication
+    path('auth/', include('apps.users.urls')),
+    
+    # Public Browse Pages (read-only discovery)
     path('marketplace/', include('apps.marketplace.urls')),
+    path('games/', include('apps.games.urls')),
     path('jobs/', include('apps.jobs.urls')),
     path('mentorship/', include('apps.mentorship.urls')),
-    path('games/', include('apps.games.urls')),
-    path('social/', include('apps.social.urls')),
+    path('community/', include('apps.social.urls')),
     path('competitions/', include('apps.competitions.urls')),
-    path('ai/', include('apps.ai_assistant.urls')),
+    path('', include('apps.core.portfolio_urls')),  # Portfolio URLs (creator/<username>)
+    
+    # Dashboard (all user-specific actions)
+    path('dashboard/', include('apps.dashboard.urls')),
+    
+    # Core features (reporting, moderation)
+    path('', include('apps.core.urls')),
+    
+    # Workspace and AI
     path('workspace/', include('apps.workspace.urls')),
-    path('core/', include('apps.core.urls')),
+    path('ai/', include('apps.ai_assistant.urls')),
     
     # API URLs
     path('api/v1/', include('apps.api.urls')),

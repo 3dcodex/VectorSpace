@@ -1,0 +1,40 @@
+{% extends 'dashboard_base.html' %}
+{% block title %}Delete Collection{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 4rem auto;">
+    <div class="card" style="padding: 3rem; text-align: center;">
+        <div style="font-size: 5rem; margin-bottom: 1.5rem;">⚠️</div>
+        
+        <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, var(--danger), var(--warning)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Delete Collection?</h1>
+        
+        <p style="font-size: 1.125rem; color: var(--text-secondary); margin-bottom: 2rem; line-height: 1.6;">
+            Are you sure you want to delete <strong style="color: var(--text-primary);">"{{ collection.name }}"</strong>?
+            {% if item_count > 0 %}
+            This collection contains <strong style="color: var(--danger);">{{ item_count }} asset{{ item_count|pluralize }}</strong>.
+            {% endif %}
+        </p>
+        
+        <div style="padding: 1.5rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 0.75rem; margin-bottom: 2rem; text-align: left;">
+            <div style="font-weight: 700; color: var(--danger); margin-bottom: 0.75rem; font-size: 1rem;">🔥 This action cannot be undone!</div>
+            <ul style="margin: 0; padding-left: 1.5rem; color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.8;">
+                <li>The collection will be permanently deleted</li>
+                {% if item_count > 0 %}
+                <li>All {{ item_count }} asset{{ item_count|pluralize }} will be removed from this collection</li>
+                <li>The assets themselves will not be deleted (they remain in the marketplace)</li>
+                {% endif %}
+                <li>Any shared links to this collection will no longer work</li>
+            </ul>
+        </div>
+        
+        <form method="POST" style="display: flex; flex-direction: column; gap: 1rem;">
+            {% csrf_token %}
+            
+            <button type="submit" class="btn" style="width: 100%; padding: 1rem; background: linear-gradient(135deg, var(--danger), #dc2626); border-color: var(--danger); font-size: 1.0625rem; font-weight: 700;">🗑️ Yes, Delete Collection</button>
+            
+            <a href="{% url 'dashboard:marketplace_collection_detail' username=collection.owner.username slug=collection.slug %}" class="btn btn-secondary" style="width: 100%; padding: 1rem; font-size: 1.0625rem; text-decoration: none; display: block; text-align: center;">Cancel</a>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

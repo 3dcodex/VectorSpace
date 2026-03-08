@@ -1,59 +1,523 @@
 {% extends 'base.html' %}
+{% block title %}Competitions | Vector Space{% endblock %}
 
-{% block title %}Competitions{% endblock %}
+{% block extra_css %}
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .hero {
+    background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(239,68,68,0.1));
+    padding: 4rem 2rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .hero h1 {
+    font-size: 3.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #fbbf24, #ef4444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+  }
+
+  .hero p {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.7);
+    max-width: 800px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 2rem;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #fbbf24;
+  }
+
+  .stat-label {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  .section {
+    margin-bottom: 4rem;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .type-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+  }
+
+  .type-card:hover {
+    transform: translateY(-8px);
+    border-color: #fbbf24;
+    background: rgba(251,191,36,0.1);
+  }
+
+  .type-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .type-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .type-desc {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .filter-bar {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 0.75rem 1.5rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+  }
+
+  .filter-btn.active {
+    background: linear-gradient(135deg, #fbbf24, #ef4444);
+    border-color: transparent;
+    color: #fff;
+  }
+
+  .competitions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+  }
+
+  .competition-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .competition-card:hover {
+    transform: translateY(-8px);
+    border-color: #fbbf24;
+    box-shadow: 0 12px 40px rgba(251,191,36,0.3);
+  }
+
+  .competition-header {
+    height: 180px;
+    background: linear-gradient(135deg, rgba(251,191,36,0.15), rgba(239,68,68,0.15));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    position: relative;
+  }
+
+  .competition-status {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    backdrop-filter: blur(10px);
+  }
+
+  .status-active {
+    background: rgba(34,197,94,0.9);
+    color: #fff;
+  }
+
+  .status-upcoming {
+    background: rgba(59,130,246,0.9);
+    color: #fff;
+  }
+
+  .status-ended {
+    background: rgba(107,114,128,0.9);
+    color: #fff;
+  }
+
+  .competition-prize {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    padding: 0.4rem 0.9rem;
+    background: rgba(251,191,36,0.9);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #000;
+  }
+
+  .competition-content {
+    padding: 1.5rem;
+  }
+
+  .competition-title {
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  .competition-desc {
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .competition-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .competition-category {
+    padding: 0.3rem 0.8rem;
+    background: rgba(251,191,36,0.2);
+    border: 1px solid rgba(251,191,36,0.3);
+    border-radius: 20px;
+    color: #fbbf24;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .competition-stats {
+    display: flex;
+    gap: 1rem;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+  }
+
+  .benefits {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .benefit-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .benefit-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .benefit-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .benefit-desc {
+    color: rgba(255,255,255,0.6);
+    line-height: 1.6;
+  }
+
+  .criteria-section {
+    background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(239,68,68,0.1));
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 3rem;
+  }
+
+  .criteria-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .criteria-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .criteria-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+
+  .criteria-text {
+    color: rgba(255,255,255,0.8);
+    line-height: 1.6;
+  }
+
+  .criteria-title {
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.3rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: rgba(255,255,255,0.6);
+    border: 2px dashed rgba(255,255,255,0.1);
+    border-radius: 16px;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+  }
+
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 2.5rem; }
+    .hero-stats { flex-direction: column; gap: 1.5rem; }
+    .filter-bar { flex-direction: column; }
+    .competitions-grid { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="page-container">
-    <div class="page-header">
-        <div>
-            <h1 style="color: var(--text-light); font-size: 2.5rem; font-weight: 800;">Competitions</h1>
-            <p style="color: rgba(255,255,255,0.6);">Compete, showcase your skills, and win prizes</p>
-        </div>
-        {% if user.is_authenticated %}
-            <a href="{% url 'competitions:create' %}" class="btn-primary" style="text-decoration: none;">Create Competition</a>
-        {% endif %}
+<div class="hero">
+  <h1>Competitions Hub</h1>
+  <p>Challenges designed to inspire creativity and innovation. Compete for recognition, rewards, and community exposure while demonstrating your skills.</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-number">{{ competitions.count }}</div>
+      <div class="stat-label">Active Competitions</div>
     </div>
-    
-    <div class="filters-section">
-        <div style="display: flex; gap: 1rem;">
-            <a href="?status=upcoming" class="btn-secondary" style="text-decoration: none;">Upcoming</a>
-            <a href="?status=active" class="btn-secondary" style="text-decoration: none;">Active</a>
-            <a href="?status=ended" class="btn-secondary" style="text-decoration: none;">Ended</a>
-            <a href="{% url 'competitions:list' %}" class="btn-secondary" style="text-decoration: none;">All</a>
-        </div>
+    <div class="stat">
+      <div class="stat-number">500+</div>
+      <div class="stat-label">Participants</div>
     </div>
-    
-    <div class="competitions-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;">
-        {% for competition in competitions %}
-            <div class="competition-card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 0.75rem; padding: 1.5rem;">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-                    <h3 style="color: var(--text-light); font-size: 1.25rem;">{{ competition.title }}</h3>
-                    <span class="badge status-{{ competition.status }}">{{ competition.get_status_display }}</span>
-                </div>
-                
-                <p style="color: rgba(255,255,255,0.7); margin-bottom: 1rem; line-height: 1.6;">
-                    {{ competition.description|truncatewords:25 }}
-                </p>
-                
-                <div style="margin-bottom: 1rem;">
-                    <span class="badge" style="background: rgba(13,185,242,0.2); color: var(--primary);">{{ competition.category }}</span>
-                    <span style="color: var(--primary); font-weight: 700; margin-left: 1rem;">💰 ${{ competition.prize_pool }}</span>
-                </div>
-                
-                <div style="color: rgba(255,255,255,0.6); font-size: 0.875rem; margin-bottom: 1rem;">
-                    <p>📅 Start: {{ competition.start_date|date:"M d, Y" }}</p>
-                    <p>🏁 End: {{ competition.end_date|date:"M d, Y" }}</p>
-                    <p>📊 Submissions: {{ competition.submissions.count }}</p>
-                </div>
-                
-                <div style="display: flex; gap: 0.5rem;">
-                    <a href="{% url 'competitions:detail' competition.pk %}" class="btn-small btn-primary" style="text-decoration: none; flex: 1; text-align: center;">View Details</a>
-                    <a href="{% url 'competitions:leaderboard' competition.pk %}" class="btn-small btn-secondary" style="text-decoration: none; flex: 1; text-align: center;">Leaderboard</a>
-                </div>
-            </div>
-        {% empty %}
-            <p style="color: rgba(255,255,255,0.6); text-align: center; padding: 3rem;">No competitions available.</p>
-        {% endfor %}
+    <div class="stat">
+      <div class="stat-number">$10K+</div>
+      <div class="stat-label">Total Prizes</div>
     </div>
+  </div>
 </div>
+
+<div class="container">
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Competition Types</h2>
+    </div>
+    <div class="types">
+      <div class="type-card">
+        <div class="type-icon">🎮</div>
+        <div class="type-name">Game Development</div>
+        <div class="type-desc">Create playable games within specific themes or time limits</div>
+      </div>
+      <div class="type-card">
+        <div class="type-icon">🎨</div>
+        <div class="type-name">3D Art</div>
+        <div class="type-desc">Design characters, environments, or props based on concepts</div>
+      </div>
+      <div class="type-card">
+        <div class="type-icon">✨</div>
+        <div class="type-name">Design Challenges</div>
+        <div class="type-desc">Create UI designs, game mechanics, or visual effects</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">All Competitions</h2>
+    </div>
+    
+    <div class="filter-bar">
+      <button class="filter-btn {% if not request.GET.status %}active{% endif %}" onclick="filterStatus('')">All</button>
+      <button class="filter-btn {% if request.GET.status == 'active' %}active{% endif %}" onclick="filterStatus('active')">Active</button>
+      <button class="filter-btn {% if request.GET.status == 'upcoming' %}active{% endif %}" onclick="filterStatus('upcoming')">Upcoming</button>
+      <button class="filter-btn {% if request.GET.status == 'ended' %}active{% endif %}" onclick="filterStatus('ended')">Ended</button>
+    </div>
+
+    <div class="competitions-grid">
+      {% for competition in competitions %}
+      <div class="competition-card" onclick="window.location.href='{% url 'competitions:detail' competition.pk %}'">
+        <div class="competition-header">
+          <span class="competition-prize">💰 ${{ competition.prize_pool }}</span>
+          <span class="competition-status status-{{ competition.status }}">{{ competition.get_status_display|upper }}</span>
+          🏆
+        </div>
+        <div class="competition-content">
+          <h3 class="competition-title">{{ competition.title }}</h3>
+          <p class="competition-desc">{{ competition.description|truncatewords:20 }}</p>
+          <div class="competition-meta">
+            <span class="competition-category">{{ competition.category }}</span>
+            <div class="competition-stats">
+              <span>📅 {{ competition.end_date|date:"M d" }}</span>
+              <span>👥 {{ competition.submissions.count }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-state">
+        <div class="empty-icon">🏆</div>
+        <h3>No competitions available</h3>
+        <p>Check back soon for new challenges</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Why Participate</h2>
+    </div>
+    <div class="benefits">
+      <div class="benefit-card">
+        <div class="benefit-icon">🎯</div>
+        <div class="benefit-title">Showcase Skills</div>
+        <div class="benefit-desc">Demonstrate your abilities to the community</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">📁</div>
+        <div class="benefit-title">Build Portfolio</div>
+        <div class="benefit-desc">Create impressive work for your portfolio</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">⭐</div>
+        <div class="benefit-title">Gain Recognition</div>
+        <div class="benefit-desc">Get noticed within the community</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">💬</div>
+        <div class="benefit-title">Receive Feedback</div>
+        <div class="benefit-desc">Learn from experienced developers</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🏆</div>
+        <div class="benefit-title">Win Prizes</div>
+        <div class="benefit-desc">Compete for rewards and recognition</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="criteria-section">
+      <h2 class="section-title">Judging Criteria</h2>
+      <p style="color: rgba(255,255,255,0.7); margin-top: 0.5rem;">Entries are evaluated based on these key factors:</p>
+      <div class="criteria-grid">
+        <div class="criteria-item">
+          <div class="criteria-icon">💡</div>
+          <div>
+            <div class="criteria-title">Creativity</div>
+            <div class="criteria-text">Originality and innovative thinking</div>
+          </div>
+        </div>
+        <div class="criteria-item">
+          <div class="criteria-icon">⚙️</div>
+          <div>
+            <div class="criteria-title">Technical Quality</div>
+            <div class="criteria-text">Code quality and implementation</div>
+          </div>
+        </div>
+        <div class="criteria-item">
+          <div class="criteria-icon">🎨</div>
+          <div>
+            <div class="criteria-title">Visual Design</div>
+            <div class="criteria-text">Aesthetics and polish</div>
+          </div>
+        </div>
+        <div class="criteria-item">
+          <div class="criteria-icon">🎮</div>
+          <div>
+            <div class="criteria-title">Gameplay/Usability</div>
+            <div class="criteria-text">User experience and functionality</div>
+          </div>
+        </div>
+        <div class="criteria-item">
+          <div class="criteria-icon">✨</div>
+          <div>
+            <div class="criteria-title">Presentation</div>
+            <div class="criteria-text">Overall quality and completeness</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+function filterStatus(status) {
+  const params = new URLSearchParams(window.location.search);
+  if (status) {
+    params.set('status', status);
+  } else {
+    params.delete('status');
+  }
+  window.location.href = '?' + params.toString();
+}
+</script>
 {% endblock %}

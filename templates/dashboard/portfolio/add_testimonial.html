@@ -1,0 +1,50 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Add Testimonial - Dashboard{% endblock %}
+
+{% block dashboard_content %}
+<div style="max-width: 700px; margin: 0 auto;">
+    <h1 style="margin-bottom: 2rem;">➕ Add Testimonial</h1>
+    
+    <form method="post" style="background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 12px; border: 1px solid rgba(13, 185, 242, 0.2);">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="author_name"><strong>Client Name *</strong></label>
+            <input type="text" id="author_name" name="author_name" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="author_title"><strong>Client Title/Position</strong></label>
+            <input type="text" id="author_title" name="author_title" class="form-control" placeholder="e.g., CEO at Company">
+        </div>
+        
+        <div class="form-group">
+            <label for="author_avatar"><strong>Client Avatar URL</strong></label>
+            <input type="url" id="author_avatar" name="author_avatar" class="form-control" placeholder="https://example.com/avatar.jpg">
+        </div>
+        
+        <div class="form-group">
+            <label for="content"><strong>Testimonial *</strong></label>
+            <textarea id="content" name="content" class="form-control" rows="5" required placeholder="What did the client say about your work?"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="rating"><strong>Rating *</strong></label>
+            <select id="rating" name="rating" class="form-control" required>
+                <option value="5" selected>⭐⭐⭐⭐⭐ (5 stars)</option>
+                <option value="4">⭐⭐⭐⭐ (4 stars)</option>
+                <option value="3">⭐⭐⭐ (3 stars)</option>
+                <option value="2">⭐⭐ (2 stars)</option>
+                <option value="1">⭐ (1 star)</option>
+            </select>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">Add Testimonial</button>
+            <a href="{% url 'dashboard:manage_testimonials' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

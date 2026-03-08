@@ -1,0 +1,26 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}My Posts{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <h1 style="color: var(--text-light); font-size: 2.25rem; font-weight: 800; margin-bottom: 1.5rem;">My Posts</h1>
+
+    {% if posts %}
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            {% for post in posts %}
+                <div class="card">
+                    <p style="color: var(--text-primary); margin-bottom: 0.75rem;">{{ post.content|truncatewords:40 }}</p>
+                    <div style="display:flex; gap:1rem; color: var(--text-muted); font-size: 0.875rem;">
+                        <span>❤️ {{ post.likes_count }}</span>
+                        <span>💬 {{ post.comments.count }}</span>
+                        <span>{{ post.created_at|timesince }} ago</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="color: rgba(255,255,255,0.65);">No posts yet. <a href="{% url 'dashboard:social_create_post' %}" style="color: var(--primary);">Create your first post</a>.</p>
+    {% endif %}
+</div>
+{% endblock %}

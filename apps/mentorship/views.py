@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils import timezone
-from .models import MentorProfile, MentorshipRequest, Session
+from .models import MentorProfile, MentorshipRequest
 from .forms import MentorProfileForm, SessionBookingForm, MentorshipRequestForm
 
 def mentor_list(request):
@@ -99,7 +99,13 @@ def my_sessions(request):
         mentor=request.user
     ).prefetch_related('sessions').order_by('-created_at')
     
-    return render(request, 'mentorship/my_sessions.html', {
+    # Use dashboard template when accessed from dashboard
+    if 'dashboard' in request.path:
+        template = 'dashboard/mentorship_sessions.html'
+    else:
+        template = 'mentorship/my_sessions.html'
+    
+    return render(request, template, {
         'mentee_requests': mentee_requests,
         'mentor_requests': mentor_requests
     })
@@ -111,7 +117,7 @@ def accept_session(request, request_id):
     # Only mentor can accept
     if mentorship_request.mentor != request.user:
         messages.error(request, 'You do not have permission to accept this session.')
-        return redirect('mentorship:my_sessions')
+        return redirect('mentorship_dashboard:my_sessions' if 'dashboard' in request.path else 'mentorship:my_sessions')
     
     mentorship_request.status = 'accepted'
     mentorship_request.save()
@@ -126,7 +132,7 @@ def accept_session(request, request_id):
     )
     
     messages.success(request, 'Session accepted!')
-    return redirect('mentorship:my_sessions')
+    return redirect('mentorship_dashboard:my_sessions' if 'dashboard' in request.path else 'mentorship:my_sessions')
 
 @login_required
 def reject_session(request, request_id):
@@ -135,7 +141,7 @@ def reject_session(request, request_id):
     # Only mentor can reject
     if mentorship_request.mentor != request.user:
         messages.error(request, 'You do not have permission to reject this session.')
-        return redirect('mentorship:my_sessions')
+        return redirect('mentorship_dashboard:my_sessions' if 'dashboard' in request.path else 'mentorship:my_sessions')
     
     mentorship_request.status = 'rejected'
     mentorship_request.save()
@@ -150,7 +156,7 @@ def reject_session(request, request_id):
     )
     
     messages.info(request, 'Session rejected.')
-    return redirect('mentorship:my_sessions')
+    return redirect('mentorship_dashboard:my_sessions' if 'dashboard' in request.path else 'mentorship:my_sessions')
 
 @login_required
 def become_mentor(request):

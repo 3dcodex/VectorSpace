@@ -1,0 +1,131 @@
+{% extends 'dashboard_base.html' %}
+{% block title %}My Assets{% endblock %}
+
+{% block content %}
+<div class="page-header" style="margin-bottom: 2.5rem;">
+    <div>
+        <h1 class="page-title" style="display: flex; align-items: center; gap: 1rem;">
+            <span style="font-size: 2.5rem;">🎨</span>
+            <span style="background: linear-gradient(135deg, #0db9f2, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">My Assets</span>
+        </h1>
+        <p class="page-subtitle" style="font-size: 1.125rem; margin-top: 0.75rem;">Manage your 3D assets and track performance</p>
+    </div>
+    <div style="display: flex; gap: 1rem;">
+        <a href="{% url 'marketplace:list' %}" class="btn btn-secondary" style="white-space: nowrap;">Browse Marketplace</a>
+        <a href="{% url 'dashboard:marketplace_upload' %}" class="btn" style="white-space: nowrap;">⬆️ Upload New Asset</a>
+    </div>
+</div>
+
+{% if assets %}
+<div class="card" style="padding: 0; overflow: hidden;">
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: linear-gradient(135deg, rgba(13, 185, 242, 0.1), rgba(168, 85, 247, 0.1)); border-bottom: 2px solid rgba(13, 185, 242, 0.3);">
+                    <th style="padding: 1.25rem 1.5rem; text-align: left; font-size: 0.8125rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Preview</th>
+                    <th style="padding: 1.25rem 1.5rem; text-align: left; font-size: 0.8125rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Asset Details</th>
+                    <th style="padding: 1.25rem 1.5rem; text-align: left; font-size: 0.8125rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Price</th>
+                    <th style="padding: 1.25rem 1.5rem; text-align: left; font-size: 0.8125rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Status</th>
+                    <th style="padding: 1.25rem 1.5rem; text-align: left; font-size: 0.8125rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Performance</th>
+                    <th style="padding: 1.25rem 1.5rem; text-align: left; font-size: 0.8125rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Created</th>
+                    <th style="padding: 1.25rem 1.5rem; text-align: right; font-size: 0.8125rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asset in assets %}
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.2s;" onmouseover="this.style.background='rgba(13, 185, 242, 0.05)';" onmouseout="this.style.background='transparent';">
+                    <td style="padding: 1.25rem 1.5rem;">
+                        {% if asset.preview_image %}
+                        <img src="{{ asset.preview_image }}" alt="{{ asset.title }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 0.75rem; background: rgba(255, 255, 255, 0.05); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);">
+                        {% else %}
+                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(13, 185, 242, 0.1), rgba(168, 85, 247, 0.1)); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);">🎨</div>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1.25rem 1.5rem;">
+                        <div style="font-weight: 700; font-size: 1.0625rem; color: var(--text-primary); margin-bottom: 0.375rem;">{{ asset.title }}</div>
+                        <div style="font-size: 0.8125rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="padding: 0.25rem 0.625rem; background: rgba(13, 185, 242, 0.1); border-radius: 0.375rem; font-weight: 600;">{{ asset.asset_type }}</span>
+                        </div>
+                    </td>
+                    <td style="padding: 1.25rem 1.5rem;">
+                        {% if asset.is_free %}
+                        <span style="font-size: 1.125rem; font-weight: 800; background: linear-gradient(135deg, var(--success), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">FREE</span>
+                        {% else %}
+                        <span style="font-size: 1.125rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">${{ asset.price }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1.25rem 1.5rem;">
+                        {% if asset.is_active %}
+                        <span style="display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.1)); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--success); border-radius: 999px; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);">
+                            <span style="width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: pulse 2s infinite;"></span>
+                            Published
+                        </span>
+                        {% else %}
+                        <span style="display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.1)); border: 1px solid rgba(245, 158, 11, 0.3); color: var(--warning); border-radius: 999px; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);">
+                            <span style="width: 6px; height: 6px; background: var(--warning); border-radius: 50%;"></span>
+                            Draft
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1.25rem 1.5rem;">
+                        <div style="display: flex; flex-direction: column; gap: 0.375rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9375rem;">
+                                <span style="color: var(--text-muted);">⬇</span>
+                                <span style="font-weight: 600; color: var(--text-primary);">{{ asset.downloads }}</span>
+                                <span style="color: var(--text-muted); font-size: 0.8125rem;">downloads</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9375rem;">
+                                <span style="color: var(--text-muted);">⭐</span>
+                                <span style="font-weight: 600; color: var(--text-primary);">{{ asset.rating|default:"0.0" }}</span>
+                                <span style="color: var(--text-muted); font-size: 0.8125rem;">rating</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="padding: 1.25rem 1.5rem;">
+                        <div style="color: var(--text-muted); font-size: 0.875rem;">{{ asset.created_at|date:"M d, Y" }}</div>
+                        <div style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.25rem;">{{ asset.created_at|timesince }} ago</div>
+                    </td>
+                    <td style="padding: 1.25rem 1.5rem; text-align: right;">
+                        <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+                            <a href="{% url 'marketplace:detail' asset.pk %}" style="padding: 0.5rem 1rem; background: rgba(13, 185, 242, 0.1); border: 1px solid rgba(13, 185, 242, 0.3); color: var(--primary); text-decoration: none; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='rgba(13, 185, 242, 0.2)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='rgba(13, 185, 242, 0.1)'; this.style.transform='translateY(0)';">View</a>
+                            <a href="{% url 'dashboard:marketplace_edit_asset' asset.pk %}" style="padding: 0.5rem 1rem; background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); color: var(--purple); text-decoration: none; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='rgba(168, 85, 247, 0.2)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='rgba(168, 85, 247, 0.1)'; this.style.transform='translateY(0)';">Edit</a>
+                            <a href="{% url 'dashboard:marketplace_delete_asset' asset.pk %}" style="padding: 0.5rem 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--danger); text-decoration: none; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'; this.style.transform='translateY(0)';" onclick="return confirm('Are you sure you want to delete this asset?');">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div style="margin-top: 2rem; padding: 1.5rem; background: linear-gradient(135deg, rgba(13, 185, 242, 0.05), rgba(168, 85, 247, 0.05)); border-radius: 1rem; border: 1px solid rgba(13, 185, 242, 0.2);">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 0.5rem;">📊 Quick Stats</h3>
+            <p style="color: var(--text-muted); font-size: 0.9375rem;">Overview of your marketplace performance</p>
+        </div>
+        <div style="display: flex; gap: 2rem;">
+            <div style="text-align: center;">
+                <div style="font-size: 1.75rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ assets.count }}</div>
+                <div style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.25rem;">Total Assets</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 1.75rem; font-weight: 800; background: linear-gradient(135deg, var(--success), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ assets|length }}</div>
+                <div style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.25rem;">Published</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div style="text-align: center; padding: 5rem 2rem; background: linear-gradient(135deg, rgba(13, 185, 242, 0.05), rgba(168, 85, 247, 0.05)); border-radius: 1.25rem; border: 1px dashed var(--border);">
+    <div style="font-size: 5rem; margin-bottom: 1.5rem; filter: drop-shadow(0 4px 12px rgba(13, 185, 242, 0.3));">🎨</div>
+    <h3 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.75rem;">No Assets Yet</h3>
+    <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.125rem;">Upload your first 3D asset to get started and reach thousands of creators</p>
+    <div style="display: flex; gap: 1rem; justify-content: center;">
+        <a href="{% url 'dashboard:marketplace_upload' %}" class="btn">Upload Your First Asset</a>
+        <a href="{% url 'marketplace:list' %}" class="btn btn-secondary">Browse Marketplace</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,41 +1,110 @@
-{% extends 'base.html' %}
+{% extends 'dashboard_base.html' %}
 
 {% block title %}AI Assistant{% endblock %}
 
 {% block content %}
-<div class="page-container">
-    <div class="page-header">
-        <h1 style="color: var(--text-light); font-size: 2.5rem; font-weight: 800;">AI Assistant</h1>
-        <p style="color: rgba(255,255,255,0.6);">Get help with code, art, game design, and career advice</p>
+<div class="page-header" style="margin-bottom: 2.5rem;">
+    <div>
+        <h1 class="page-title" style="display: flex; align-items: center; gap: 1rem;">
+            <span style="font-size: 2.5rem;">🤖</span>
+            <span style="background: linear-gradient(135deg, #0db9f2, #0a8fc7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">AI Assistant</span>
+        </h1>
+        <p class="page-subtitle" style="font-size: 1.125rem; margin-top: 0.75rem;">Get instant help with code, 3D art, game design, and career advice</p>
+    </div>
+    <a href="{% url 'ai_assistant:chat' %}" class="btn" style="white-space: nowrap;">✨ Start New Chat</a>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2.5rem;">
+    <!-- Assistants Sidebar -->
+    <div>
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🤖</span> AI Assistants
+        </h2>
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            {% if assistants %}
+                {% for assistant in assistants %}
+                <div class="card" style="background: linear-gradient(135deg, rgba(13, 185, 242, 0.08), rgba(10, 143, 199, 0.08)); transition: all 0.3s;" onmouseenter="this.style.transform='translateX(4px)'; this.style.borderColor='rgba(13, 185, 242, 0.5)';" onmouseleave="this.style.transform='translateX(0)'; this.style.borderColor='var(--border)';">
+                    <div style="display: flex; align-items: start; gap: 1rem;">
+                        <div style="width: 48px; height: 48px; border-radius: 0.75rem; background: linear-gradient(135deg, #0db9f2, #0a8fc7); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; box-shadow: 0 4px 12px rgba(13, 185, 242, 0.3);">🤖</div>
+                        <div style="flex: 1;">
+                            <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 0.5rem;">{{ assistant.name }}</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.875rem; line-height: 1.5;">{{ assistant.description }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="card" style="text-align: center; padding: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">🤖</div>
+                    <p style="color: var(--text-muted);">No assistants available</p>
+                </div>
+            {% endif %}
+        </div>
     </div>
     
-    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
-        <div>
-            <h2 style="color: var(--text-light); font-size: 1.5rem; margin-bottom: 1rem;">Assistants</h2>
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                {% for assistant in assistants %}
-                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 0.75rem; padding: 1rem;">
-                        <h3 style="color: var(--text-light); margin-bottom: 0.5rem;">{{ assistant.name }}</h3>
-                        <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">{{ assistant.description }}</p>
-                    </div>
-                {% endfor %}
-            </div>
-            
-            <a href="{% url 'ai_assistant:chat' %}" class="btn-primary" style="text-decoration: none; display: block; text-align: center; margin-top: 1rem;">Start New Chat</a>
-        </div>
-        
-        <div>
-            <h2 style="color: var(--text-light); font-size: 1.5rem; margin-bottom: 1rem;">Recent Conversations</h2>
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
+    <!-- Recent Conversations -->
+    <div>
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>💬</span> Recent Conversations
+        </h2>
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            {% if conversations %}
                 {% for conversation in conversations %}
-                    <a href="{% url 'ai_assistant:conversation' conversation.pk %}" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 0.75rem; padding: 1rem; text-decoration: none; display: block;">
-                        <h3 style="color: var(--text-light); margin-bottom: 0.5rem;">{{ conversation.title }}</h3>
-                        <p style="color: rgba(255,255,255,0.5); font-size: 0.875rem;">{{ conversation.created_at|date:"M d, Y H:i" }}</p>
-                    </a>
-                {% empty %}
-                    <p style="color: rgba(255,255,255,0.6);">No conversations yet. Start chatting!</p>
+                <a href="{% url 'ai_assistant:conversation' conversation.pk %}" class="card" style="text-decoration: none; transition: all 0.3s; cursor: pointer;" onmouseenter="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 32px rgba(13, 185, 242, 0.2)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='';">
+                    <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
+                        <div style="flex: 1;">
+                            <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-primary);">{{ conversation.title }}</h3>
+                            <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.875rem; color: var(--text-muted);">
+                                <span style="display: flex; align-items: center; gap: 0.375rem;">
+                                    <span>📅</span> {{ conversation.created_at|date:"M d, Y" }}
+                                </span>
+                                <span style="display: flex; align-items: center; gap: 0.375rem;">
+                                    <span>🕒</span> {{ conversation.created_at|date:"H:i" }}
+                                </span>
+                                <span style="display: flex; align-items: center; gap: 0.375rem;">
+                                    <span>💬</span> {{ conversation.messages.count }} messages
+                                </span>
+                            </div>
+                        </div>
+                        <div style="padding: 0.5rem 1rem; background: rgba(13, 185, 242, 0.1); border: 1px solid rgba(13, 185, 242, 0.3); border-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; color: var(--primary); white-space: nowrap;">View Chat →</div>
+                    </div>
+                </a>
                 {% endfor %}
-            </div>
+            {% else %}
+                <div style="text-align: center; padding: 5rem 2rem; background: linear-gradient(135deg, rgba(13, 185, 242, 0.05), rgba(10, 143, 199, 0.05)); border-radius: 1.25rem; border: 1px dashed var(--border);">
+                    <div style="font-size: 5rem; margin-bottom: 1.5rem; filter: drop-shadow(0 4px 12px rgba(13, 185, 242, 0.3));">💬</div>
+                    <h3 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.75rem;">No Conversations Yet</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.125rem;">Start chatting with our AI assistant to get help with your projects</p>
+                    <a href="{% url 'ai_assistant:chat' %}" class="btn">Start Your First Chat</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div style="margin-top: 4rem; padding: 2.5rem; background: linear-gradient(135deg, rgba(13, 185, 242, 0.05), rgba(10, 143, 199, 0.05)); border-radius: 1.25rem; border: 1px solid rgba(13, 185, 242, 0.2);">
+    <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; text-align: center;">What Can AI Assistant Help You With?</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+        <div style="text-align: center; padding: 1.5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 1rem;">💻</div>
+            <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Code Help</h4>
+            <p style="color: var(--text-secondary); font-size: 0.875rem;">Debug issues, optimize code, and learn best practices</p>
+        </div>
+        <div style="text-align: center; padding: 1.5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎨</div>
+            <h4 style="font-weight: 700; margin-bottom: 0.5rem;">3D Art Tips</h4>
+            <p style="color: var(--text-secondary); font-size: 0.875rem;">Get guidance on modeling, texturing, and rendering</p>
+        </div>
+        <div style="text-align: center; padding: 1.5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎮</div>
+            <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Game Design</h4>
+            <p style="color: var(--text-secondary); font-size: 0.875rem;">Brainstorm mechanics, balance gameplay, and more</p>
+        </div>
+        <div style="text-align: center; padding: 1.5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 1rem;">💼</div>
+            <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Career Advice</h4>
+            <p style="color: var(--text-secondary); font-size: 0.875rem;">Portfolio tips, interview prep, and career growth</p>
         </div>
     </div>
 </div>

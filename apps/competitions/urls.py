@@ -1,13 +1,11 @@
 from django.urls import path
-from . import views
+from . import views_public
 
 app_name = 'competitions'
 
 urlpatterns = [
-    path('', views.competition_list, name='list'),
-    path('create/', views.create_competition, name='create'),
-    path('<int:pk>/', views.competition_detail, name='detail'),
-    path('<int:pk>/submit/', views.submit_entry, name='submit'),
-    path('<int:pk>/leaderboard/', views.leaderboard, name='leaderboard'),
-    path('submission/<int:pk>/vote/', views.vote_submission, name='vote'),
+    # Public URLs - Browse competitions
+    path('', views_public.competition_list, name='list'),
+    path('<int:pk>/', views_public.competition_detail, name='detail'),
+    path('<int:pk>/leaderboard/', views_public.leaderboard, name='leaderboard'),
 ]

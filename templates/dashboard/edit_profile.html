@@ -1,0 +1,239 @@
+{% extends 'dashboard_base.html' %}
+{% block title %}Edit Profile | Vector Space{% endblock %}
+
+{% block extra_css %}
+<style>
+  .edit-header {
+    margin-bottom: 2rem;
+  }
+
+  .edit-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .edit-subtitle {
+    color: rgba(255,255,255,0.6);
+  }
+
+  .form-section {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-label {
+    display: block;
+    color: rgba(255,255,255,0.8);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .form-input, .form-textarea, .form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.95rem;
+  }
+
+  .form-textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  .form-input:focus, .form-textarea:focus, .form-select:focus {
+    outline: none;
+    border-color: #0db9f2;
+    background: rgba(255,255,255,0.08);
+  }
+
+  .skills-input-wrapper {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+
+  .skill-tag {
+    padding: 0.5rem 1rem;
+    background: rgba(13,185,242,0.15);
+    border: 1px solid rgba(13,185,242,0.3);
+    border-radius: 20px;
+    color: #0db9f2;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .skill-remove {
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .btn {
+    padding: 0.75rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #0db9f2, #a855f7);
+    color: #fff;
+  }
+
+  .btn-secondary {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="edit-header">
+  <h1 class="edit-title">Edit Profile</h1>
+  <p class="edit-subtitle">Update your personal and professional information</p>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  
+  <div class="form-section">
+    <h2 class="section-title">Personal Information</h2>
+    <div class="form-group">
+      <label class="form-label">Profile Picture</label>
+      <input type="file" name="avatar" class="form-input" accept="image/*">
+      {% if user.avatar %}
+      <p style="color: rgba(255,255,255,0.6); margin-top: 0.5rem; font-size: 0.85rem;">Current avatar uploaded</p>
+      {% endif %}
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" name="full_name" class="form-input" value="{{ user.get_full_name }}" placeholder="John Doe">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" name="username" class="form-input" value="{{ user.username }}" placeholder="johndoe">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Bio</label>
+      <textarea name="bio" class="form-textarea" placeholder="Tell us about yourself...">{{ user.bio }}</textarea>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Location</label>
+        <input type="text" name="location" class="form-input" value="{{ user.profile.location }}" placeholder="San Francisco, CA">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Portfolio URL</label>
+        <input type="url" name="portfolio_url" class="form-input" value="{{ user.portfolio_url }}" placeholder="https://yourportfolio.com">
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2 class="section-title">Professional Information</h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Professional Role</label>
+        <select name="user_type" class="form-select">
+          <option value="developer" {% if user.user_type == 'developer' %}selected{% endif %}>Developer</option>
+          <option value="artist" {% if user.user_type == 'artist' %}selected{% endif %}>3D Artist</option>
+          <option value="vfx" {% if user.user_type == 'vfx' %}selected{% endif %}>VFX Designer</option>
+          <option value="recruiter" {% if user.user_type == 'recruiter' %}selected{% endif %}>Recruiter</option>
+          <option value="mentor" {% if user.user_type == 'mentor' %}selected{% endif %}>Mentor</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Experience Level</label>
+        <select name="experience_years" class="form-select">
+          <option value="0" {% if user.profile.experience_years == 0 %}selected{% endif %}>Beginner</option>
+          <option value="2" {% if user.profile.experience_years == 2 %}selected{% endif %}>Intermediate</option>
+          <option value="5" {% if user.profile.experience_years == 5 %}selected{% endif %}>Professional</option>
+          <option value="10" {% if user.profile.experience_years >= 10 %}selected{% endif %}>Industry Expert</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Skills (comma-separated)</label>
+      <input type="text" name="skills" class="form-input" value="{{ user.skills|join:', ' }}" placeholder="Unreal Engine, Blender, C++">
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2 class="section-title">Social Links</h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">GitHub</label>
+        <input type="url" name="github" class="form-input" value="{{ user.profile.github }}" placeholder="https://github.com/username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">LinkedIn</label>
+        <input type="url" name="linkedin" class="form-input" value="{{ user.profile.linkedin }}" placeholder="https://linkedin.com/in/username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">ArtStation</label>
+        <input type="url" name="artstation" class="form-input" value="{{ user.profile.artstation }}" placeholder="https://artstation.com/username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">YouTube</label>
+        <input type="url" name="youtube" class="form-input" value="{{ user.profile.youtube }}" placeholder="https://youtube.com/@username">
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2 class="section-title">Resume</h2>
+    <div class="form-group">
+      <label class="form-label">Upload Resume (PDF)</label>
+      <input type="file" name="resume" class="form-input" accept=".pdf">
+      {% if user.profile.resume %}
+      <p style="color: rgba(255,255,255,0.6); margin-top: 0.5rem; font-size: 0.85rem;">Current: {{ user.profile.resume.name }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="btn-group">
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a href="{% url 'dashboard:social_profile' user.id %}" class="btn btn-secondary">Cancel</a>
+  </div>
+</form>
+{% endblock %}

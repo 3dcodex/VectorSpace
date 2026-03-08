@@ -1,61 +1,732 @@
 {% extends 'base.html' %}
+{% block title %}Games Hub | Vector Space{% endblock %}
 
-{% block title %}Game Showcase{% endblock %}
+{% block extra_css %}
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .hero {
+    background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(236,72,153,0.1));
+    padding: 4rem 2rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .hero h1 {
+    font-size: 3.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+  }
+
+  .hero p {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.7);
+    max-width: 800px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 2rem;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #a855f7;
+  }
+
+  .stat-label {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  .section {
+    margin-bottom: 4rem;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .genres {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .genre-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .genre-card:hover {
+    transform: translateY(-8px);
+    border-color: #a855f7;
+    background: rgba(168,85,247,0.1);
+  }
+
+  .genre-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .genre-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .genre-desc {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .search-filter-bar {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .search-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 300px;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 0.9rem 1rem 0.9rem 3rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1rem;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.5);
+    font-size: 1.2rem;
+  }
+
+  .filter-select {
+    padding: 0.9rem 1rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+  }
+
+  .game-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .game-card:hover {
+    transform: translateY(-8px);
+    border-color: #a855f7;
+    box-shadow: 0 12px 40px rgba(168,85,247,0.3);
+  }
+
+  .game-image {
+    height: 200px;
+    background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(236,72,153,0.15));
+    position: relative;
+    overflow: hidden;
+  }
+
+  .game-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .game-card:hover .game-image img {
+    transform: scale(1.05);
+  }
+
+  .game-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+  }
+
+  .game-badges {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .badge {
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    backdrop-filter: blur(10px);
+  }
+
+  .badge-verified {
+    background: rgba(59,130,246,0.9);
+    color: #fff;
+  }
+
+  .badge-new {
+    background: rgba(34,197,94,0.9);
+    color: #fff;
+  }
+
+  .game-platform {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.3rem 0.7rem;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .game-content {
+    padding: 1.5rem;
+  }
+
+  .game-title {
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .game-developer {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .game-desc {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .game-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .game-stats {
+    display: flex;
+    gap: 1rem;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+  }
+
+  .game-genre {
+    padding: 0.3rem 0.8rem;
+    background: rgba(168,85,247,0.2);
+    border: 1px solid rgba(168,85,247,0.3);
+    border-radius: 20px;
+    color: #a855f7;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .featured-developer {
+    background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(236,72,153,0.1));
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 3rem;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .developer-avatar {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    border: 4px solid rgba(255,255,255,0.1);
+  }
+
+  .developer-info h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .developer-badge {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    background: rgba(168,85,247,0.2);
+    border: 1px solid rgba(168,85,247,0.5);
+    border-radius: 20px;
+    color: #a855f7;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .developer-desc {
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .developer-game {
+    padding: 0.5rem 1rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.8);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .benefits {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .benefit-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .benefit-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .benefit-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .benefit-desc {
+    color: rgba(255,255,255,0.6);
+    line-height: 1.6;
+  }
+
+  .cta-section {
+    background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(236,72,153,0.15));
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 3rem;
+    text-align: center;
+  }
+
+  .cta-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+
+  .cta-desc {
+    color: rgba(255,255,255,0.7);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+
+  .cta-step {
+    background: rgba(255,255,255,0.05);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .step-number {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    border-radius: 50%;
+    text-align: center;
+    line-height: 32px;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+  }
+
+  .step-text {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.95rem;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+  }
+
+  .cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(168,85,247,0.4);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: rgba(255,255,255,0.6);
+    border: 2px dashed rgba(255,255,255,0.1);
+    border-radius: 16px;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+  }
+
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 2.5rem; }
+    .hero-stats { flex-direction: column; gap: 1.5rem; }
+    .featured-developer { grid-template-columns: 1fr; text-align: center; }
+    .developer-avatar { margin: 0 auto; }
+    .search-filter-bar { flex-direction: column; }
+    .search-wrapper { min-width: 100%; }
+    .games-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="page-container">
-    <div class="page-header">
-        <div>
-            <h1 style="color: var(--text-light); font-size: 2.5rem; font-weight: 800;">Game Showcase</h1>
-            <p style="color: rgba(255,255,255,0.6);">Discover and play indie games from talented developers</p>
-        </div>
-        {% if user.is_authenticated %}
-            <a href="{% url 'games:publish' %}" class="btn-primary" style="text-decoration: none;">Publish Your Game</a>
-        {% endif %}
+<div class="hero">
+  <h1>Games Hub</h1>
+  <p>Discover innovative games created by the Vector Space community. From experimental indie projects to fully developed titles, explore creativity and technical achievement across multiple genres.</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-number">{{ games.count }}+</div>
+      <div class="stat-label">Published Games</div>
     </div>
-    
-    <div class="filters-section">
-        <form method="get" class="filter-form">
-            <input type="text" name="search" placeholder="Search games..." value="{{ request.GET.search }}" 
-                   style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-light); padding: 0.75rem; border-radius: 0.5rem; flex: 1;">
-            <input type="text" name="genre" placeholder="Genre..." value="{{ request.GET.genre }}" 
-                   style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-light); padding: 0.75rem; border-radius: 0.5rem; width: 200px;">
-            <button type="submit" class="btn-secondary">Filter</button>
-        </form>
+    <div class="stat">
+      <div class="stat-number">250+</div>
+      <div class="stat-label">Active Developers</div>
     </div>
-    
-    <div class="games-grid">
-        {% for game in games %}
-            <div class="game-card">
-                {% if game.thumbnail %}
-                    <img src="{{ game.thumbnail }}" alt="{{ game.title }}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 0.5rem 0.5rem 0 0;">
-                {% else %}
-                    <div style="width: 100%; height: 200px; background: linear-gradient(135deg, rgba(13,185,242,0.2), rgba(13,185,242,0.05)); display: flex; align-items: center; justify-content: center; border-radius: 0.5rem 0.5rem 0 0;">
-                        <span style="font-size: 3rem;">🎮</span>
-                    </div>
-                {% endif %}
-                
-                <div style="padding: 1.5rem;">
-                    <h3 style="color: var(--text-light); margin-bottom: 0.5rem;">{{ game.title }}</h3>
-                    <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem; margin-bottom: 0.5rem;">by {{ game.developer.username }}</p>
-                    <span class="badge" style="background: rgba(13,185,242,0.2); color: var(--primary);">{{ game.genre }}</span>
-                    
-                    <p style="color: rgba(255,255,255,0.7); margin: 1rem 0; line-height: 1.6;">
-                        {{ game.description|truncatewords:20 }}
-                    </p>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05);">
-                        <div style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">
-                            <span>⭐ {{ game.rating|floatformat:1 }}</span>
-                            <span style="margin-left: 1rem;">⬇ {{ game.downloads }}</span>
-                        </div>
-                        <a href="{% url 'games:detail' game.pk %}" class="btn-small btn-primary" style="text-decoration: none;">Play</a>
-                    </div>
-                </div>
-            </div>
-        {% empty %}
-            <p style="color: rgba(255,255,255,0.6); text-align: center; padding: 3rem;">No games published yet.</p>
-        {% endfor %}
+    <div class="stat">
+      <div class="stat-number">15K+</div>
+      <div class="stat-label">Total Downloads</div>
     </div>
+  </div>
 </div>
+
+<div class="container">
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Browse by Genre</h2>
+    </div>
+    <div class="genres">
+      <div class="genre-card" onclick="filterByGenre('Action')">
+        <div class="genre-icon">⚔️</div>
+        <div class="genre-name">Action</div>
+        <div class="genre-desc">Fast-paced combat and reflex-based mechanics</div>
+      </div>
+      <div class="genre-card" onclick="filterByGenre('Adventure')">
+        <div class="genre-icon">🗺️</div>
+        <div class="genre-name">Adventure</div>
+        <div class="genre-desc">Story-driven exploration and puzzles</div>
+      </div>
+      <div class="genre-card" onclick="filterByGenre('RPG')">
+        <div class="genre-icon">🎭</div>
+        <div class="genre-name">RPG</div>
+        <div class="genre-desc">Character development and immersive worlds</div>
+      </div>
+      <div class="genre-card" onclick="filterByGenre('Strategy')">
+        <div class="genre-icon">♟️</div>
+        <div class="genre-name">Strategy</div>
+        <div class="genre-desc">Planning and tactical decision-making</div>
+      </div>
+      <div class="genre-card" onclick="filterByGenre('Simulation')">
+        <div class="genre-icon">🎮</div>
+        <div class="genre-name">Simulation</div>
+        <div class="genre-desc">Real-world systems and environments</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">All Games</h2>
+    </div>
+    
+    <div class="search-filter-bar">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search games or developers..." value="{{ request.GET.search }}">
+      </div>
+      <select class="filter-select" id="genreFilter" onchange="applyFilters()">
+        <option value="">All Genres</option>
+        <option value="Action" {% if request.GET.genre == 'Action' %}selected{% endif %}>Action</option>
+        <option value="Adventure" {% if request.GET.genre == 'Adventure' %}selected{% endif %}>Adventure</option>
+        <option value="RPG" {% if request.GET.genre == 'RPG' %}selected{% endif %}>RPG</option>
+        <option value="Strategy" {% if request.GET.genre == 'Strategy' %}selected{% endif %}>Strategy</option>
+        <option value="Simulation" {% if request.GET.genre == 'Simulation' %}selected{% endif %}>Simulation</option>
+        <option value="Puzzle" {% if request.GET.genre == 'Puzzle' %}selected{% endif %}>Puzzle</option>
+      </select>
+      <select class="filter-select" id="platformFilter" onchange="applyFilters()">
+        <option value="">All Platforms</option>
+        <option value="pc" {% if request.GET.platform == 'pc' %}selected{% endif %}>PC</option>
+        <option value="web" {% if request.GET.platform == 'web' %}selected{% endif %}>Web</option>
+        <option value="mobile" {% if request.GET.platform == 'mobile' %}selected{% endif %}>Mobile</option>
+        <option value="console" {% if request.GET.platform == 'console' %}selected{% endif %}>Console</option>
+      </select>
+      <select class="filter-select" id="sortSelect" onchange="applyFilters()">
+        <option value="newest" {% if request.GET.sort == 'newest' or not request.GET.sort %}selected{% endif %}>Newest</option>
+        <option value="popular" {% if request.GET.sort == 'popular' %}selected{% endif %}>Most Popular</option>
+        <option value="rating" {% if request.GET.sort == 'rating' %}selected{% endif %}>Highest Rated</option>
+      </select>
+    </div>
+
+    <div class="games-grid">
+      {% for game in games %}
+      <div class="game-card" onclick="window.location.href='{% url 'games:detail' game.pk %}'">
+        <div class="game-image">
+          <span class="game-platform">{{ game.get_platform_display }}</span>
+          <div class="game-badges">
+            {% if game.verified %}<span class="badge badge-verified">✓ VERIFIED</span>{% endif %}
+          </div>
+          {% if game.thumbnail %}
+          <img src="{{ game.thumbnail }}" alt="{{ game.title }}" loading="lazy">
+          {% else %}
+          <div class="game-placeholder">🎮</div>
+          {% endif %}
+        </div>
+        <div class="game-content">
+          <h3 class="game-title">{{ game.title }}</h3>
+          <div class="game-developer">
+            <span>👤</span>
+            <span>{{ game.developer.username }}</span>
+          </div>
+          <p class="game-desc">{{ game.description|truncatewords:20 }}</p>
+          <div class="game-footer">
+            <span class="game-genre">{{ game.genre }}</span>
+            <div class="game-stats">
+              <span>⭐ {{ game.rating|floatformat:1|default:"0.0" }}</span>
+              <span>⬇ {{ game.downloads|default:0 }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-state">
+        <div class="empty-icon">🎮</div>
+        <h3>No games found</h3>
+        <p>Try adjusting your search or filters</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Developer Spotlight</h2>
+    </div>
+    <div class="featured-developer">
+      <div class="developer-avatar">🚀</div>
+      <div class="developer-info">
+        <h3>Orion Interactive</h3>
+        <span class="developer-badge">⭐ Featured Developer</span>
+        <p class="developer-desc">Orion Interactive is an independent development team focused on creating cinematic space exploration games. Their most popular title, Nebula Raiders, has attracted attention for its dynamic combat system and visually impressive space environments.</p>
+        <div class="developer-game">
+          🎮 Popular Title: Nebula Raiders
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">What You Can Do</h2>
+    </div>
+    <div class="benefits">
+      <div class="benefit-card">
+        <div class="benefit-icon">🎮</div>
+        <div class="benefit-title">Discover New Games</div>
+        <div class="benefit-desc">Explore innovative indie games across multiple genres and platforms</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">💬</div>
+        <div class="benefit-title">Leave Feedback</div>
+        <div class="benefit-desc">Share reviews and help developers improve their projects</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">👥</div>
+        <div class="benefit-title">Follow Developers</div>
+        <div class="benefit-desc">Stay updated on your favorite creators and their releases</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">📅</div>
+        <div class="benefit-title">Track Releases</div>
+        <div class="benefit-desc">Get notified about upcoming games and updates</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="cta-section">
+      <h2 class="cta-title">Publish Your Game</h2>
+      <p class="cta-desc">Showcase your project to a global audience. Get feedback, build your portfolio, and connect with other developers.</p>
+      <div class="cta-steps">
+        <div class="cta-step">
+          <div class="step-number">1</div>
+          <div class="step-text">Upload game information and media</div>
+        </div>
+        <div class="cta-step">
+          <div class="step-number">2</div>
+          <div class="step-text">Add screenshots and trailers</div>
+        </div>
+        <div class="cta-step">
+          <div class="step-number">3</div>
+          <div class="step-text">Provide demo or download link</div>
+        </div>
+        <div class="cta-step">
+          <div class="step-number">4</div>
+          <div class="step-text">Select categories and tags</div>
+        </div>
+        <div class="cta-step">
+          <div class="step-number">5</div>
+          <div class="step-text">Publish to the community</div>
+        </div>
+      </div>
+      <a href="{% url 'dashboard:games_publish' %}" class="cta-btn">Publish Your Game</a>
+    </div>
+  </section>
+</div>
+
+<script>
+let searchTimeout;
+
+document.getElementById('searchInput')?.addEventListener('input', function() {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => applyFilters(), 500);
+});
+
+function filterByGenre(genre) {
+  const params = new URLSearchParams(window.location.search);
+  params.set('genre', genre);
+  window.location.href = '?' + params.toString();
+}
+
+function applyFilters() {
+  const params = new URLSearchParams();
+  
+  const search = document.getElementById('searchInput')?.value;
+  if (search) params.set('search', search);
+  
+  const genre = document.getElementById('genreFilter')?.value;
+  if (genre) params.set('genre', genre);
+  
+  const platform = document.getElementById('platformFilter')?.value;
+  if (platform) params.set('platform', platform);
+  
+  const sort = document.getElementById('sortSelect')?.value;
+  if (sort) params.set('sort', sort);
+  
+  window.location.href = '?' + params.toString();
+}
+</script>
 {% endblock %}

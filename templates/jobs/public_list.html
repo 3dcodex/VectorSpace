@@ -1,0 +1,562 @@
+{% extends 'base.html' %}
+{% block title %}Job Hub | Vector Space{% endblock %}
+
+{% block extra_css %}
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .hero {
+    background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1));
+    padding: 4rem 2rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .hero h1 {
+    font-size: 3.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+  }
+
+  .hero p {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.7);
+    max-width: 800px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 2rem;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #6366f1;
+  }
+
+  .stat-label {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  .section {
+    margin-bottom: 4rem;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .roles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .role-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .role-card:hover {
+    transform: translateY(-8px);
+    border-color: #6366f1;
+    background: rgba(99,102,241,0.1);
+  }
+
+  .role-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .role-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .search-bar {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .search-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 300px;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 0.9rem 1rem 0.9rem 3rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1rem;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.5);
+    font-size: 1.2rem;
+  }
+
+  .filter-select {
+    padding: 0.9rem 1rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+
+  .jobs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .job-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .job-card:hover {
+    border-color: #6366f1;
+    background: rgba(255,255,255,0.06);
+  }
+
+  .job-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+
+  .job-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .job-title {
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .job-company {
+    color: rgba(255,255,255,0.7);
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .job-tags {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .job-tag {
+    padding: 0.3rem 0.8rem;
+    background: rgba(99,102,241,0.2);
+    border: 1px solid rgba(99,102,241,0.3);
+    border-radius: 20px;
+    color: #6366f1;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .job-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.9rem;
+  }
+
+  .job-salary {
+    color: #6366f1;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .feature-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .feature-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .feature-desc {
+    color: rgba(255,255,255,0.6);
+    line-height: 1.6;
+  }
+
+  .feature-list {
+    list-style: none;
+    margin-top: 1rem;
+  }
+
+  .feature-list li {
+    color: rgba(255,255,255,0.7);
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+  }
+
+  .feature-list li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #6366f1;
+    font-weight: 700;
+  }
+
+  .cta-section {
+    background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.15));
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 3rem;
+    text-align: center;
+  }
+
+  .cta-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+
+  .cta-desc {
+    color: rgba(255,255,255,0.7);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: rgba(255,255,255,0.6);
+    border: 2px dashed rgba(255,255,255,0.1);
+    border-radius: 16px;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+  }
+
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 2.5rem; }
+    .hero-stats { flex-direction: column; gap: 1.5rem; }
+    .search-bar { flex-direction: column; }
+    .search-wrapper { min-width: 100%; }
+    .job-card { grid-template-columns: 1fr; }
+    .job-logo { margin: 0 auto; }
+    .job-meta { align-items: flex-start; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Job Hub</h1>
+  <p>Connect talented creators with companies seeking skilled professionals in game development and digital media. Discover career opportunities or find qualified candidates.</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-number">{{ jobs.count }}+</div>
+      <div class="stat-label">Open Positions</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">200+</div>
+      <div class="stat-label">Companies Hiring</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">1K+</div>
+      <div class="stat-label">Successful Hires</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Popular Roles</h2>
+    </div>
+    <div class="roles">
+      <div class="role-card" onclick="filterRole('programmer')">
+        <div class="role-icon">💻</div>
+        <div class="role-name">Game Programmers</div>
+      </div>
+      <div class="role-card" onclick="filterRole('3d-artist')">
+        <div class="role-icon">🎨</div>
+        <div class="role-name">3D Artists</div>
+      </div>
+      <div class="role-card" onclick="filterRole('technical-artist')">
+        <div class="role-icon">⚙️</div>
+        <div class="role-name">Technical Artists</div>
+      </div>
+      <div class="role-card" onclick="filterRole('designer')">
+        <div class="role-icon">🎮</div>
+        <div class="role-name">Game Designers</div>
+      </div>
+      <div class="role-card" onclick="filterRole('vfx')">
+        <div class="role-icon">✨</div>
+        <div class="role-name">VFX Artists</div>
+      </div>
+      <div class="role-card" onclick="filterRole('ui-ux')">
+        <div class="role-icon">📱</div>
+        <div class="role-name">UI/UX Designers</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">All Jobs</h2>
+    </div>
+    
+    <div class="search-bar">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search job titles..." value="{{ request.GET.search }}">
+      </div>
+      <select class="filter-select" id="typeFilter" onchange="applyFilters()">
+        <option value="">All Types</option>
+        <option value="full_time" {% if request.GET.type == 'full_time' %}selected{% endif %}>Full Time</option>
+        <option value="part_time" {% if request.GET.type == 'part_time' %}selected{% endif %}>Part Time</option>
+        <option value="contract" {% if request.GET.type == 'contract' %}selected{% endif %}>Contract</option>
+        <option value="freelance" {% if request.GET.type == 'freelance' %}selected{% endif %}>Freelance</option>
+      </select>
+      <select class="filter-select" id="remoteFilter" onchange="applyFilters()">
+        <option value="">All Locations</option>
+        <option value="true" {% if request.GET.remote == 'true' %}selected{% endif %}>Remote Only</option>
+      </select>
+    </div>
+
+    <div class="jobs-list">
+      {% for job in jobs %}
+      <div class="job-card" onclick="window.location.href='{% url 'jobs:detail' job.pk %}'">
+        <div class="job-logo">💼</div>
+        <div class="job-info">
+          <h3 class="job-title">{{ job.title }}</h3>
+          <div class="job-company">{{ job.company_name }}</div>
+          <div class="job-tags">
+            <span class="job-tag">{{ job.get_job_type_display }}</span>
+            <span class="job-tag">{{ job.get_experience_level_display }}</span>
+            {% if job.remote %}<span class="job-tag">🌍 Remote</span>{% endif %}
+            <span class="job-tag">📍 {{ job.location }}</span>
+          </div>
+        </div>
+        <div class="job-meta">
+          {% if job.salary_min and job.salary_max %}
+          <div class="job-salary">${{ job.salary_min|floatformat:0 }} - ${{ job.salary_max|floatformat:0 }}</div>
+          {% endif %}
+          <div>{{ job.created_at|timesince }} ago</div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-state">
+        <div class="empty-icon">💼</div>
+        <h3>No jobs available</h3>
+        <p>Check back soon for new opportunities</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">For Job Seekers</h2>
+    </div>
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon">📄</div>
+        <div class="feature-title">Build Your Profile</div>
+        <div class="feature-desc">Create a professional presence</div>
+        <ul class="feature-list">
+          <li>Upload resumes</li>
+          <li>Showcase portfolios</li>
+          <li>Highlight skills</li>
+        </ul>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-title">Apply & Track</div>
+        <div class="feature-desc">Manage your applications</div>
+        <ul class="feature-list">
+          <li>Apply for positions</li>
+          <li>Track applications</li>
+          <li>Get notifications</li>
+        </ul>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤝</div>
+        <div class="feature-title">Connect</div>
+        <div class="feature-desc">Network with recruiters</div>
+        <ul class="feature-list">
+          <li>Connect with recruiters</li>
+          <li>Get discovered</li>
+          <li>Build relationships</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">For Recruiters</h2>
+    </div>
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon">📝</div>
+        <div class="feature-title">Post Jobs</div>
+        <div class="feature-desc">Reach qualified candidates</div>
+        <ul class="feature-list">
+          <li>Create job listings</li>
+          <li>Set requirements</li>
+          <li>Manage postings</li>
+        </ul>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <div class="feature-title">Find Talent</div>
+        <div class="feature-desc">Search candidate profiles</div>
+        <ul class="feature-list">
+          <li>Search profiles</li>
+          <li>Review portfolios</li>
+          <li>Filter by skills</li>
+        </ul>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Manage Pipeline</div>
+        <div class="feature-desc">Streamline hiring process</div>
+        <ul class="feature-list">
+          <li>Review applications</li>
+          <li>Track candidates</li>
+          <li>Contact directly</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="cta-section">
+      <h2 class="cta-title">Grow Your Career</h2>
+      <p class="cta-desc">Build a strong portfolio, participate in competitions, and contribute to the community to attract potential employers and demonstrate your abilities.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+let searchTimeout;
+
+document.getElementById('searchInput')?.addEventListener('input', function() {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => applyFilters(), 500);
+});
+
+function filterRole(role) {
+  const params = new URLSearchParams(window.location.search);
+  params.set('search', role);
+  window.location.href = '?' + params.toString();
+}
+
+function applyFilters() {
+  const params = new URLSearchParams();
+  
+  const search = document.getElementById('searchInput')?.value;
+  if (search) params.set('search', search);
+  
+  const type = document.getElementById('typeFilter')?.value;
+  if (type) params.set('type', type);
+  
+  const remote = document.getElementById('remoteFilter')?.value;
+  if (remote) params.set('remote', remote);
+  
+  window.location.href = '?' + params.toString();
+}
+</script>
+{% endblock %}

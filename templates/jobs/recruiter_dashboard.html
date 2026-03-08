@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'dashboard_base.html' %}
 
 {% block title %}Recruiter Dashboard{% endblock %}
 
@@ -9,7 +9,7 @@
     <div class="dashboard-section">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
             <h2 style="color: var(--text-light); font-size: 1.5rem;">Your Job Postings</h2>
-            <a href="{% url 'jobs:post' %}" class="btn-primary" style="text-decoration: none;">Post New Job</a>
+            <a href="{% url 'dashboard:jobs_post' %}" class="btn-primary" style="text-decoration: none;">Post New Job</a>
         </div>
         
         <div class="jobs-grid">
@@ -18,7 +18,7 @@
                     <h3 style="color: var(--text-light);">{{ job.title }}</h3>
                     <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">{{ job.applications.count }} applications</p>
                     <div style="margin-top: 1rem;">
-                        <a href="{% url 'jobs:detail' job.pk %}" class="btn-small btn-primary" style="text-decoration: none;">View</a>
+                        <a href="{% url 'dashboard:jobs_detail' job.pk %}" class="btn-small btn-primary" style="text-decoration: none;">View</a>
                     </div>
                 </div>
             {% empty %}
@@ -42,7 +42,7 @@
                     <div style="display: flex; align-items: center; gap: 1rem;">
                         <span class="badge status-{{ application.status }}">{{ application.get_status_display }}</span>
                         
-                        <form method="post" action="{% url 'jobs:update_status' application.pk %}" style="display: inline;">
+                        <form method="post" action="{% url 'dashboard:jobs_update_status' application.pk %}" style="display: inline;">
                             {% csrf_token %}
                             <select name="status" onchange="this.form.submit()" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-light); padding: 0.5rem; border-radius: 0.25rem;">
                                 <option value="pending" {% if application.status == 'pending' %}selected{% endif %}>Pending</option>

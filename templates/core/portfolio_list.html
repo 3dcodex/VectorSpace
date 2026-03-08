@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Creator Portfolios - Vector Space{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-hero {
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .search-filters {
+        background: rgba(255,255,255,0.05);
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(13, 185, 242, 0.2);
+    }
+    
+    .filter-row {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .filter-input {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .portfolios-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .portfolio-card {
+        background: rgba(255,255,255,0.05);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(13, 185, 242, 0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .portfolio-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(13, 185, 242, 0.3);
+    }
+    
+    .portfolio-cover {
+        height: 120px;
+        background: linear-gradient(135deg, #0db9f2, #0ea5d4);
+        position: relative;
+    }
+    
+    .portfolio-avatar-wrapper {
+        position: absolute;
+        bottom: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .portfolio-avatar-small {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 3px solid #1a1a2e;
+        object-fit: cover;
+        background: #16213e;
+    }
+    
+    .portfolio-body {
+        padding: 3rem 1.5rem 1.5rem;
+        text-align: center;
+    }
+    
+    .portfolio-username {
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-bottom: 0.3rem;
+    }
+    
+    .portfolio-tagline {
+        color: #888;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    
+    .portfolio-stats-small {
+        display: flex;
+        justify-content: space-around;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        margin-top: 1rem;
+    }
+    
+    .stat-small {
+        text-align: center;
+    }
+    
+    .stat-small-value {
+        font-weight: bold;
+        color: #0db9f2;
+    }
+    
+    .stat-small-label {
+        font-size: 0.75rem;
+        color: #888;
+    }
+    
+    .verified-badge {
+        background: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+        padding: 0.2rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        margin-left: 0.3rem;
+    }
+    
+    .specialties-small {
+        display: flex;
+        gap: 0.3rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+    
+    .specialty-tag {
+        background: rgba(13, 185, 242, 0.2);
+        color: #0db9f2;
+        padding: 0.2rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+    <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">🎨 Creator Portfolios</h1>
+    <p style="color: #888; font-size: 1.1rem;">Discover talented creators and their amazing work</p>
+</div>
+
+<div class="container">
+    <!-- Search and Filters -->
+    <div class="search-filters">
+        <form method="get" action="{% url 'portfolio:list' %}">
+            <div class="filter-row">
+                <div class="filter-input">
+                    <input type="text" name="q" value="{{ search_query }}" placeholder="Search creators..." class="form-control">
+                </div>
+                
+                <div class="filter-input">
+                    <select name="specialty" class="form-control">
+                        <option value="">All Specialties</option>
+                        <option value="3D Modeling" {% if specialty == "3D Modeling" %}selected{% endif %}>3D Modeling</option>
+                        <option value="2D Art" {% if specialty == "2D Art" %}selected{% endif %}>2D Art</option>
+                        <option value="Animation" {% if specialty == "Animation" %}selected{% endif %}>Animation</option>
+                        <option value="Game Development" {% if specialty == "Game Development" %}selected{% endif %}>Game Development</option>
+                        <option value="UI/UX Design" {% if specialty == "UI/UX Design" %}selected{% endif %}>UI/UX Design</option>
+                        <option value="Sound Design" {% if specialty == "Sound Design" %}selected{% endif %}>Sound Design</option>
+                        <option value="Programming" {% if specialty == "Programming" %}selected{% endif %}>Programming</option>
+                    </select>
+                </div>
+                
+                <div class="filter-input">
+                    <select name="sort" class="form-control">
+                        <option value="views" {% if sort_by == "views" %}selected{% endif %}>Most Viewed</option>
+                        <option value="recent" {% if sort_by == "recent" %}selected{% endif %}>Recently Updated</option>
+                        <option value="rating" {% if sort_by == "rating" %}selected{% endif %}>Highest Rated</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Portfolios Grid -->
+    {% if page_obj %}
+        <div class="portfolios-grid">
+            {% for portfolio in page_obj %}
+                <a href="{% url 'portfolio:detail' portfolio.custom_url %}" class="portfolio-card" style="text-decoration: none; color: inherit;">
+                    <div class="portfolio-cover" {% if portfolio.cover_image %}style="background-image: url('{{ portfolio.cover_image }}'); background-size: cover;"{% endif %}>
+                        <div class="portfolio-avatar-wrapper">
+                            {% if portfolio.user.avatar %}
+                                <img src="{{ portfolio.user.avatar }}" alt="{{ portfolio.user.username }}" class="portfolio-avatar-small">
+                            {% else %}
+                                <div class="portfolio-avatar-small" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0db9f2, #0ea5d4); color: white; font-size: 2rem; font-weight: bold;">
+                                    {{ portfolio.user.username|first|upper }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="portfolio-body">
+                        <h3 class="portfolio-username">
+                            {{ portfolio.user.get_full_name|default:portfolio.user.username }}
+                            {% if portfolio.verified_creator %}
+                                <span class="verified-badge">✓</span>
+                            {% endif %}
+                        </h3>
+                        
+                        {% if portfolio.tagline %}
+                            <p class="portfolio-tagline">{{ portfolio.tagline|truncatewords:12 }}</p>
+                        {% endif %}
+                        
+                        {% if portfolio.specialties %}
+                            <div class="specialties-small">
+                                {% for specialty in portfolio.specialties|slice:":3" %}
+                                    <span class="specialty-tag">{{ specialty }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="portfolio-stats-small">
+                            <div class="stat-small">
+                                <div class="stat-small-value">{{ portfolio.total_projects }}</div>
+                                <div class="stat-small-label">Projects</div>
+                            </div>
+                            <div class="stat-small">
+                                <div class="stat-small-value">{{ portfolio.total_views|floatformat:0 }}</div>
+                                <div class="stat-small-label">Views</div>
+                            </div>
+                            <div class="stat-small">
+                                <div class="stat-small-value">{{ portfolio.average_rating|floatformat:1 }}</div>
+                                <div class="stat-small-label">Rating</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+            <div class="pagination" style="display: flex; justify-content: center; gap: 0.5rem; margin: 2rem 0;">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}{% if specialty %}&specialty={{ specialty }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="btn btn-sm">First</a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if specialty %}&specialty={{ specialty }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="btn btn-sm">Previous</a>
+                {% endif %}
+                
+                <span class="btn btn-sm" style="background: rgba(13, 185, 242, 0.2);">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if specialty %}&specialty={{ specialty }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="btn btn-sm">Next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}{% if specialty %}&specialty={{ specialty }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="btn btn-sm">Last</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% else %}
+        <div style="text-align: center; padding: 3rem; color: #888;">
+            <h3>No portfolios found</h3>
+            <p>Try adjusting your search filters.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

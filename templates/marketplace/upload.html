@@ -1,115 +1,256 @@
-{% extends 'users/dashboards/base_dashboard.html' %}
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
 {% block title %}Upload Asset{% endblock %}
 
-{% block sidebar %}
-<li><a href="{% url 'users:creator_dashboard' %}"><span>📊</span> Overview</a></li>
-<li><a href="#"><span>🎨</span> My Assets</a></li>
-<li><a href="{% url 'marketplace:upload' %}" class="active"><span>⬆️</span> Upload Asset</a></li>
-<li><a href="{% url 'games:list' %}"><span>🎮</span> My Games</a></li>
+{% block extra_css %}
+<style>
+*{box-sizing:border-box}
+.upload-wrapper{min-height:100vh;background:linear-gradient(135deg,#0a0e27 0%,#060918 100%);padding:2rem}
+.upload-container{max-width:1600px;margin:0 auto}
+.upload-hero{text-align:center;margin-bottom:3rem;position:relative}
+.upload-hero::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(13,185,242,0.15) 0%,transparent 70%);filter:blur(80px);pointer-events:none;z-index:0}
+.upload-hero h1{font-size:3rem;font-weight:800;background:linear-gradient(135deg,#0DB9F2 0%,#06b6d4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1rem;position:relative;z-index:1}
+.upload-hero p{font-size:1.125rem;color:rgba(255,255,255,0.6);position:relative;z-index:1}
+.upload-grid{display:grid;grid-template-columns:1fr 380px;gap:2rem;align-items:start}
+.upload-main{display:flex;flex-direction:column;gap:2rem}
+.glass-card{background:rgba(13,185,242,0.03);backdrop-filter:blur(20px);border:1px solid rgba(13,185,242,0.15);border-radius:20px;padding:2rem;position:relative;overflow:hidden;transition:all 0.3s}
+.glass-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(13,185,242,0.5),transparent)}
+.glass-card:hover{border-color:rgba(13,185,242,0.3);box-shadow:0 20px 60px rgba(13,185,242,0.1)}
+.card-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
+.card-icon{width:48px;height:48px;background:linear-gradient(135deg,rgba(13,185,242,0.2),rgba(13,185,242,0.05));border-radius:12px;display:flex;align-items:center;justify-content:center;color:#0DB9F2}
+.card-icon svg{width:24px;height:24px}
+.card-title{font-size:1.25rem;font-weight:700;color:#fff;margin:0}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.form-field{display:flex;flex-direction:column;gap:0.5rem}
+.form-field.full{grid-column:1/-1}
+.field-label{font-size:0.875rem;font-weight:600;color:rgba(255,255,255,0.9);display:flex;align-items:center;gap:0.5rem}
+.field-label .required{color:#ef4444}
+.form-input,.form-textarea,.form-select{width:100%;background:rgba(0,0,0,0.4);border:1px solid rgba(13,185,242,0.2);border-radius:12px;padding:0.875rem 1rem;color:#fff;font-size:0.875rem;font-family:inherit;transition:all 0.3s}
+.form-input:focus,.form-textarea:focus,.form-select:focus{outline:none;border-color:#0DB9F2;background:rgba(0,0,0,0.5);box-shadow:0 0 0 4px rgba(13,185,242,0.1),0 8px 24px rgba(13,185,242,0.15)}
+.form-input::placeholder,.form-textarea::placeholder{color:rgba(255,255,255,0.4)}
+.form-textarea{min-height:140px;resize:vertical}
+.form-select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%230DB9F2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:20px;padding-right:2.5rem}
+.form-select option{background:#0a0e27;color:#fff;padding:0.75rem}
+.field-hint{font-size:0.75rem;color:rgba(255,255,255,0.5)}
+.upload-zone{border:2px dashed rgba(13,185,242,0.3);border-radius:16px;padding:3rem 2rem;text-align:center;background:rgba(13,185,242,0.02);transition:all 0.3s;cursor:pointer;position:relative}
+.upload-zone:hover{border-color:#0DB9F2;background:rgba(13,185,242,0.08)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-icon{width:64px;height:64px;margin:0 auto 1.5rem;background:linear-gradient(135deg,rgba(13,185,242,0.2),rgba(13,185,242,0.05));border-radius:16px;display:flex;align-items:center;justify-content:center;color:#0DB9F2}
+.upload-icon svg{width:32px;height:32px}
+.upload-text{font-size:1.125rem;font-weight:600;color:#fff;margin-bottom:0.5rem}
+.upload-hint{font-size:0.875rem;color:rgba(255,255,255,0.5)}
+.upload-formats{display:flex;flex-wrap:wrap;gap:0.5rem;justify-content:center;margin-top:1rem}
+.format-badge{padding:0.375rem 0.75rem;background:rgba(13,185,242,0.1);border:1px solid rgba(13,185,242,0.2);border-radius:8px;font-size:0.75rem;color:#0DB9F2;font-weight:600}
+.checkbox-card{background:rgba(13,185,242,0.05);border:1px solid rgba(13,185,242,0.15);border-radius:12px;padding:1.25rem;display:flex;align-items:center;gap:1rem;cursor:pointer;transition:all 0.3s}
+.checkbox-card:hover{background:rgba(13,185,242,0.08);border-color:rgba(13,185,242,0.3)}
+.checkbox-card input[type=checkbox]{width:24px;height:24px;cursor:pointer;accent-color:#0DB9F2}
+.checkbox-label{flex:1}
+.checkbox-label strong{display:block;color:#fff;font-size:0.9375rem;margin-bottom:0.25rem}
+.checkbox-label span{font-size:0.8125rem;color:rgba(255,255,255,0.6)}
+.form-actions{display:flex;gap:1rem;margin-top:2rem}
+.btn{padding:1rem 2.5rem;border-radius:12px;font-weight:700;font-size:0.9375rem;cursor:pointer;transition:all 0.3s;border:none;display:inline-flex;align-items:center;justify-content:center;gap:0.75rem;text-decoration:none}
+.btn-primary{background:linear-gradient(135deg,#0DB9F2,#0891c7);color:#fff;box-shadow:0 8px 24px rgba(13,185,242,0.3)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(13,185,242,0.4)}
+.btn-primary svg{width:20px;height:20px}
+.btn-secondary{background:rgba(13,185,242,0.1);color:#0DB9F2;border:1px solid rgba(13,185,242,0.3)}
+.btn-secondary:hover{background:rgba(13,185,242,0.15);transform:translateY(-2px)}
+.sidebar-sticky{position:sticky;top:100px;display:flex;flex-direction:column;gap:1.5rem}
+.info-card{background:linear-gradient(135deg,rgba(13,185,242,0.08),rgba(13,185,242,0.03));border:1px solid rgba(13,185,242,0.2);border-radius:16px;padding:1.5rem;backdrop-filter:blur(10px)}
+.info-header{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem}
+.info-icon{width:36px;height:36px;background:rgba(13,185,242,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#0DB9F2}
+.info-icon svg{width:18px;height:18px}
+.info-title{font-size:1rem;font-weight:700;color:#fff;margin:0}
+.info-list{list-style:none;padding:0;margin:0}
+.info-list li{padding:0.75rem 0;color:rgba(255,255,255,0.8);font-size:0.875rem;line-height:1.6;display:flex;align-items:start;gap:0.75rem;border-bottom:1px solid rgba(13,185,242,0.1)}
+.info-list li:last-child{border-bottom:none}
+.info-list li::before{content:'✓';color:#10b981;font-weight:700;flex-shrink:0;width:20px;height:20px;background:rgba(16,185,129,0.1);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.75rem}
+.tip-list li::before{content:'💡';background:rgba(251,191,36,0.1)}
+.error-banner{background:linear-gradient(135deg,rgba(239,68,68,0.15),rgba(239,68,68,0.05));border:1px solid rgba(239,68,68,0.3);border-radius:16px;padding:1.5rem;margin-bottom:2rem;color:#fca5a5}
+.error-banner strong{display:block;margin-bottom:0.75rem;font-size:1rem}
+.error-banner ul{margin:0;padding-left:1.5rem}
+@media(max-width:1200px){.upload-grid{grid-template-columns:1fr}.sidebar-sticky{position:static}}
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="dashboard-header">
-    <h1>Upload New Asset</h1>
-    <p>Share your 3D creations with the community</p>
-</div>
+<div class="upload-wrapper">
+    <div class="upload-container">
+        <div class="upload-hero">
+            <a href="{% url 'dashboard:marketplace_my_assets' %}" style="display:inline-flex;align-items:center;gap:0.5rem;color:rgba(255,255,255,0.7);text-decoration:none;margin-bottom:1rem;transition:all 0.3s;font-size:0.9375rem" onmouseover="this.style.color='#0DB9F2'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                Back to My Assets
+            </a>
+            <h1>Upload Your Asset</h1>
+            <p>Share your creativity with the world and start earning</p>
+        </div>
 
-<form method="POST" enctype="multipart/form-data" style="max-width:800px">
-    {% csrf_token %}
-    
-    {% if form.errors %}
-    <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:0.5rem;padding:1rem;margin-bottom:1.5rem;color:#fca5a5">
-        <strong>Please correct the errors below:</strong>
-        <ul style="margin:0.5rem 0 0 1.5rem">
-        {% for field in form %}
-            {% for error in field.errors %}
-            <li>{{ field.label }}: {{ error }}</li>
-            {% endfor %}
-        {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
-    
-    <div style="display:grid;gap:1.5rem">
-        <div>
-            <label style="display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.875rem">Title *</label>
-            {{ form.title }}
+        {% if form.errors %}
+        <div class="error-banner">
+            <strong>⚠️ Please fix the following errors:</strong>
+            <ul>
+            {% for field in form %}{% for error in field.errors %}
+                <li>{{ field.label }}: {{ error }}</li>
+            {% endfor %}{% endfor %}
+            </ul>
         </div>
-        
-        <div>
-            <label style="display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.875rem">Description *</label>
-            {{ form.description }}
-        </div>
-        
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-            <div>
-                <label style="display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.875rem">Asset Type *</label>
-                {{ form.asset_type }}
-            </div>
-            <div>
-                <label style="display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.875rem">File Format</label>
-                {{ form.file_format }}
-            </div>
-        </div>
-        
-        <div>
-            <label style="display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.875rem">Category</label>
-            {{ form.category }}
-        </div>
-        
-        <div>
-            <label style="display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.875rem">3D File *</label>
-            {{ form.file }}
-            <p style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:0.25rem">Supported: FBX, OBJ, BLEND, GLTF, etc. (Max 100MB)</p>
-        </div>
-        
-        <div>
-            <label style="display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.875rem">Preview Image URL</label>
-            {{ form.preview_image }}
-            <p style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:0.25rem">Enter a direct image URL (e.g., from Imgur, Cloudinary)</p>
-        </div>
-        
-        <div>
-            <label style="display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.875rem">Tags</label>
-            {{ form.tags }}
-        </div>
-        
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-            <div>
-                <label style="display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.875rem">Price (USD) *</label>
-                {{ form.price }}
-            </div>
-            <div style="display:flex;align-items:center;gap:1rem;padding-top:2rem">
-                <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
-                    {{ form.is_free }}
-                    <span style="font-size:0.875rem">Free Asset</span>
-                </label>
-            </div>
-        </div>
-        
-        <div style="background:rgba(13,185,242,0.1);border:1px solid rgba(13,185,242,0.3);border-radius:0.75rem;padding:1rem">
-            <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer">
-                {{ form.is_active }}
-                <div>
-                    <div style="font-weight:600;font-size:0.875rem">Publish Immediately</div>
-                    <div style="font-size:0.75rem;color:rgba(255,255,255,0.6)">Make this asset visible in the marketplace</div>
+        {% endif %}
+
+        <div class="upload-grid">
+            <form method="POST" enctype="multipart/form-data" class="upload-main">
+                {% csrf_token %}
+                
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <h2 class="card-title">Basic Information</h2>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-field full">
+                            <label class="field-label">Asset Title <span class="required">*</span></label>
+                            {{ form.title }}
+                        </div>
+                        <div class="form-field">
+                            <label class="field-label">Category</label>
+                            {{ form.category }}
+                            <span class="field-hint">e.g., Characters, Environments, Props</span>
+                        </div>
+                        <div class="form-field">
+                            <label class="field-label">Asset Type <span class="required">*</span></label>
+                            {{ form.asset_type }}
+                        </div>
+                        <div class="form-field full">
+                            <label class="field-label">Description <span class="required">*</span></label>
+                            {{ form.description }}
+                            <span class="field-hint">Describe what's included and key features</span>
+                        </div>
+                    </div>
                 </div>
-            </label>
+
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                        </div>
+                        <h2 class="card-title">Upload Files</h2>
+                    </div>
+                    <div class="upload-zone">
+                        {{ form.file }}
+                        <div class="upload-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                        </div>
+                        <div class="upload-text">Drop your file here or click to browse</div>
+                        <div class="upload-hint">Maximum file size: 100MB</div>
+                        <div class="upload-formats">
+                            <span class="format-badge">FBX</span>
+                            <span class="format-badge">OBJ</span>
+                            <span class="format-badge">BLEND</span>
+                            <span class="format-badge">GLTF</span>
+                            <span class="format-badge">ZIP</span>
+                        </div>
+                    </div>
+                    <div class="form-grid" style="margin-top:1.5rem">
+                        <div class="form-field">
+                            <label class="field-label">Preview Image URL</label>
+                            {{ form.preview_image }}
+                            <span class="field-hint">Direct link to preview image</span>
+                        </div>
+                        <div class="form-field">
+                            <label class="field-label">File Format</label>
+                            {{ form.file_format }}
+                            <span class="field-hint">e.g., FBX, OBJ, BLEND</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <h2 class="card-title">Pricing & Tags</h2>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label class="field-label">Price (USD) <span class="required">*</span></label>
+                            {{ form.price }}
+                        </div>
+                        <div class="form-field">
+                            <label class="field-label">Tags</label>
+                            {{ form.tags }}
+                            <span class="field-hint">Comma-separated keywords</span>
+                        </div>
+                    </div>
+                    <div class="checkbox-card" style="margin-top:1rem">
+                        {{ form.is_free }}
+                        <label class="checkbox-label" for="{{ form.is_free.id_for_label }}">
+                            <strong>Make this asset free</strong>
+                            <span>Allow users to download without payment</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <h2 class="card-title">Publishing Options</h2>
+                    </div>
+                    <div class="checkbox-card">
+                        {{ form.is_active }}
+                        <label class="checkbox-label" for="{{ form.is_active.id_for_label }}">
+                            <strong>Publish immediately</strong>
+                            <span>Make this asset visible in the marketplace right away</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                        Upload Asset
+                    </button>
+                    <a href="{% url 'dashboard:marketplace_my_assets' %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+
+            <aside class="sidebar-sticky">
+                <div class="info-card">
+                    <div class="info-header">
+                        <div class="info-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <h3 class="info-title">Quality Guidelines</h3>
+                    </div>
+                    <ul class="info-list">
+                        <li>High-quality preview images</li>
+                        <li>Organized file structure</li>
+                        <li>Optimized for performance</li>
+                        <li>Original content only</li>
+                        <li>Include documentation</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-header">
+                        <div class="info-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                        </div>
+                        <h3 class="info-title">Tips for Success</h3>
+                    </div>
+                    <ul class="info-list tip-list">
+                        <li>Use descriptive titles</li>
+                        <li>Add multiple previews</li>
+                        <li>Write detailed descriptions</li>
+                        <li>Price competitively</li>
+                        <li>Update regularly</li>
+                    </ul>
+                </div>
+            </aside>
         </div>
     </div>
-    
-    <div style="display:flex;gap:1rem;margin-top:2rem">
-        <button type="submit" class="btn">Upload Asset</button>
-        <a href="{% url 'users:creator_dashboard' %}" class="btn btn-secondary">Cancel</a>
-    </div>
-</form>
-
-<style>
-input[type="text"],input[type="number"],textarea,select{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:0.5rem;padding:0.75rem;color:#fff;font-size:0.875rem}
-input[type="text"]:focus,input[type="number"]:focus,textarea:focus,select:focus{outline:none;border-color:#0db9f2;box-shadow:0 0 0 3px rgba(13,185,242,0.1)}
-input[type="file"]{width:100%;padding:0.75rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:0.5rem;color:rgba(255,255,255,0.7);font-size:0.875rem}
-input[type="checkbox"]{width:1.25rem;height:1.25rem;border-radius:0.25rem;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);cursor:pointer}
-textarea{min-height:100px;resize:vertical}
-::placeholder{color:rgba(255,255,255,0.3)}
-</style>
+</div>
 {% endblock %}

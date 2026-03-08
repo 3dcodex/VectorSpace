@@ -1,4 +1,3 @@
-import os
 from django.utils.text import slugify
 from django.core.mail import send_mail
 from django.conf import settings
@@ -46,7 +45,7 @@ def create_notification(user, notification_type, title, message, link=''):
     Returns:
         Notification object
     """
-    from apps.core.models import Notification
+    from apps.core.notifications import Notification
     
     notification = Notification.objects.create(
         user=user,

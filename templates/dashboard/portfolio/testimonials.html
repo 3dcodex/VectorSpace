@@ -1,0 +1,181 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Manage Testimonials - Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .testimonial-item {
+        background: rgba(255,255,255,0.05);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(13, 185, 242, 0.2);
+        position: relative;
+    }
+    
+    .testimonial-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+    
+    .testimonial-author-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .testimonial-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: linear-gradient(135deg, #0db9f2, #0ea5d4);
+    }
+    
+    .testimonial-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .stars {
+        color: #f59e0b;
+        font-size: 0.9rem;
+    }
+    
+    .badge {
+        padding: 0.3rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        display: inline-block;
+        margin-left: 0.5rem;
+    }
+    
+    .badge-featured {
+        background: rgba(245, 158, 11, 0.2);
+        color: #f59e0b;
+    }
+    
+    .badge-approved {
+        background: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+    }
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<div style="max-width: 1000px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1 style="margin: 0;">💬 Testimonials ({{ testimonials.count }})</h1>
+        <a href="{% url 'dashboard:add_testimonial' %}" class="btn btn-primary">+ Add Testimonial</a>
+    </div>
+    
+    {% if testimonials %}
+        {% for testimonial in testimonials %}
+            <div class="testimonial-item">
+                <div class="testimonial-header">
+                    <div class="testimonial-author-info">
+                        {% if testimonial.author_avatar %}
+                            <img src="{{ testimonial.author_avatar }}" alt="{{ testimonial.author_name }}" class="testimonial-avatar">
+                        {% else %}
+                            <div class="testimonial-avatar" style="display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">
+                                {{ testimonial.author_name|first|upper }}
+                            </div>
+                        {% endif %}
+                        
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.1rem;">{{ testimonial.author_name }}</h3>
+                            {% if testimonial.author_title %}
+                                <p style="color: #888; font-size: 0.85rem; margin: 0.2rem 0 0 0;">{{ testimonial.author_title }}</p>
+                            {% endif %}
+                            
+                            <div style="margin-top: 0.3rem;">
+                                <span class="stars">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= testimonial.rating %}★{% else %}☆{% endif %}
+                                    {% endfor %}
+                                </span>
+                                
+                                {% if testimonial.is_featured %}
+                                    <span class="badge badge-featured">Featured</span>
+                                {% endif %}
+                                
+                                {% if testimonial.is_approved %}
+                                    <span class="badge badge-approved">Approved</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial-actions">
+                        <button onclick="deleteTestimonial({{ testimonial.id }})" class="btn btn-sm btn-danger" title="Delete">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+                
+                <p style="color: #ddd; font-size: 1rem; line-height: 1.6; margin: 1rem 0;">
+                    {{ testimonial.content }}
+                </p>
+                
+                <small style="color: #888;">
+                    Added {{ testimonial.created_at|date:"M d, Y" }}
+                    {% if testimonial.related_asset %}
+                        • Related to: <a href="{% url 'marketplace:detail' testimonial.related_asset.id %}" style="color: #0db9f2;">{{ testimonial.related_asset.title }}</a>
+                    {% elif testimonial.related_game %}
+                        • Related to: <a href="{% url 'games:detail' testimonial.related_game.id %}" style="color: #0db9f2;">{{ testimonial.related_game.title }}</a>
+                    {% endif %}
+                </small>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div style="background: rgba(255,255,255,0.05); padding: 3rem; border-radius: 12px; text-align: center; border: 1px solid rgba(13, 185, 242, 0.2);">
+            <h3 style="color: #888;">No testimonials yet</h3>
+            <p style="color: #666;">Add testimonials from happy clients to build social proof</p>
+            <a href="{% url 'dashboard:add_testimonial' %}" class="btn btn-primary" style="margin-top: 1rem;">Add Your First Testimonial</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function deleteTestimonial(testimonialId) {
+    if (!confirm('Are you sure you want to delete this testimonial?')) return;
+    
+    fetch(`/dashboard/portfolio/testimonials/delete/${testimonialId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while deleting');
+    });
+}
+</script>
+{% endblock %}

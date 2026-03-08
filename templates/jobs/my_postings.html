@@ -1,0 +1,29 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}My Job Postings{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <h1 style="color: var(--text-light); font-size: 2.25rem; font-weight: 800; margin-bottom: 1.5rem;">My Job Postings</h1>
+
+    {% if jobs %}
+        <div class="applications-list">
+            {% for job in jobs %}
+                <div class="application-card">
+                    <div>
+                        <h4 style="color: var(--text-light); margin-bottom: 0.35rem;">{{ job.title }}</h4>
+                        <p style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">{{ job.company|default:'Company not set' }}</p>
+                        <p style="color: rgba(255,255,255,0.5); font-size: 0.75rem;">Posted: {{ job.created_at|date:'M d, Y' }}</p>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem; align-items: center;">
+                        <span class="badge status-{{ job.active|yesno:'accepted,rejected' }}">{{ job.active|yesno:'Active,Inactive' }}</span>
+                        <a href="{% url 'dashboard:jobs_detail' job.pk %}" class="btn-small btn-secondary" style="text-decoration: none;">View</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="color: rgba(255,255,255,0.65);">No job postings yet. <a href="{% url 'dashboard:jobs_post' %}" style="color: var(--primary);">Post your first job</a>.</p>
+    {% endif %}
+</div>
+{% endblock %}

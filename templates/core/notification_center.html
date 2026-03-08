@@ -1,0 +1,317 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Notification Center - Vector Space{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header with title and actions -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="bi bi-bell-fill text-primary me-2"></i>
+                    Notification Center
+                    {% if unread_count > 0 %}
+                        <span class="badge bg-danger ms-2">{{ unread_count }}</span>
+                    {% endif %}
+                </h1>
+                
+                <div class="d-flex gap-2">
+                    {% if unread_count > 0 %}
+                        <button class="btn btn-outline-primary" onclick="markAllAsRead()">
+                            <i class="bi bi-check-all"></i> Mark All Read
+                        </button>
+                    {% endif %}
+                    <a href="{% url 'core:notification_preferences' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-gear"></i> Preferences
+                    </a>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="type" class="form-label">Filter by Type</label>
+                            <select class="form-select" id="type" name="type" onchange="this.form.submit()">
+                                <option value="all" {% if current_filter_type == 'all' %}selected{% endif %}>All Types</option>
+                                {% for type_key, type_label in notification_types %}
+                                    <option value="{{ type_key }}" {% if current_filter_type == type_key %}selected{% endif %}>
+                                        {{ type_label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="read" class="form-label">Filter by Status</label>
+                            <select class="form-select" id="read" name="read" onchange="this.form.submit()">
+                                <option value="all" {% if current_filter_read == 'all' %}selected{% endif %}>All</option>
+                                <option value="unread" {% if current_filter_read == 'unread' %}selected{% endif %}>Unread</option>
+                                <option value="read" {% if current_filter_read == 'read' %}selected{% endif %}>Read</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-funnel"></i> Apply Filters
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Notifications List -->
+            <div class="card">
+                <div class="card-body">
+                    {% if notifications %}
+                        <div class="notification-list">
+                            {% for notification in notifications %}
+                                <div class="notification-item {% if not notification.read %}notification-unread{% endif %}" 
+                                     data-notification-id="{{ notification.id }}">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <!-- Notification icon based on type -->
+                                            <div class="notification-icon">
+                                                {% if notification.notification_type == 'purchase' %}
+                                                    <i class="bi bi-cart-check text-success"></i>
+                                                {% elif notification.notification_type == 'review' %}
+                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                {% elif notification.notification_type == 'comment' %}
+                                                    <i class="bi bi-chat-fill text-info"></i>
+                                                {% elif notification.notification_type == 'follow' %}
+                                                    <i class="bi bi-person-plus text-primary"></i>
+                                                {% elif notification.notification_type == 'system' %}
+                                                    <i class="bi bi-gear text-secondary"></i>
+                                                {% else %}
+                                                    <i class="bi bi-bell text-primary"></i>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="notification-content">
+                                                <h6 class="notification-title mb-1">{{ notification.title }}</h6>
+                                                <p class="notification-message mb-1">{{ notification.message }}</p>
+                                                <small class="text-muted">
+                                                    {{ notification.created_at|timesince }} ago
+                                                    {% if notification.priority == 'high' %}
+                                                        <span class="badge bg-warning ms-2">High Priority</span>
+                                                    {% elif notification.priority == 'urgent' %}
+                                                        <span class="badge bg-danger ms-2">Urgent</span>
+                                                    {% endif %}
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="notification-actions">
+                                                {% if notification.action_url %}
+                                                    <a href="{{ notification.action_url }}" class="btn btn-sm btn-primary me-2">
+                                                        Action
+                                                    </a>
+                                                {% elif notification.link %}
+                                                    <a href="{{ notification.link }}" class="btn btn-sm btn-outline-primary me-2">
+                                                        View
+                                                    </a>
+                                                {% endif %}
+                                                
+                                                {% if not notification.read %}
+                                                    <button class="btn btn-sm btn-outline-success me-2" 
+                                                            onclick="markAsRead({{ notification.id }})">
+                                                        <i class="bi bi-check"></i>
+                                                    </button>
+                                                {% endif %}
+                                                
+                                                <button class="btn btn-sm btn-outline-danger" 
+                                                        onclick="deleteNotification({{ notification.id }})">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Pagination -->
+                        {% if page_obj.has_other_pages %}
+                            <nav aria-label="Notifications pagination" class="mt-4">
+                                <ul class="pagination justify-content-center">
+                                    {% if page_obj.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=1{% if current_filter_type != 'all' %}&type={{ current_filter_type }}{% endif %}{% if current_filter_read != 'all' %}&read={{ current_filter_read }}{% endif %}">First</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if current_filter_type != 'all' %}&type={{ current_filter_type }}{% endif %}{% if current_filter_read != 'all' %}&read={{ current_filter_read }}{% endif %}">Previous</a>
+                                        </li>
+                                    {% endif %}
+                                    
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                                    </li>
+                                    
+                                    {% if page_obj.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if current_filter_type != 'all' %}&type={{ current_filter_type }}{% endif %}{% if current_filter_read != 'all' %}&read={{ current_filter_read }}{% endif %}">Next</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if current_filter_type != 'all' %}&type={{ current_filter_type }}{% endif %}{% if current_filter_read != 'all' %}&read={{ current_filter_read }}{% endif %}">Last</a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-bell display-1 text-muted"></i>
+                            <h4 class="mt-3">No notifications found</h4>
+                            <p class="text-muted">
+                                {% if current_filter_type != 'all' or current_filter_read != 'all' %}
+                                    Try adjusting your filters to see more notifications.
+                                {% else %}
+                                    You're all caught up! Notifications will appear here when you have new activity.
+                                {% endif %}
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// CSRF token for AJAX requests
+const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+function markAsRead(notificationId) {
+    fetch("{% url 'core:mark_notification_read' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({notification_id: notificationId})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update UI
+            const notificationElement = document.querySelector(`[data-notification-id="${notificationId}"]`);
+            notificationElement.classList.remove('notification-unread');
+            
+            // Remove mark as read button
+            const markReadBtn = notificationElement.querySelector('.btn-outline-success');
+            if (markReadBtn) markReadBtn.remove();
+            
+            // Update unread count in header
+            updateUnreadCount(data.unread_count);
+            
+            // Show success message
+            showAlert('Notification marked as read', 'success');
+        } else {
+            showAlert('Error marking notification as read', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Error marking notification as read', 'error');
+    });
+}
+
+function markAllAsRead() {
+    fetch("{% url 'core:mark_all_notifications_read' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Reload page to update UI
+            window.location.reload();
+        } else {
+            showAlert('Error marking all notifications as read', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Error marking all notifications as read', 'error');
+    });
+}
+
+function deleteNotification(notificationId) {
+    if (confirm('Are you sure you want to delete this notification?')) {
+        fetch("{% url 'core:delete_notification' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({notification_id: notificationId})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove notification from UI
+                const notificationElement = document.querySelector(`[data-notification-id="${notificationId}"]`);
+                notificationElement.remove();
+                
+                // Update unread count
+                updateUnreadCount(data.unread_count);
+                
+                showAlert('Notification deleted', 'success');
+            } else {
+                showAlert('Error deleting notification', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('Error deleting notification', 'error');
+        });
+    }
+}
+
+function updateUnreadCount(count) {
+    const badge = document.querySelector('.badge.bg-danger');
+    if (count > 0) {
+        if (badge) {
+            badge.textContent = count;
+        }
+    } else {
+        if (badge) {
+            badge.remove();
+        }
+        // Also hide "Mark All Read" button if no unread notifications
+        const markAllBtn = document.querySelector('button[onclick="markAllAsRead()"]');
+        if (markAllBtn) markAllBtn.style.display = 'none';
+    }
+}
+
+function showAlert(message, type) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const alert = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    const container = document.querySelector('.container-fluid');
+    container.insertAdjacentHTML('afterbegin', alert);
+    
+    // Auto dismiss after 5 seconds
+    setTimeout(() => {
+        const alertElement = document.querySelector('.alert');
+        if (alertElement) alertElement.remove();
+    }, 5000);
+}
+</script>
+{% endblock %}

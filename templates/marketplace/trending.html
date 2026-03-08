@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Trending Now - Vector Space{% endblock %}
+
+{% block extra_css %}
+<style>
+    .trending-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .trending-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .period-selector {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .period-btn {
+        padding: 0.7rem 1.5rem;
+        border-radius: 8px;
+        border: 2px solid rgba(13, 185, 242, 0.3);
+        background: rgba(255,255,255,0.03);
+        color: #ddd;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .period-btn:hover,
+    .period-btn.active {
+        border-color: #0db9f2;
+        background: rgba(13, 185, 242, 0.2);
+        color: #0db9f2;
+    }
+    
+    .trending-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+    
+    .trending-card {
+        background: rgba(255,255,255,0.05);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(13, 185, 242, 0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .trending-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(13, 185, 242, 0.3);
+    }
+    
+    .trend-ranking {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: linear-gradient(135deg, #f59e0b, #ef4444);
+        color: white;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        z-index: 10;
+    }
+    
+    .trend-image {
+        position: relative;
+        width: 100%;
+        height: 200px;
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        object-fit: cover;
+    }
+    
+    .trend-content {
+        padding: 1.5rem;
+    }
+    
+    .trend-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .trend-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        margin-top: 1rem;
+    }
+    
+    .trend-stat {
+        text-align: center;
+    }
+    
+    .trend-stat-value {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #0db9f2;
+    }
+    
+    .trend-stat-label {
+        font-size: 0.75rem;
+        color: #888;
+        margin-top: 0.3rem;
+    }
+    
+    .trend-score {
+        display: inline-block;
+        background: rgba(245, 158, 11, 0.2);
+        color: #f59e0b;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="trending-container">
+    <!-- Header -->
+    <div class="trending-header">
+        <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">🔥 Trending Now</h1>
+        <p style="color: #888; font-size: 1.1rem;">The hottest assets and games right now</p>
+    </div>
+    
+    <!-- Period Selector -->
+    <div class="period-selector">
+        <a href="?period=today{% if item_type %}{{ item_type }}{% endif %}" class="period-btn {% if period == 'today' %}active{% endif %}">
+            Today
+        </a>
+        <a href="?period=week{% if item_type %}{{ item_type }}{% endif %}" class="period-btn {% if period == 'week' %}active{% endif %}">
+            This Week
+        </a>
+        <a href="?period=month{% if item_type %}{{ item_type }}{% endif %}" class="period-btn {% if period == 'month' %}active{% endif %}">
+            This Month
+        </a>
+        <a href="?period=all_time{% if item_type %}{{ item_type }}{% endif %}" class="period-btn {% if period == 'all_time' %}active{% endif %}">
+            All Time
+        </a>
+    </div>
+    
+    <!-- Type Selector -->
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+            <a href="?period={{ period }}&type=all" class="btn {% if item_type == 'all' %}btn-primary{% else %}btn-secondary{% endif %}">
+                All
+            </a>
+            <a href="?period={{ period }}&type=asset" class="btn {% if item_type == 'asset' %}btn-primary{% else %}btn-secondary{% endif %}">
+                Assets
+            </a>
+            <a href="?period={{ period }}&type=game" class="btn {% if item_type == 'game' %}btn-primary{% else %}btn-secondary{% endif %}">
+                Games
+            </a>
+        </div>
+    </div>
+    
+    <!-- Trending Grid -->
+    {% if trending %}
+        <div class="trending-grid">
+            {% for item in trending %}
+                <a href="{% if item.asset %}{% url 'marketplace:detail' item.asset.id %}{% else %}{% url 'games:detail' item.game.id %}{% endif %}" 
+                   class="trending-card" style="text-decoration: none; color: inherit;">
+                    
+                    <div class="trend-image">
+                        {% if item.asset %}
+                            {% if item.asset.preview_image %}
+                                <img src="{{ item.asset.preview_image }}" alt="{{ item.asset.title }}">
+                            {% else %}
+                                <div style="height: 100%; background: linear-gradient(135deg, #0db9f2, #0ea5d4);"></div>
+                            {% endif %}
+                        {% else %}
+                            {% if item.game.thumbnail %}
+                                <img src="{{ item.game.thumbnail }}" alt="{{ item.game.title }}">
+                            {% else %}
+                                <div style="height: 100%; background: linear-gradient(135deg, #0db9f2, #0ea5d4);"></div>
+                            {% endif %}
+                        {% endif %}
+                        
+                        <div class="trend-ranking">{{ item.ranking }}</div>
+                    </div>
+                    
+                    <div class="trend-content">
+                        <div class="trend-title">
+                            {% if item.asset %}
+                                {{ item.asset.title|truncatewords:5 }}
+                            {% else %}
+                                {{ item.game.title|truncatewords:5 }}
+                            {% endif %}
+                        </div>
+                        
+                        <span class="badge-pill" style="background: rgba(13, 185, 242, 0.2); color: #0db9f2; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem;">
+                            {{ item.item_type|title }}
+                        </span>
+                        
+                        <div class="trend-score">🔥 Score: {{ item.score|floatformat:1 }}</div>
+                        
+                        <div class="trend-stats">
+                            <div class="trend-stat">
+                                <div class="trend-stat-value">{{ item.views_30d }}</div>
+                                <div class="trend-stat-label">Views</div>
+                            </div>
+                            <div class="trend-stat">
+                                <div class="trend-stat-value">{{ item.purchases_30d }}</div>
+                                <div class="trend-stat-label">Purchases</div>
+                            </div>
+                            <div class="trend-stat">
+                                <div class="trend-stat-value">{{ item.rating_avg|floatformat:1 }}</div>
+                                <div class="trend-stat-label">Rating</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 3rem; color: #888;">
+            <h3>No trending items yet for this period</h3>
+            <p>Check back soon!</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

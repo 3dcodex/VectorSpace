@@ -1,0 +1,489 @@
+{% extends 'dashboard_base.html' %}
+{% block title %}Settings | Vector Space{% endblock %}
+
+{% block extra_css %}
+<style>
+  .settings-header {
+    margin-bottom: 2rem;
+  }
+
+  .settings-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .settings-subtitle {
+    color: rgba(255,255,255,0.6);
+  }
+
+  .settings-section {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1.5rem;
+  }
+
+  .setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .setting-item:last-child {
+    border-bottom: none;
+  }
+
+  .setting-info h3 {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+
+  .setting-info p {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.85rem;
+  }
+
+  .toggle-switch {
+    position: relative;
+    width: 50px;
+    height: 26px;
+  }
+
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.1);
+    border-radius: 26px;
+    transition: 0.3s;
+  }
+
+  .toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 4px;
+    bottom: 4px;
+    background: #fff;
+    border-radius: 50%;
+    transition: 0.3s;
+  }
+
+  input:checked + .toggle-slider {
+    background: linear-gradient(135deg, #0db9f2, #a855f7);
+  }
+
+  input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #0db9f2, #a855f7);
+    color: #fff;
+  }
+
+  .btn-danger {
+    background: rgba(239,68,68,0.2);
+    border: 1px solid rgba(239,68,68,0.5);
+    color: #ef4444;
+  }
+
+  .tips-section {
+    background: linear-gradient(135deg, rgba(13,185,242,0.1), rgba(168,85,247,0.1));
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .tips-list {
+    list-style: none;
+    margin-top: 1rem;
+  }
+
+  .tips-list li {
+    color: rgba(255,255,255,0.8);
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+  }
+
+  .tips-list li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #0db9f2;
+    font-weight: 700;
+  }
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+  }
+  .modal-content {
+    background: #1a1a2e;
+    margin: 10% auto;
+    padding: 2rem;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .modal input {
+    width: 100%;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: #fff;
+  }
+  .modal-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .modal-buttons button {
+    flex: 1;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="settings-header">
+  <h1 class="settings-title">Settings</h1>
+  <p class="settings-subtitle">Manage your account preferences and security</p>
+</div>
+
+<div class="settings-section">
+  <h2 class="section-title">Account Settings</h2>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Email Address</h3>
+      <p id="email-display">{{ user.email }}</p>
+    </div>
+    <button class="btn btn-primary" onclick="changeEmail()">Change</button>
+  </div>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Password</h3>
+      <p>••••••••</p>
+    </div>
+    <button class="btn btn-primary" onclick="changePassword()">Update</button>
+  </div>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Profile Visibility</h3>
+      <p>Control who can see your profile</p>
+    </div>
+    <label class="toggle-switch">
+      <input type="checkbox" {% if settings.profile_visible %}checked{% endif %} onchange="toggleSetting('profile_visible', this.checked)">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+</div>
+
+<div class="settings-section">
+  <h2 class="section-title">Security</h2>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Two-Factor Authentication</h3>
+      <p>Add extra security to your account</p>
+    </div>
+    <label class="toggle-switch">
+      <input type="checkbox" {% if settings.two_factor_enabled %}checked{% endif %} onchange="toggleSetting('two_factor_enabled', this.checked)">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+</div>
+
+<div class="settings-section">
+  <h2 class="section-title">Email Notifications</h2>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Job Application Updates</h3>
+      <p>Get notified about application status changes</p>
+    </div>
+    <label class="toggle-switch">
+      <input type="checkbox" {% if settings.email_job_updates %}checked{% endif %} onchange="toggleSetting('email_job_updates', this.checked)">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Marketplace Sales</h3>
+      <p>Notifications when your assets are purchased</p>
+    </div>
+    <label class="toggle-switch">
+      <input type="checkbox" {% if settings.email_marketplace_sales %}checked{% endif %} onchange="toggleSetting('email_marketplace_sales', this.checked)">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Competition Announcements</h3>
+      <p>New competitions and results</p>
+    </div>
+    <label class="toggle-switch">
+      <input type="checkbox" {% if settings.email_competition_announcements %}checked{% endif %} onchange="toggleSetting('email_competition_announcements', this.checked)">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Community Replies</h3>
+      <p>When someone replies to your posts</p>
+    </div>
+    <label class="toggle-switch">
+      <input type="checkbox" {% if settings.email_community_replies %}checked{% endif %} onchange="toggleSetting('email_community_replies', this.checked)">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+</div>
+
+<div class="settings-section">
+  <h2 class="section-title">Platform Notifications</h2>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Direct Messages</h3>
+      <p>Notifications for new messages</p>
+    </div>
+    <label class="toggle-switch">
+      <input type="checkbox" {% if settings.notif_direct_messages %}checked{% endif %} onchange="toggleSetting('notif_direct_messages', this.checked)">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Comments on Posts</h3>
+      <p>When someone comments on your content</p>
+    </div>
+    <label class="toggle-switch">
+      <input type="checkbox" {% if settings.notif_comments %}checked{% endif %} onchange="toggleSetting('notif_comments', this.checked)">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Follower Activity</h3>
+      <p>When someone follows you</p>
+    </div>
+    <label class="toggle-switch">
+      <input type="checkbox" {% if settings.notif_follower_activity %}checked{% endif %} onchange="toggleSetting('notif_follower_activity', this.checked)">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+</div>
+
+<div class="settings-section">
+  <h2 class="section-title">Privacy Controls</h2>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Public Profile</h3>
+      <p>Make profile visible to all users</p>
+    </div>
+    <label class="toggle-switch">
+      <input type="checkbox" {% if settings.public_profile %}checked{% endif %} onchange="toggleSetting('public_profile', this.checked)">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Hide Email Address</h3>
+      <p>Don't show email on public profile</p>
+    </div>
+    <label class="toggle-switch">
+      <input type="checkbox" {% if settings.hide_email %}checked{% endif %} onchange="toggleSetting('hide_email', this.checked)">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+</div>
+
+<div class="settings-section">
+  <h2 class="section-title">Account Management</h2>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Deactivate Account</h3>
+      <p>Temporarily disable your account</p>
+    </div>
+    <button class="btn btn-danger" onclick="deactivateAccount()">Deactivate</button>
+  </div>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Delete Account</h3>
+      <p>Permanently delete your account and data</p>
+    </div>
+    <button class="btn btn-danger" onclick="deleteAccount()">Delete</button>
+  </div>
+</div>
+
+<div class="tips-section">
+  <h2 class="section-title">Tips for Building a Strong Profile</h2>
+  <ul class="tips-list">
+    <li>Add a professional profile image</li>
+    <li>Showcase your best projects</li>
+    <li>Keep your resume updated</li>
+    <li>Participate in community discussions</li>
+    <li>Enter competitions to gain visibility</li>
+  </ul>
+</div>
+
+<div id="emailModal" class="modal">
+  <div class="modal-content">
+    <h3 style="color:#fff;margin-bottom:1rem">Change Email</h3>
+    <input type="email" id="newEmail" placeholder="New email address">
+    <div class="modal-buttons">
+      <button class="btn btn-primary" onclick="saveEmail()">Save</button>
+      <button class="btn btn-danger" onclick="closeModal('emailModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="passwordModal" class="modal">
+  <div class="modal-content">
+    <h3 style="color:#fff;margin-bottom:1rem">Change Password</h3>
+    <input type="password" id="oldPassword" placeholder="Current password">
+    <input type="password" id="newPassword" placeholder="New password">
+    <div class="modal-buttons">
+      <button class="btn btn-primary" onclick="savePassword()">Save</button>
+      <button class="btn btn-danger" onclick="closeModal('passwordModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function getCookie(name) {
+  let value = `; ${document.cookie}`;
+  let parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+function toggleSetting(field, value) {
+  fetch('', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: `action=toggle_setting&field=${field}&value=${value}`
+  });
+}
+
+function changeEmail() {
+  document.getElementById('emailModal').style.display = 'block';
+}
+
+function changePassword() {
+  document.getElementById('passwordModal').style.display = 'block';
+}
+
+function closeModal(id) {
+  document.getElementById(id).style.display = 'none';
+}
+
+function saveEmail() {
+  const email = document.getElementById('newEmail').value;
+  fetch('', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: `action=update_email&email=${email}`
+  }).then(r => r.json()).then(data => {
+    if(data.success) {
+      document.getElementById('email-display').textContent = email;
+      closeModal('emailModal');
+      alert('Email updated successfully');
+    }
+  });
+}
+
+function savePassword() {
+  const oldPassword = document.getElementById('oldPassword').value;
+  const newPassword = document.getElementById('newPassword').value;
+  fetch('', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: `action=update_password&old_password=${oldPassword}&new_password=${newPassword}`
+  }).then(r => r.json()).then(data => {
+    if(data.success) {
+      closeModal('passwordModal');
+      alert('Password updated successfully');
+    } else {
+      alert(data.message);
+    }
+  });
+}
+
+function deactivateAccount() {
+  if(confirm('Are you sure you want to deactivate your account?')) {
+    fetch('', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': getCookie('csrftoken')
+      },
+      body: 'action=deactivate'
+    }).then(r => r.json()).then(data => {
+      if(data.success) window.location.href = data.redirect;
+    });
+  }
+}
+
+function deleteAccount() {
+  if(confirm('Are you sure? This action cannot be undone!')) {
+    fetch('', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': getCookie('csrftoken')
+      },
+      body: 'action=delete'
+    }).then(r => r.json()).then(data => {
+      if(data.success) window.location.href = data.redirect;
+    });
+  }
+}
+</script>
+{% endblock %}

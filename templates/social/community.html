@@ -1,0 +1,652 @@
+{% extends 'base.html' %}
+{% block title %}Community | Vector Space{% endblock %}
+
+{% block extra_css %}
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .hero {
+    background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(59,130,246,0.1));
+    padding: 4rem 2rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .hero h1 {
+    font-size: 3.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #22c55e, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+  }
+
+  .hero p {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.7);
+    max-width: 800px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 2rem;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #22c55e;
+  }
+
+  .stat-label {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  .section {
+    margin-bottom: 4rem;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .category-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .category-card:hover {
+    transform: translateY(-8px);
+    border-color: #22c55e;
+    background: rgba(34,197,94,0.1);
+  }
+
+  .category-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .category-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .category-desc {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .category-stats {
+    display: flex;
+    gap: 1rem;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+  }
+
+  .search-bar {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .search-wrapper {
+    position: relative;
+    flex: 1;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 0.9rem 1rem 0.9rem 3rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1rem;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.5);
+    font-size: 1.2rem;
+  }
+
+  .filter-select {
+    padding: 0.9rem 1rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+
+  .new-post-btn {
+    padding: 0.9rem 2rem;
+    background: linear-gradient(135deg, #22c55e, #3b82f6);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .new-post-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(34,197,94,0.4);
+  }
+
+  .posts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .post-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .post-card:hover {
+    border-color: #22c55e;
+    background: rgba(255,255,255,0.06);
+  }
+
+  .post-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .post-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #22c55e, #3b82f6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+
+  .post-meta {
+    flex: 1;
+  }
+
+  .post-author {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .post-time {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+  }
+
+  .post-category {
+    padding: 0.3rem 0.8rem;
+    background: rgba(34,197,94,0.2);
+    border: 1px solid rgba(34,197,94,0.3);
+    border-radius: 20px;
+    color: #22c55e;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .post-title {
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  .post-content {
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .post-footer {
+    display: flex;
+    gap: 2rem;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.9rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .post-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .values-section {
+    background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(59,130,246,0.1));
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 3rem;
+  }
+
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .value-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .value-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+
+  .value-text {
+    color: rgba(255,255,255,0.8);
+    line-height: 1.6;
+  }
+
+  .guidelines {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 3rem;
+  }
+
+  .guidelines-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .guideline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .guideline-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .guideline-text {
+    color: rgba(255,255,255,0.8);
+    line-height: 1.6;
+  }
+
+  .top-contributors {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .contributors-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1.5rem;
+  }
+
+  .contributor-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease;
+  }
+
+  .contributor-item:hover {
+    background: rgba(255,255,255,0.06);
+  }
+
+  .contributor-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #22c55e, #3b82f6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+  }
+
+  .contributor-info {
+    flex: 1;
+  }
+
+  .contributor-name {
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .contributor-posts {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: rgba(255,255,255,0.6);
+    border: 2px dashed rgba(255,255,255,0.1);
+    border-radius: 16px;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+  }
+
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 2.5rem; }
+    .hero-stats { flex-direction: column; gap: 1.5rem; }
+    .search-bar { flex-direction: column; }
+    .categories { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Community</h1>
+  <p>A collaborative space where developers, artists, and enthusiasts share ideas, ask questions, and connect. Join discussions on game development, 3D art, programming, and creative technology.</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-number">{{ posts.paginator.count }}+</div>
+      <div class="stat-label">Discussions</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">{{ top_contributors.count }}+</div>
+      <div class="stat-label">Active Members</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">5</div>
+      <div class="stat-label">Categories</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Discussion Categories</h2>
+    </div>
+    <div class="categories">
+      <div class="category-card" onclick="filterByCategory('game-development')">
+        <div class="category-icon">🎮</div>
+        <div class="category-name">Game Development</div>
+        <div class="category-desc">Technical discussions about programming, engines, and gameplay systems</div>
+        <div class="category-stats">
+          <span>💬 Discussions</span>
+        </div>
+      </div>
+      <div class="category-card" onclick="filterByCategory('3d-art')">
+        <div class="category-icon">🎨</div>
+        <div class="category-name">3D Modeling & Art</div>
+        <div class="category-desc">Techniques, tools, and workflows for 3D asset creation</div>
+        <div class="category-stats">
+          <span>💬 Discussions</span>
+        </div>
+      </div>
+      <div class="category-card" onclick="filterByCategory('industry')">
+        <div class="category-icon">💼</div>
+        <div class="category-name">Industry Discussion</div>
+        <div class="category-desc">Trends, career advice, and professional experiences</div>
+        <div class="category-stats">
+          <span>💬 Discussions</span>
+        </div>
+      </div>
+      <div class="category-card" onclick="filterByCategory('showcase')">
+        <div class="category-icon">✨</div>
+        <div class="category-name">Project Showcases</div>
+        <div class="category-desc">Share your projects and receive community feedback</div>
+        <div class="category-stats">
+          <span>💬 Discussions</span>
+        </div>
+      </div>
+      <div class="category-card" onclick="filterByCategory('support')">
+        <div class="category-icon">🛠️</div>
+        <div class="category-name">Technical Support</div>
+        <div class="category-desc">Get help with software and development tools</div>
+        <div class="category-stats">
+          <span>💬 Discussions</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Recent Discussions</h2>
+    </div>
+    
+    <div class="search-bar">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search discussions..." value="{{ search_query }}">
+      </div>
+      <select class="filter-select" id="categoryFilter" onchange="applyFilters()">
+        <option value="">All Categories</option>
+        {% for category in categories %}
+        <option value="{{ category.slug }}" {% if active_category == category.slug %}selected{% endif %}>{{ category.name }}</option>
+        {% endfor %}
+      </select>
+      <select class="filter-select" id="sortFilter" onchange="applyFilters()">
+        <option value="newest">Newest</option>
+        <option value="popular">Most Popular</option>
+        <option value="active">Most Active</option>
+      </select>
+    </div>
+
+    <div class="posts-list">
+      {% for post in posts %}
+      <div class="post-card" onclick="window.location.href='{% url 'social:post_detail' post.pk %}'">
+        <div class="post-header">
+          <div class="post-avatar">👤</div>
+          <div class="post-meta">
+            <div class="post-author">{{ post.author.username }}</div>
+            <div class="post-time">{{ post.created_at|timesince }} ago</div>
+          </div>
+          {% if post.category %}
+          <span class="post-category">{{ post.category.name }}</span>
+          {% endif %}
+        </div>
+        {% if post.title %}
+        <h3 class="post-title">{{ post.title }}</h3>
+        {% endif %}
+        <p class="post-content">{{ post.content|truncatewords:50 }}</p>
+        <div class="post-footer">
+          <span class="post-stat">
+            <span>👍</span>
+            <span>{{ post.upvotes|default:0 }}</span>
+          </span>
+          <span class="post-stat">
+            <span>💬</span>
+            <span>{{ post.comment_count|default:0 }} comments</span>
+          </span>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-state">
+        <div class="empty-icon">💬</div>
+        <h3>No discussions yet</h3>
+        <p>Be the first to start a conversation!</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="values-section">
+      <h2 class="section-title">Community Values</h2>
+      <p style="color: rgba(255,255,255,0.7); margin-top: 0.5rem;">Our community is built on respect, collaboration, and creativity.</p>
+      <div class="values-grid">
+        <div class="value-item">
+          <div class="value-icon">📚</div>
+          <div class="value-text">Share knowledge openly and help others learn</div>
+        </div>
+        <div class="value-item">
+          <div class="value-icon">💡</div>
+          <div class="value-text">Provide constructive feedback and suggestions</div>
+        </div>
+        <div class="value-item">
+          <div class="value-icon">🤝</div>
+          <div class="value-text">Respect other creators' work and ideas</div>
+        </div>
+        <div class="value-item">
+          <div class="value-icon">🌱</div>
+          <div class="value-text">Foster a supportive learning environment</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="guidelines">
+      <h2 class="section-title">Community Guidelines</h2>
+      <p style="color: rgba(255,255,255,0.7); margin-top: 0.5rem;">Follow these rules to maintain a positive environment.</p>
+      <div class="guidelines-list">
+        <div class="guideline-item">
+          <div class="guideline-icon">✅</div>
+          <div class="guideline-text">Be respectful toward all members</div>
+        </div>
+        <div class="guideline-item">
+          <div class="guideline-icon">🚫</div>
+          <div class="guideline-text">Avoid spam or promotional content without context</div>
+        </div>
+        <div class="guideline-item">
+          <div class="guideline-icon">©️</div>
+          <div class="guideline-text">Credit original creators and sources</div>
+        </div>
+        <div class="guideline-item">
+          <div class="guideline-icon">⚖️</div>
+          <div class="guideline-text">Avoid sharing copyrighted or illegal materials</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% if top_contributors %}
+  <section class="section">
+    <div class="top-contributors">
+      <h3 class="contributors-title">Top Contributors</h3>
+      {% for contributor in top_contributors %}
+      <div class="contributor-item" onclick="window.location.href='{% url 'social:profile' contributor.id %}'">
+        <div class="contributor-avatar">👤</div>
+        <div class="contributor-info">
+          <div class="contributor-name">{{ contributor.username }}</div>
+          <div class="contributor-posts">{{ contributor.post_count }} post{{ contributor.post_count|pluralize }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+
+<script>
+let searchTimeout;
+
+document.getElementById('searchInput')?.addEventListener('input', function() {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => applyFilters(), 500);
+});
+
+function filterByCategory(slug) {
+  const params = new URLSearchParams(window.location.search);
+  params.set('category', slug);
+  window.location.href = '?' + params.toString();
+}
+
+function applyFilters() {
+  const params = new URLSearchParams();
+  
+  const search = document.getElementById('searchInput')?.value;
+  if (search) params.set('search', search);
+  
+  const category = document.getElementById('categoryFilter')?.value;
+  if (category) params.set('category', category);
+  
+  const sort = document.getElementById('sortFilter')?.value;
+  if (sort) params.set('sort', sort);
+  
+  window.location.href = '?' + params.toString();
+}
+</script>
+{% endblock %}

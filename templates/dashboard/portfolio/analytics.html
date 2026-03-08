@@ -1,0 +1,284 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Portfolio Analytics - Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .analytics-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .date-filter {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .date-filter-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(13, 185, 242, 0.3);
+        background: rgba(255,255,255,0.05);
+        color: #ccc;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .date-filter-btn:hover,
+    .date-filter-btn.active {
+        background: rgba(13, 185, 242, 0.2);
+        border-color: #0db9f2;
+        color: #0db9f2;
+    }
+    
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+    
+    .metric-card {
+        background: rgba(255,255,255,0.05);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid rgba(13, 185, 242, 0.2);
+    }
+    
+    .metric-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #0db9f2;
+        margin: 0.5rem 0;
+    }
+    
+    .metric-label {
+        color: #888;
+        font-size: 0.9rem;
+    }
+    
+    .chart-container {
+        background: rgba(255,255,255,0.05);
+        padding: 2rem;
+        border-radius: 12px;
+        border: 1px solid rgba(13, 185, 242, 0.2);
+        margin-bottom: 2rem;
+    }
+    
+    .analytics-table {
+        width: 100%;
+        background: rgba(255,255,255,0.05);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(13, 185, 242, 0.2);
+    }
+    
+    .analytics-table th,
+    .analytics-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .analytics-table th {
+        background: rgba(13, 185, 242, 0.1);
+        color: #0db9f2;
+        font-weight: bold;
+    }
+    
+    .analytics-table tr:last-child td {
+        border-bottom: none;
+    }
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="analytics-header">
+    <h1 style="margin: 0;">📊 Portfolio Analytics</h1>
+    
+    <div class="date-filter">
+        <a href="?days=7" class="date-filter-btn {% if days == 7 %}active{% endif %}">7 Days</a>
+        <a href="?days=30" class="date-filter-btn {% if days == 30 %}active{% endif %}">30 Days</a>
+        <a href="?days=90" class="date-filter-btn {% if days == 90 %}active{% endif %}">90 Days</a>
+        <a href="?days=365" class="date-filter-btn {% if days == 365 %}active{% endif %}">Year</a>
+    </div>
+</div>
+
+<!-- Key Metrics -->
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-label">Total Views</div>
+        <div class="metric-value">{{ total_views|floatformat:0 }}</div>
+        <small style="color: #888;">Last {{ days }} days</small>
+    </div>
+    
+    <div class="metric-card">
+        <div class="metric-label">Revenue</div>
+        <div class="metric-value">${{ total_revenue|floatformat:2 }}</div>
+        <small style="color: #888;">Last {{ days }} days</small>
+    </div>
+    
+    <div class="metric-card">
+        <div class="metric-label">Avg. Time on Page</div>
+        <div class="metric-value">{{ avg_time }}s</div>
+        <small style="color: #888;">Average session duration</small>
+    </div>
+    
+    <div class="metric-card">
+        <div class="metric-label">Engagement Rate</div>
+        <div class="metric-value">
+            {% if total_views > 0 %}
+                {{ portfolio.total_likes|add:portfolio.total_downloads|floatformat:0 }}
+            {% else %}
+                0
+            {% endif %}
+        </div>
+        <small style="color: #888;">Likes + Downloads</small>
+    </div>
+</div>
+
+<!-- Views Chart -->
+<div class="chart-container">
+    <h2 style="margin-bottom: 1.5rem;">Views Over Time</h2>
+    <canvas id="viewsChart" height="80"></canvas>
+</div>
+
+<!-- Revenue Chart -->
+<div class="chart-container">
+    <h2 style="margin-bottom: 1.5rem;">Revenue Over Time</h2>
+    <canvas id="revenueChart" height="80"></canvas>
+</div>
+
+<!-- Daily Analytics Table -->
+<div style="margin-top: 3rem;">
+    <h2 style="margin-bottom: 1.5rem;">Daily Breakdown</h2>
+    
+    {% if analytics %}
+        <table class="analytics-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Views</th>
+                    <th>Unique Visitors</th>
+                    <th>Avg. Time (s)</th>
+                    <th>Downloads</th>
+                    <th>Revenue</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for day in analytics %}
+                    <tr>
+                        <td>{{ day.date|date:"M d, Y" }}</td>
+                        <td>{{ day.views }}</td>
+                        <td>{{ day.unique_visitors }}</td>
+                        <td>{{ day.avg_time_on_page }}</td>
+                        <td>{{ day.downloads }}</td>
+                        <td>${{ day.revenue|floatformat:2 }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="text-align: center; padding: 3rem; color: #888;">No analytics data available for this period</p>
+    {% endif %}
+</div>
+
+<!-- Chart.js for visualization -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const chartData = {{ chart_data|safe }};
+
+// Views Chart
+const viewsCtx = document.getElementById('viewsChart').getContext('2d');
+new Chart(viewsCtx, {
+    type: 'line',
+    data: {
+        labels: chartData.dates,
+        datasets: [{
+            label: 'Views',
+            data: chartData.views,
+            borderColor: '#0db9f2',
+            backgroundColor: 'rgba(13, 185, 242, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                    color: '#888'
+                }
+            },
+            x: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                    color: '#888'
+                }
+            }
+        }
+    }
+});
+
+// Revenue Chart
+const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+new Chart(revenueCtx, {
+    type: 'bar',
+    data: {
+        labels: chartData.dates,
+        datasets: [{
+            label: 'Revenue',
+            data: chartData.revenue,
+            backgroundColor: 'rgba(34, 197, 94, 0.6)',
+            borderColor: '#22c55e',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                    color: '#888',
+                    callback: function(value) {
+                        return '$' + value;
+                    }
+                }
+            },
+            x: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                    color: '#888'
+                }
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,194 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Community Discussions - Vector Space{% endblock %}
+
+{% block extra_css %}
+<style>
+    .community-hero {
+        background: linear-gradient(135deg, rgba(13, 185, 242, 0.15), rgba(10, 143, 199, 0.08));
+        border-bottom: 1px solid rgba(13, 185, 242, 0.2);
+        padding: 4rem 2rem;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .community-hero h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #0db9f2, #0a8fc7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+    }
+    .community-hero p {
+        font-size: 1.25rem;
+        color: rgba(255,255,255,0.7);
+        margin-bottom: 2rem;
+    }
+    .category-bar {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .category-btn {
+        padding: 0.75rem 1.5rem;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 2rem;
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    .category-btn:hover {
+        background: rgba(13,185,242,0.1);
+        border-color: rgba(13,185,242,0.3);
+        color: white;
+    }
+    .category-btn.active {
+        background: linear-gradient(135deg, rgba(13,185,242,0.2), rgba(13,185,242,0.1));
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+    .community-layout {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 2rem;
+    }
+    .create-post-box {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .create-post-box:hover {
+        border-color: rgba(13,185,242,0.3);
+    }
+    .post-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0db9f2, #0a8fc7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+    }
+    .post-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s;
+    }
+    .post-card:hover {
+        border-color: rgba(13,185,242,0.3);
+        box-shadow: 0 8px 30px rgba(13,185,242,0.15);
+    }
+    .sidebar {
+        position: sticky;
+        top: 100px;
+    }
+    .sidebar-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="community-hero">
+    <h1>💬 Community Discussions</h1>
+    <p>Connect with creators, developers, and gamers</p>
+    <a href="{% url 'social:create_post' %}" class="btn-primary">💬 Start Discussion</a>
+</div>
+
+<div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
+    <div class="category-bar">
+        <a href="{% url 'social:feed' %}" class="category-btn active">All</a>
+    </div>
+</div>
+
+<div class="community-layout">
+    <div>
+        <a href="{% url 'social:create_post' %}" style="text-decoration: none;">
+            <div class="create-post-box">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div class="post-avatar">{{ user.username|first|upper }}</div>
+                    <div style="flex: 1; padding: 0.875rem 1.25rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 2rem; color: rgba(255,255,255,0.5);">
+                        What would you like to discuss?
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        {% for post in posts %}
+            <div class="post-card">
+                <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="post-avatar">{{ post.author.username|first|upper }}</div>
+                    <div style="flex: 1;">
+                        <a href="{% url 'social:profile' post.author.pk %}" style="color: white; font-weight: 600; text-decoration: none;">{{ post.author.username }}</a>
+                        <div style="font-size: 0.875rem; color: rgba(255,255,255,0.5);">{{ post.created_at|timesince }} ago</div>
+                    </div>
+                </div>
+                
+                <div style="color: rgba(255,255,255,0.7); margin-bottom: 1rem;">{{ post.content|truncatewords:30 }}</div>
+                
+                <div style="display: flex; gap: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.875rem; color: rgba(255,255,255,0.6);">
+                    <span>⬆ <strong style="color: var(--primary);">{{ post.vote_score }}</strong></span>
+                    <span>💬 {{ post.comments.count }} comments</span>
+                    <a href="{% url 'social:post_detail' post.pk %}" style="color: var(--primary); text-decoration: none; font-weight: 600;">Read more →</a>
+                </div>
+            </div>
+        {% empty %}
+            <div style="text-align: center; padding: 4rem 2rem; background: rgba(255,255,255,0.02); border: 2px dashed rgba(13,185,242,0.2); border-radius: 1rem;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">💬</div>
+                <h3>No discussions yet</h3>
+                <p>Start the first conversation</p>
+                <a href="{% url 'social:create_post' %}" class="btn-primary" style="margin-top: 1rem;">Start Discussion</a>
+            </div>
+        {% endfor %}
+    </div>
+
+    <aside class="sidebar">
+        <div class="sidebar-card">
+            <h3 style="margin-bottom: 1rem;">🏆 Top Contributors</h3>
+            {% for contributor in top_contributors %}
+                <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: rgba(255,255,255,0.03); border-radius: 0.5rem; margin-bottom: 0.5rem;">
+                    <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #0db9f2, #0a8fc7); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.875rem;">
+                        {{ contributor.username|first|upper }}
+                    </div>
+                    <div>
+                        <div style="color: white; font-weight: 600; font-size: 0.875rem;">{{ contributor.username }}</div>
+                        <div style="color: rgba(255,255,255,0.5); font-size: 0.75rem;">{{ contributor.post_count }} posts</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="sidebar-card">
+            <h3 style="margin-bottom: 1rem;">📜 Community Rules</h3>
+            <div style="padding: 0.75rem; background: rgba(255,255,255,0.03); border-left: 3px solid var(--primary); border-radius: 0.25rem; margin-bottom: 0.75rem; color: rgba(255,255,255,0.7); font-size: 0.875rem;">✓ Be respectful</div>
+            <div style="padding: 0.75rem; background: rgba(255,255,255,0.03); border-left: 3px solid var(--primary); border-radius: 0.25rem; margin-bottom: 0.75rem; color: rgba(255,255,255,0.7); font-size: 0.875rem;">✓ No spam</div>
+            <div style="padding: 0.75rem; background: rgba(255,255,255,0.03); border-left: 3px solid var(--primary); border-radius: 0.25rem; margin-bottom: 0.75rem; color: rgba(255,255,255,0.7); font-size: 0.875rem;">✓ Credit creators</div>
+            <div style="padding: 0.75rem; background: rgba(255,255,255,0.03); border-left: 3px solid var(--primary); border-radius: 0.25rem; color: rgba(255,255,255,0.7); font-size: 0.875rem;">✓ No piracy</div>
+        </div>
+    </aside>
+</div>
+{% endblock %}

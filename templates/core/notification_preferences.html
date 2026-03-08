@@ -1,0 +1,356 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Notification Preferences - Vector Space{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-1">
+                        <i class="bi bi-gear text-primary me-2"></i>
+                        Notification Preferences
+                    </h1>
+                    <p class="text-muted mb-0">Customize how and when you receive notifications</p>
+                </div>
+                <a href="{% url 'core:notifications' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left"></i> Back to Notifications
+                </a>
+            </div>
+
+            <!-- Preferences Form -->
+            <div class="card">
+                <div class="card-body">
+                    <form id="preferences-form">
+                        {% csrf_token %}
+                        
+                        <!-- General Settings -->
+                        <div class="mb-4">
+                            <h5 class="card-title">
+                                <i class="bi bi-envelope text-primary me-2"></i>
+                                General Settings
+                            </h5>
+                            <p class="text-muted small mb-3">Control how you receive notifications</p>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="email_notifications" 
+                                               name="email_notifications" {% if preferences.email_notifications %}checked{% endif %}>
+                                        <label class="form-check-label" for="email_notifications">
+                                            <strong>Email Notifications</strong>
+                                            <br><small class="text-muted">Receive notifications via email</small>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="push_notifications" 
+                                               name="push_notifications" {% if preferences.push_notifications %}checked{% endif %}>
+                                        <label class="form-check-label" for="push_notifications">
+                                            <strong>Browser Notifications</strong>
+                                            <br><small class="text-muted">Show desktop notifications</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Category Settings -->
+                        <div class="mb-4">
+                            <h5 class="card-title">
+                                <i class="bi bi-tags text-primary me-2"></i>
+                                Notification Categories
+                            </h5>
+                            <p class="text-muted small mb-3">Choose which types of notifications you want to receive</p>
+                            
+                            <div class="row g-4">
+                                <!-- Marketplace Notifications -->
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i class="bi bi-shop text-success me-2 fs-5"></i>
+                                                <h6 class="mb-0">Marketplace</h6>
+                                            </div>
+                                            <p class="text-muted small mb-3">Asset purchases, reviews, approvals</p>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="marketplace_notifications" 
+                                                       name="marketplace_notifications" {% if preferences.marketplace_notifications %}checked{% endif %}>
+                                                <label class="form-check-label" for="marketplace_notifications">
+                                                    Enable marketplace notifications
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Social Notifications -->
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i class="bi bi-people text-info me-2 fs-5"></i>
+                                                <h6 class="mb-0">Social</h6>
+                                            </div>
+                                            <p class="text-muted small mb-3">Follows, comments, likes, mentions</p>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="social_notifications" 
+                                                       name="social_notifications" {% if preferences.social_notifications %}checked{% endif %}>
+                                                <label class="form-check-label" for="social_notifications">
+                                                    Enable social notifications
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Job Notifications -->
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i class="bi bi-briefcase text-warning me-2 fs-5"></i>
+                                                <h6 class="mb-0">Jobs</h6>
+                                            </div>
+                                            <p class="text-muted small mb-3">Applications, offers, job matches</p>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="job_notifications" 
+                                                       name="job_notifications" {% if preferences.job_notifications %}checked{% endif %}>
+                                                <label class="form-check-label" for="job_notifications">
+                                                    Enable job notifications
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Mentorship Notifications -->
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i class="bi bi-person-workspace text-purple me-2 fs-5"></i>
+                                                <h6 class="mb-0">Mentorship</h6>
+                                            </div>
+                                            <p class="text-muted small mb-3">Requests, sessions, mentor updates</p>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="mentorship_notifications" 
+                                                       name="mentorship_notifications" {% if preferences.mentorship_notifications %}checked{% endif %}>
+                                                <label class="form-check-label" for="mentorship_notifications">
+                                                    Enable mentorship notifications
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- System Notifications -->
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i class="bi bi-gear text-secondary me-2 fs-5"></i>
+                                                <h6 class="mb-0">System & Security</h6>
+                                            </div>
+                                            <p class="text-muted small mb-3">Important updates, security alerts, maintenance notices</p>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="system_notifications" 
+                                                       name="system_notifications" {% if preferences.system_notifications %}checked{% endif %}>
+                                                <label class="form-check-label" for="system_notifications">
+                                                    Enable system notifications <small class="text-muted">(Recommended)</small>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <button type="button" class="btn btn-outline-secondary" onclick="resetToDefaults()">
+                                    <i class="bi bi-arrow-clockwise"></i> Reset to Defaults
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-outline-danger me-2" onclick="disableAll()">
+                                    <i class="bi bi-bell-slash"></i> Disable All
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check"></i> Save Preferences
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Test Notifications (for development) -->
+            {% if user.is_staff %}
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="bi bi-bug text-warning me-2"></i>
+                            Development Tools
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small mb-3">Tools for testing notifications (staff only)</p>
+                        <button type="button" class="btn btn-outline-info btn-sm" onclick="sendTestNotification()">
+                            <i class="bi bi-bell"></i> Send Test Notification
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// CSRF token for AJAX requests
+const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+// Handle form submission
+document.getElementById('preferences-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const preferences = {};
+    
+    // Convert form data to object
+    const checkboxes = ['email_notifications', 'push_notifications', 'marketplace_notifications',
+                       'social_notifications', 'job_notifications', 'mentorship_notifications',
+                       'system_notifications'];
+    
+    checkboxes.forEach(name => {
+        preferences[name] = formData.has(name);
+    });
+    
+    // Show loading state
+    const submitBtn = document.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+    submitBtn.disabled = true;
+    
+    // Send preferences update
+    fetch("{% url 'core:notification_preferences' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify(preferences)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Preferences saved successfully!', 'success');
+        } else {
+            showAlert('Error saving preferences', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Error saving preferences', 'error');
+    })
+    .finally(() => {
+        // Reset button state
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+});
+
+function resetToDefaults() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = true;
+    });
+    showAlert('Reset to default settings', 'info');
+}
+
+function disableAll() {
+    if (confirm('Are you sure you want to disable all notifications?')) {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            if (checkbox.name !== 'system_notifications') { // Keep system notifications enabled
+                checkbox.checked = false;
+            }
+        });
+        showAlert('All notifications disabled (except system notifications)', 'warning');
+    }
+}
+
+function sendTestNotification() {
+    fetch("{% url 'core:send_test_notification' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({
+            type: 'system',
+            title: 'Test Notification',
+            message: 'This is a test notification to verify your settings are working correctly.'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Test notification sent!', 'success');
+        } else {
+            showAlert('Error sending test notification', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Error sending test notification', 'error');
+    });
+}
+
+function showAlert(message, type) {
+    const alertClass = type === 'success' ? 'alert-success' : 
+                      type === 'error' ? 'alert-danger' : 
+                      type === 'warning' ? 'alert-warning' : 'alert-info';
+    
+    const alert = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    const container = document.querySelector('.container-fluid');
+    container.insertAdjacentHTML('afterbegin', alert);
+    
+    // Auto dismiss after 5 seconds
+    setTimeout(() => {
+        const alertElement = document.querySelector('.alert');
+        if (alertElement) alertElement.remove();
+    }, 5000);
+}
+
+// Add custom purple color for mentorship icons
+const style = document.createElement('style');
+style.textContent = `
+    .text-purple {
+        color: #6f42c1 !important;
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

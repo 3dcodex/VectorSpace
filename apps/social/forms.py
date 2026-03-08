@@ -4,8 +4,9 @@ from .models import Post, Comment, Message
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['content', 'media']
+        fields = ['title', 'content', 'category', 'media']
         widgets = {
+            'title': forms.TextInput(attrs={'placeholder': 'Post title...'}),
             'content': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Share your thoughts...'}),
         }
 

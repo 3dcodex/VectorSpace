@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
 from .forms import UserRegistrationForm
-from .models import User, UserProfile
+from .models import User
 
 def signup_view(request):
     if request.method == 'POST':
@@ -60,7 +60,7 @@ def login_view(request):
         if user is not None:
             if user.email_verified:
                 login(request, user)
-                return redirect('users:dashboard')
+                return redirect('dashboard:overview')
             else:
                 messages.error(request, 'Please verify your email first.')
         else:
@@ -75,78 +75,6 @@ def logout_view(request):
 
 @login_required
 def dashboard_view(request):
-    role = request.user.profile.role
-    
-    if role == 'CREATOR':
-        return redirect('users:creator_dashboard')
-    elif role == 'MENTOR':
-        return redirect('users:mentor_dashboard')
-    elif role == 'RECRUITER':
-        return redirect('users:recruiter_dashboard')
-    elif role == 'ADMIN':
-        return redirect('admin:index')
-    else:
-        return redirect('users:user_dashboard')
+    """Unified dashboard for all users"""
+    return render(request, 'users/dashboard.html')
 
-@login_required
-def user_dashboard(request):
-    return render(request, 'users/dashboards/user_dashboard.html')
-
-@login_required
-def creator_dashboard(request):
-    if request.user.profile.role != 'CREATOR':
-        return redirect('users:dashboard')
-    
-    from apps.marketplace.models import Asset
-    from apps.games.models import Game
-    
-    assets = Asset.objects.filter(seller=request.user)
-    games = Game.objects.filter(developer=request.user)
-    
-    context = {
-        'total_assets': assets.count(),
-        'total_games': games.count(),
-        'total_downloads': sum(a.downloads for a in assets) + sum(g.downloads for g in games),
-        'recent_assets': assets.order_by('-created_at')[:5],
-        'recent_games': games.order_by('-created_at')[:3],
-    }
-    return render(request, 'users/dashboards/creator_dashboard.html', context)
-
-@login_required
-def mentor_dashboard(request):
-    if request.user.profile.role != 'MENTOR':
-        return redirect('users:dashboard')
-    
-    from apps.mentorship.models import MentorProfile, Session
-    
-    try:
-        mentor_profile = MentorProfile.objects.get(mentor=request.user)
-        sessions = Session.objects.filter(mentor_profile=mentor_profile)
-        context = {
-            'mentor_profile': mentor_profile,
-            'total_sessions': sessions.count(),
-            'upcoming_sessions': sessions.filter(status='scheduled').order_by('scheduled_time')[:5],
-        }
-    except MentorProfile.DoesNotExist:
-        context = {'mentor_profile': None}
-    
-    return render(request, 'users/dashboards/mentor_dashboard.html', context)
-
-@login_required
-def recruiter_dashboard(request):
-    if request.user.profile.role != 'RECRUITER':
-        return redirect('users:dashboard')
-    
-    from apps.jobs.models import Job, Application
-    
-    jobs = Job.objects.filter(recruiter=request.user)
-    applications = Application.objects.filter(job__recruiter=request.user)
-    
-    context = {
-        'total_jobs': jobs.count(),
-        'active_jobs': jobs.filter(active=True).count(),
-        'total_applications': applications.count(),
-        'recent_jobs': jobs.order_by('-created_at')[:5],
-        'recent_applications': applications.order_by('-applied_at')[:5],
-    }
-    return render(request, 'users/dashboards/recruiter_dashboard.html', context)
