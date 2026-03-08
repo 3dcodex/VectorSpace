@@ -26,6 +26,21 @@ echo Adding all files...
 git add .
 if errorlevel 1 goto :error
 
+REM Warn before committing if deletions are staged.
+set "has_deletions="
+for /f "delims=" %%d in ('git diff --cached --name-status ^| findstr /B /C:"D"') do set "has_deletions=1"
+if defined has_deletions (
+    echo.
+    echo WARNING: The following deletions are staged:
+    git diff --cached --name-status | findstr /B /C:"D"
+    echo.
+    set /p confirm_delete=Continue with commit and push including deletions? (y/N): 
+    if /I not "%confirm_delete%"=="Y" (
+        echo Commit aborted by user. Staged changes remain for review.
+        goto :done
+    )
+)
+
 REM If nothing is staged, skip commit/push.
 git diff --cached --quiet
 if errorlevel 1 goto :has_changes
