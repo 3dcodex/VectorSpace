@@ -137,6 +137,39 @@ ALL_DOCUMENTATION.md   Consolidated extended project documentation
 - Logging output is written to `logs/django.log` and console.
 - `DEBUG=True` is enabled in development settings.
 
+## Model Context Protocol (MCP)
+
+The Model Context Protocol (MCP) is an open standard that defines how applications share context with large language models (LLMs). MCP provides a standardized way to connect AI models to different data sources and tools, enabling them to work together more effectively.
+
+### MCP in Vector Space
+
+This project uses MCP to extend the capabilities of the Copilot coding agent by connecting it to:
+
+- Project-specific tools and services
+- Custom data sources and APIs
+- Development automation scripts
+- Testing and debugging utilities
+
+### MCP Configuration
+
+MCP servers can be defined through:
+
+- **JSON MCP Configuration**: Define MCP server connections in `.mcp.json` or similar configuration files
+- **Custom Agents**: Create specialized agents with domain-specific knowledge and tool access
+
+### Custom Agents
+
+Custom agents can be configured to:
+
+- Access project-specific documentation
+- Execute domain-specific commands
+- Integrate with external services
+- Provide specialized code generation and refactoring capabilities
+
+For more information:
+- [MCP Configuration Guide](https://modelcontextprotocol.io/docs)
+- [Writing Custom Agents](https://docs.github.com/en/copilot/customizing-copilot/creating-custom-agents)
+
 ## License
 
 This repository currently does not define a license file. Add a `LICENSE` if you want explicit usage terms.
