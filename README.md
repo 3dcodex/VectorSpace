@@ -4,6 +4,33 @@ Vector Space is a Django-based creator ecosystem platform that combines a public
 
 Users can discover and buy digital assets, publish games, post jobs, join mentorship sessions, participate in competitions, build creator portfolios, and use workspace/AI tools.
 
+## Role System (Vector Model)
+
+- Base role: `VECTOR` (every new account starts here)
+- Upgrade roles: `CREATOR`, `DEVELOPER`, `RECRUITER`, `MENTOR`
+- Multi-role support:
+	- `primary_role` controls main dashboard context
+	- `secondary_roles` unlock additional toolsets
+
+### Dynamic Sidebar
+
+The dashboard sidebar expands based on user capabilities and is grouped for UX:
+
+- `Core`: Dashboard, Marketplace, Games, Community, Competitions, Jobs, Mentorship
+- `Professional Tools`: Role-specific tools (assets, games, hiring, mentorship management)
+- `Collaboration`: Messages, Workspaces
+- `Personal`: AI Assistant, Notifications, My Profile, Settings, Resume Builder
+
+### Admin Role Impersonation
+
+Admins/moderators can preview UX for any role from one account:
+
+- Go to `Dashboard -> Settings -> Admin Tools`
+- Use **View As Role** to impersonate `VECTOR`, `CREATOR`, `DEVELOPER`, `RECRUITER`, or `MENTOR`
+- Select **Moderator Mode** to return to moderation/admin UX
+
+This impersonation does not require creating multiple test accounts.
+
 ## Core Modules
 
 - `apps.marketplace`: Asset listings, uploads, purchases, wishlist, collections, search/discovery
@@ -134,15 +161,28 @@ Services from `docker-compose.yml`:
 - AI Assistant: `/ai/`
 - API: `/api/v1/`
 
+### Public vs Dashboard Separation
+
+- Public discovery pages remain under public routes:
+	- `/marketplace/`, `/games/`, `/jobs/`, `/mentorship/`, `/community/`, `/competitions/`
+- User-specific actions and management stay under dashboard routes:
+	- `/dashboard/*`
+
 ## Testing
 
 Run tests:
 
 ```bash
-pytest
+python -m pytest -q
 ```
 
 Pytest is configured with Django settings in `pytest.ini` and includes coverage reporting.
+
+Optional URL audit (template URL tag validation):
+
+```bash
+python scripts/utils/audit_template_urls.py
+```
 
 ## Project Structure
 
@@ -212,4 +252,4 @@ For more information:
 
 ## License
 
-This repository currently does not define a license file. Add a `LICENSE` if you want explicit usage terms.
+This project is licensed under the MIT License. See `LICENSE` for full terms.
