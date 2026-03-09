@@ -57,7 +57,7 @@
         <div class="card-icon">🎨</div>
         <h3 class="card-title">3D Marketplace</h3>
         <p class="card-text">Your Uploads: <strong style="background: linear-gradient(135deg, var(--primary), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ user.assets.count }}</strong></p>
-        <a href="{% url 'marketplace:upload' %}" class="card-link">Upload Asset</a>
+        <a href="{% url 'dashboard:marketplace_upload' %}" class="card-link">Upload Asset</a>
         <br>
         <a href="/dashboard/assets/" class="card-link">My Assets</a>
     </div>
@@ -68,7 +68,7 @@
         <p class="card-text">Applications: <strong style="background: linear-gradient(135deg, var(--success), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ user.applications.count }}</strong></p>
         <a href="/dashboard/jobs/applications/" class="card-link">My Applications</a>
         <br>
-        <a href="{% url 'jobs:post' %}" class="card-link">Post Job</a>
+        <a href="{% url 'dashboard:jobs_post' %}" class="card-link">Post Job</a>
     </div>
     
     <div class="card" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(20, 24, 41, 0.8));">
@@ -97,7 +97,7 @@
         <div class="card-icon">🎮</div>
         <h3 class="card-title">Game Publishing</h3>
         <p class="card-text">Published Games: <strong style="background: linear-gradient(135deg, var(--primary), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ user.games.count }}</strong></p>
-        <a href="{% url 'games:publish' %}" class="card-link">Publish Game</a>
+        <a href="{% url 'dashboard:games_publish' %}" class="card-link">Publish Game</a>
         <br>
         <a href="/dashboard/games/" class="card-link">My Games</a>
     </div>
@@ -108,16 +108,16 @@
         <p class="card-text">Your Submissions: <strong style="background: linear-gradient(135deg, var(--purple), var(--pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ user.competition_submissions.count }}</strong></p>
         <a href="{% url 'competitions:list' %}" class="card-link">Browse</a>
         <br>
-        <a href="{% url 'competitions:create' %}" class="card-link">Create</a>
+        <a href="{% url 'dashboard:competitions_create' %}" class="card-link">Create</a>
     </div>
     
     <div class="card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(20, 24, 41, 0.8));">
         <div class="card-icon">👥</div>
         <h3 class="card-title">Community</h3>
         <p class="card-text">Your Posts: <strong style="background: linear-gradient(135deg, var(--success), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ user.posts.count }}</strong></p>
-        <a href="{% url 'social:create_post' %}" class="card-link">Create Post</a>
+        <a href="{% url 'dashboard:social_create_post' %}" class="card-link">Create Post</a>
         <br>
-        <a href="{% url 'social:messages' %}" class="card-link">Messages</a>
+        <a href="{% url 'dashboard:social_messages' %}" class="card-link">Messages</a>
     </div>
     
     <div class="card" style="background: linear-gradient(135deg, rgba(13, 185, 242, 0.1), rgba(20, 24, 41, 0.8));">
@@ -132,7 +132,7 @@
         <div class="card-icon">👔</div>
         <h3 class="card-title">Recruiter Dashboard</h3>
         <p class="card-text">Active Job Postings: <strong style="background: linear-gradient(135deg, var(--primary), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ user.job_postings.count }}</strong></p>
-        <a href="{% url 'jobs:recruiter_dashboard' %}" class="card-link">View Dashboard</a>
+        <a href="{% url 'dashboard:jobs_recruiter' %}" class="card-link">View Dashboard</a>
     </div>
     {% endif %}
     

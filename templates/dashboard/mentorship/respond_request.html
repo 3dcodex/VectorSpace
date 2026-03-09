@@ -1,0 +1,20 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Respond to Request{% endblock %}
+
+{% block dashboard_content %}
+<div style="padding:1.5rem;max-width:760px;">
+    <div style="background:#101b30;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:1.25rem;">
+        <h1 style="color:#f6fbff;font-weight:800;">Respond to Request</h1>
+        <p style="color:#9ec8dd;">{{ request.mentee.username }} requested mentorship on <strong>{{ request.topic }}</strong>.</p>
+        <p style="color:#d7eaf8;white-space:pre-wrap;">{{ request.description }}</p>
+
+        <form method="post" class="d-flex gap-2 flex-wrap">
+            {% csrf_token %}
+            <button name="action" value="accept" type="submit" class="btn btn-success">Accept Request</button>
+            <button name="action" value="reject" type="submit" class="btn btn-danger">Reject Request</button>
+            <a href="{% url 'dashboard:mentorship_request_detail' request.pk %}" class="btn btn-outline-light">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

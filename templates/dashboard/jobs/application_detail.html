@@ -1,0 +1,58 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Application Review{% endblock %}
+
+{% block extra_css %}
+<style>
+.review-wrap { padding: 1.5rem; display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; }
+.panel { background: linear-gradient(150deg, #121f39 0%, #0b1425 100%); border: 1px solid rgba(13,185,242,0.2); border-radius: 16px; padding: 1.2rem; }
+.h { color: #f6fbff; font-weight: 800; }
+.meta { color: #9ec8dd; }
+.cover { white-space: pre-wrap; color: #d8ecf8; line-height: 1.6; }
+.input, select { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #eff9ff; border-radius: 10px; padding: 0.55rem 0.65rem; }
+.cta { width: 100%; margin-top: 0.8rem; }
+@media (max-width: 900px) { .review-wrap { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="review-wrap">
+    <section class="panel">
+        <h2 class="h">Application Details</h2>
+        <p class="meta">{{ application.applicant.username }} applied for <strong>{{ application.job.title }}</strong></p>
+        <hr style="border-color:rgba(255,255,255,0.12)">
+
+        <h5 class="h" style="font-size:1rem;">Candidate</h5>
+        <p class="meta mb-2">{{ application.applicant.username }} · {{ application.applicant.email }}</p>
+
+        <h5 class="h" style="font-size:1rem;">Cover Letter</h5>
+        <div class="cover">{{ application.cover_letter }}</div>
+
+        <h5 class="h mt-3" style="font-size:1rem;">Resume</h5>
+        {% if application.resume %}
+            <a class="btn btn-outline-info btn-sm" href="{{ application.resume.url }}" target="_blank" rel="noopener">Open Resume</a>
+        {% else %}
+            <p class="meta">No resume uploaded.</p>
+        {% endif %}
+    </section>
+
+    <aside class="panel">
+        <h3 class="h" style="font-size:1.1rem;">Update Status</h3>
+        <p class="meta">Current: <strong>{{ application.get_status_display }}</strong></p>
+
+        <form method="post" action="{% url 'dashboard:jobs_update_status' application.pk %}">
+            {% csrf_token %}
+            <label class="meta" for="id_status">Application Status</label>
+            <select id="id_status" name="status" class="input">
+                <option value="pending" {% if application.status == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="reviewed" {% if application.status == 'reviewed' %}selected{% endif %}>Reviewed</option>
+                <option value="accepted" {% if application.status == 'accepted' %}selected{% endif %}>Accepted</option>
+                <option value="rejected" {% if application.status == 'rejected' %}selected{% endif %}>Rejected</option>
+            </select>
+            <button class="btn btn-info cta" type="submit">Save Status</button>
+        </form>
+
+        <a href="{% url 'dashboard:jobs_applicants_detail' application.job.pk %}" class="btn btn-outline-light btn-sm mt-2">Back to Applicants</a>
+    </aside>
+</div>
+{% endblock %}

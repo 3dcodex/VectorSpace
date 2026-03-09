@@ -572,7 +572,7 @@
             {% for asset in top_rated_assets %}
                 <div class="content-card">
                     {% if asset.preview_image %}
-                        <img src="{{ asset.preview_image }}" alt="{{ asset.title }}" class="content-card-image">
+                        <img alt="{{ asset.title }}" src="{{ asset.preview_image }}" class="content-card-image">
                     {% else %}
                         <div class="content-card-image">🎨</div>
                     {% endif %}
@@ -654,7 +654,7 @@
                     {% for asset in featured_assets|slice:":3" %}
                         <div class="content-card">
                             {% if asset.preview_image %}
-                                <img src="{{ asset.preview_image }}" alt="{{ asset.title }}" class="content-card-image">
+                                <img alt="{{ asset.title }}" src="{{ asset.preview_image }}" class="content-card-image">
                             {% else %}
                                 <div class="content-card-image">🎨</div>
                             {% endif %}
@@ -690,7 +690,7 @@
                     {% for game in featured_games|slice:":3" %}
                         <div class="content-card">
                             {% if game.thumbnail %}
-                                <img src="{{ game.thumbnail }}" alt="{{ game.title }}" class="content-card-image">
+                                <img alt="{{ game.title }}" src="{{ game.thumbnail }}" class="content-card-image">
                             {% else %}
                                 <div class="content-card-image">🎮</div>
                             {% endif %}

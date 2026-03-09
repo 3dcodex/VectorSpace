@@ -1,0 +1,760 @@
+{% extends 'dashboard_base.html' %}
+{% block title %}Dashboard - Vector Space Ecosystem{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Ecosystem Dashboard Design */
+  .ecosystem-header {
+    background: linear-gradient(135deg, rgba(13,185,242,0.1), rgba(168,85,247,0.1));
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .role-badges {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  .role-badge {
+    padding: 0.5rem 1.25rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .role-badge.primary {
+    background: linear-gradient(135deg, #0db9f2, #a855f7);
+    color: #fff;
+  }
+
+  .role-badge.secondary {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.8);
+  }
+
+  .ecosystem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .service-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .service-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(13,185,242,0.5);
+    box-shadow: 0 8px 32px rgba(13,185,242,0.2);
+  }
+
+  .service-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .service-icon {
+    font-size: 2.5rem;
+  }
+
+  .service-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+  }
+
+  .service-type {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .service-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .stat-box {
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    padding: 0.75rem;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .stat-value.highlight {
+    background: linear-gradient(135deg, #0db9f2, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .reputation-section {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .reputation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .reputation-card {
+    text-align: center;
+    padding: 1.5rem;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .reputation-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .reputation-score {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #0db9f2, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0.5rem 0;
+  }
+
+  .reputation-label {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.7);
+    font-weight: 600;
+  }
+
+  .trust-level {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+  }
+
+  .trust-star {
+    color: #fbbf24;
+    font-size: 0.9rem;
+  }
+
+  .service-flow {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .flow-diagram {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+  }
+
+  .flow-node {
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    min-width: 120px;
+  }
+
+  .flow-node.active {
+    border-color: #0db9f2;
+    background: rgba(13,185,242,0.1);
+  }
+
+  .flow-arrow {
+    font-size: 1.5rem;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .flow-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .flow-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-subtitle {
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 1.5rem;
+  }
+
+  .quick-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+
+  .action-btn {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #0db9f2, #a855f7);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(13,185,242,0.4);
+    color: #fff;
+  }
+
+  .action-btn.secondary {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .action-btn.secondary:hover {
+    background: rgba(255,255,255,0.15);
+    border-color: rgba(13,185,242,0.5);
+  }
+
+  .badge-showcase {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .badge-item {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .badge-item.legendary {
+    background: linear-gradient(135deg, rgba(234,179,8,0.2), rgba(168,85,247,0.2));
+    border-color: rgba(234,179,8,0.5);
+  }
+
+  .badge-item.epic {
+    background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(236,72,153,0.2));
+    border-color: rgba(168,85,247,0.5);
+  }
+
+  .recent-activity {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .activity-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0 0;
+  }
+
+  .activity-item {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .activity-item:last-child {
+    border-bottom: none;
+  }
+
+  .activity-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+  }
+
+  .activity-content {
+    flex: 1;
+  }
+
+  .activity-title {
+    color: #fff;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .activity-meta {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ecosystem-header">
+  <h1 style="color:#fff;font-size:2rem;font-weight:800;margin-bottom:0.5rem;">
+    Welcome back, {{ user.username }}!
+  </h1>
+  {% if user.profile.is_creator %}
+  <div style="font-size:1rem;color:rgba(255,255,255,0.9);font-weight:700;">Creator Dashboard</div>
+  {% endif %}
+  <p style="color:rgba(255,255,255,0.7);margin:0;">
+    Your Vector Space Ecosystem Dashboard
+  </p>
+  
+  <div class="role-badges">
+    <div class="role-badge primary">
+      <span>{{ primary_role_icon }}</span>
+      <span>{{ primary_role_name }} (Primary)</span>
+    </div>
+    {% for role in secondary_roles %}
+    <div class="role-badge secondary">
+      <span>{{ role.icon }}</span>
+      <span>{{ role.name }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Reputation Overview -->
+<div class="reputation-section">
+  <h2 class="section-title">Your Reputation</h2>
+  <p class="section-subtitle">Track your performance across all roles</p>
+  
+  <div class="reputation-grid">
+    {% if user.profile.is_creator %}
+    <div class="reputation-card">
+      <div class="reputation-icon">🎨</div>
+      <div class="reputation-score">{{ creator_score|floatformat:1 }}</div>
+      <div class="reputation-label">Creator Score</div>
+      <div class="trust-level">
+        {% for i in creator_trust_stars %}
+        <span class="trust-star">★</span>
+        {% endfor %}
+      </div>
+      <div style="font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:0.5rem;">
+        {{ creator_sales }} sales · ${{ creator_revenue|floatformat:0 }} revenue
+      </div>
+    </div>
+    {% endif %}
+    
+    {% if user.profile.is_developer %}
+    <div class="reputation-card">
+      <div class="reputation-icon">💻</div>
+      <div class="reputation-score">{{ developer_score|floatformat:1 }}</div>
+      <div class="reputation-label">Developer Score</div>
+      <div class="trust-level">
+        {% for i in developer_trust_stars %}
+        <span class="trust-star">★</span>
+        {% endfor %}
+      </div>
+      <div style="font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:0.5rem;">
+        {{ developer_games }} games · {{ developer_downloads }} downloads
+      </div>
+    </div>
+    {% endif %}
+    
+    {% if user.profile.is_recruiter %}
+    <div class="reputation-card">
+      <div class="reputation-icon">💼</div>
+      <div class="reputation-score">{{ recruiter_score|floatformat:1 }}</div>
+      <div class="reputation-label">Recruiter Score</div>
+      <div class="trust-level">
+        {% for i in recruiter_trust_stars %}
+        <span class="trust-star">★</span>
+        {% endfor %}
+      </div>
+      <div style="font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:0.5rem;">
+        {{ recruiter_hires }} hires · {{ recruiter_jobs }} active jobs
+      </div>
+    </div>
+    {% endif %}
+    
+    {% if user.profile.is_mentor %}
+    <div class="reputation-card">
+      <div class="reputation-icon">🎓</div>
+      <div class="reputation-score">{{ mentor_score|floatformat:1 }}</div>
+      <div class="reputation-label">Mentor Score</div>
+      <div class="trust-level">
+        {% for i in mentor_trust_stars %}
+        <span class="trust-star">★</span>
+        {% endfor %}
+      </div>
+      <div style="font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:0.5rem;">
+        {{ mentor_sessions }} sessions · {{ mentor_students }} students
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if user_badges %}
+  <div class="badge-showcase">
+    {% for badge in user_badges %}
+    <div class="badge-item {{ badge.rarity }}">
+      <span style="font-size:1.2rem;">{{ badge.icon }}</span>
+      <span>{{ badge.name }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+<!-- Service Provider Section -->
+<h2 class="section-title">What You Provide</h2>
+<p class="section-subtitle">Services you offer to the community</p>
+
+<div class="ecosystem-grid">
+  {% if user.profile.is_creator %}
+  <div class="service-card">
+    <div class="service-header">
+      <div class="service-icon">🎨</div>
+      <div>
+        <h3 class="service-title">Assets & Templates</h3>
+        <p class="service-type">Creator Services</p>
+      </div>
+    </div>
+    <p style="color:rgba(255,255,255,0.7);font-size:0.9rem;">
+      Provide 3D models, textures, UI kits, sound effects to developers
+    </p>
+    <p style="color:rgba(255,255,255,0.65);font-size:0.85rem;margin-top:0.5rem;">Published assets are visible to all buyers.</p>
+    <div class="service-stats">
+      <div class="stat-box">
+        <div class="stat-label">Total Assets</div>
+        <div class="stat-value highlight">{{ creator_assets }}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Total Sales</div>
+        <div class="stat-value highlight">{{ creator_sales }}</div>
+      </div>
+    </div>
+    <div class="quick-actions">
+      <a href="{% url 'dashboard:marketplace_dashboard' %}" class="action-btn">Upload Asset</a>
+      <a href="{% url 'dashboard:marketplace_dashboard' %}" class="action-btn secondary">View Sales</a>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if user.profile.is_developer %}
+  <div class="service-card">
+    <div class="service-header">
+      <div class="service-icon">💻</div>
+      <div>
+        <h3 class="service-title">Games & Tools</h3>
+        <p class="service-type">Developer Services</p>
+      </div>
+    </div>
+    <p style="color:rgba(255,255,255,0.7);font-size:0.9rem;">
+      Build games and tools for players and the community
+    </p>
+    <div class="service-stats">
+      <div class="stat-box">
+        <div class="stat-label">Published Games</div>
+        <div class="stat-value highlight">{{ developer_games }}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Total Downloads</div>
+        <div class="stat-value highlight">{{ developer_downloads }}</div>
+      </div>
+    </div>
+    <div class="quick-actions">
+      <a href="{% url 'dashboard:games_create' %}" class="action-btn">Upload Game</a>
+      <a href="{% url 'dashboard:games_my_games' %}" class="action-btn secondary">View Stats</a>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if user.profile.is_recruiter %}
+  <div class="service-card">
+    <div class="service-header">
+      <div class="service-icon">💼</div>
+      <div>
+        <h3 class="service-title">Job Opportunities</h3>
+        <p class="service-type">Recruiter Services</p>
+      </div>
+    </div>
+    <p style="color:rgba(255,255,255,0.7);font-size:0.9rem;">
+      Hire talented creators and developers for your projects
+    </p>
+    <div class="service-stats">
+      <div class="stat-box">
+        <div class="stat-label">Active Jobs</div>
+        <div class="stat-value highlight">{{ recruiter_jobs }}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Hires Made</div>
+        <div class="stat-value highlight">{{ recruiter_hires }}</div>
+      </div>
+    </div>
+    <div class="quick-actions">
+      <a href="{% url 'dashboard:jobs_post' %}" class="action-btn">Post Job</a>
+      <a href="{% url 'dashboard:jobs_postings' %}" class="action-btn secondary">View Applications</a>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if user.profile.is_mentor %}
+  <div class="service-card">
+    <div class="service-header">
+      <div class="service-icon">🎓</div>
+      <div>
+        <h3 class="service-title">Teaching & Mentorship</h3>
+        <p class="service-type">Mentor Services</p>
+      </div>
+    </div>
+    <p style="color:rgba(255,255,255,0.7);font-size:0.9rem;">
+      Guide students and beginners in their game development journey
+    </p>
+    <div class="service-stats">
+      <div class="stat-box">
+        <div class="stat-label">Sessions</div>
+        <div class="stat-value highlight">{{ mentor_sessions }}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Students</div>
+        <div class="stat-value highlight">{{ mentor_students }}</div>
+      </div>
+    </div>
+    <div class="quick-actions">
+      <a href="{% url 'dashboard:mentorship_manage_sessions' %}" class="action-btn">Schedule Session</a>
+      <a href="{% url 'dashboard:mentorship_students' %}" class="action-btn secondary">View Students</a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Service Consumer Section -->
+<h2 class="section-title" style="margin-top:3rem;">What You Consume</h2>
+<p class="section-subtitle">Services you use from others</p>
+
+<div class="ecosystem-grid">
+  <div class="service-card">
+    <div class="service-header">
+      <div class="service-icon">🛒</div>
+      <div>
+        <h3 class="service-title">Asset Purchases</h3>
+        <p class="service-type">Consumer Activity</p>
+      </div>
+    </div>
+    <p style="color:rgba(255,255,255,0.7);font-size:0.9rem;">
+      Assets you've purchased from creators
+    </p>
+    <div class="service-stats">
+      <div class="stat-box">
+        <div class="stat-label">Assets Owned</div>
+        <div class="stat-value">{{ assets_purchased }}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Total Spent</div>
+        <div class="stat-value">${{ assets_spent|floatformat:0 }}</div>
+      </div>
+    </div>
+    <div class="quick-actions">
+      <a href="{% url 'marketplace:list' %}" class="action-btn secondary">Browse Assets</a>
+    </div>
+  </div>
+
+  <div class="service-card">
+    <div class="service-header">
+      <div class="service-icon">🎮</div>
+      <div>
+        <h3 class="service-title">Games Played</h3>
+        <p class="service-type">Player Activity</p>
+      </div>
+    </div>
+    <p style="color:rgba(255,255,255,0.7);font-size:0.9rem;">
+      Games you've downloaded and played
+    </p>
+    <div class="service-stats">
+      <div class="stat-box">
+        <div class="stat-label">Games Played</div>
+        <div class="stat-value">{{ games_played }}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Reviews Given</div>
+        <div class="stat-value">{{ games_reviewed }}</div>
+      </div>
+    </div>
+    <div class="quick-actions">
+      <a href="{% url 'games:list' %}" class="action-btn secondary">Discover Games</a>
+    </div>
+  </div>
+
+  <div class="service-card">
+    <div class="service-header">
+      <div class="service-icon">💼</div>
+      <div>
+        <h3 class="service-title">Job Applications</h3>
+        <p class="service-type">Job Seeker</p>
+      </div>
+    </div>
+    <p style="color:rgba(255,255,255,0.7);font-size:0.9rem;">
+      Jobs you've applied to
+    </p>
+    <div class="service-stats">
+      <div class="stat-box">
+        <div class="stat-label">Applications</div>
+        <div class="stat-value">{{ jobs_applied }}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Pending</div>
+        <div class="stat-value">{{ jobs_pending }}</div>
+      </div>
+    </div>
+    <div class="quick-actions">
+      <a href="{% url 'jobs:list' %}" class="action-btn secondary">Find Jobs</a>
+    </div>
+  </div>
+
+  <div class="service-card">
+    <div class="service-header">
+      <div class="service-icon">📚</div>
+      <div>
+        <h3 class="service-title">Learning & Mentorship</h3>
+        <p class="service-type">Student Activity</p>
+      </div>
+    </div>
+    <p style="color:rgba(255,255,255,0.7);font-size:0.9rem;">
+      Sessions with mentors
+    </p>
+    <div class="service-stats">
+      <div class="stat-box">
+        <div class="stat-label">Sessions</div>
+        <div class="stat-value">{{ mentorship_sessions }}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Mentors</div>
+        <div class="stat-value">{{ mentors_connected }}</div>
+      </div>
+    </div>
+    <div class="quick-actions">
+      <a href="{% url 'mentorship:list' %}" class="action-btn secondary">Find Mentor</a>
+    </div>
+  </div>
+</div>
+
+<!-- Service Flow Visualization -->
+<div class="service-flow">
+  <h2 class="section-title">Platform Ecosystem</h2>
+  <p class="section-subtitle">How roles interact and support each other</p>
+  
+  <div class="flow-diagram">
+    <div class="flow-node {% if user.profile.is_creator %}active{% endif %}">
+      <div class="flow-icon">🎨</div>
+      <div class="flow-label">Creators</div>
+      <div style="font-size:0.7rem;color:rgba(255,255,255,0.6);">Provide Assets</div>
+    </div>
+    
+    <div class="flow-arrow">→</div>
+    
+    <div class="flow-node {% if user.profile.is_developer %}active{% endif %}">
+      <div class="flow-icon">💻</div>
+      <div class="flow-label">Developers</div>
+      <div style="font-size:0.7rem;color:rgba(255,255,255,0.6);">Build Games</div>
+    </div>
+    
+    <div class="flow-arrow">→</div>
+    
+    <div class="flow-node {% if user.profile.is_user %}active{% endif %}">
+      <div class="flow-icon">👤</div>
+      <div class="flow-label">Players</div>
+      <div style="font-size:0.7rem;color:rgba(255,255,255,0.6);">Play & Review</div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:2rem;">
+    <div style="display:inline-block;text-align:left;">
+      <div style="color:rgba(255,255,255,0.8);margin:0.5rem 0;">💼 <strong>Recruiters</strong> hire talent from all roles</div>
+      <div style="color:rgba(255,255,255,0.8);margin:0.5rem 0;">🎓 <strong>Mentors</strong> teach and guide everyone</div>
+      <div style="color:rgba(255,255,255,0.8);margin:0.5rem 0;">💰 Value flows through the ecosystem as services are exchanged</div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="recent-activity">
+  <h2 class="section-title">Recent Activity</h2>
+  <p class="section-subtitle">Your latest interactions across the platform</p>
+  
+  <ul class="activity-list">
+    {% for activity in recent_activities %}
+    <li class="activity-item">
+      <div class="activity-icon">{{ activity.icon }}</div>
+      <div class="activity-content">
+        <div class="activity-title">{{ activity.title }}</div>
+        <div class="activity-meta">{{ activity.description }} · {{ activity.time_ago }}</div>
+      </div>
+    </li>
+    {% empty %}
+    <li class="activity-item">
+      <div class="activity-content">
+        <div class="activity-title">No recent activity</div>
+        <div class="activity-meta">Start by exploring the marketplace, games, or jobs!</div>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% endblock %}

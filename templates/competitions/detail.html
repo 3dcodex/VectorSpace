@@ -14,7 +14,7 @@
             {% if user_submission %}
                 <button class="btn-secondary" disabled>Already Submitted</button>
             {% else %}
-                <a href="{% url 'competitions:submit' competition.pk %}" class="btn-primary" style="text-decoration: none;">Submit Entry</a>
+                <a href="{% url 'dashboard:competitions_submit' competition.pk %}" class="btn-primary" style="text-decoration: none;">Submit Entry</a>
             {% endif %}
         {% endif %}
     </div>

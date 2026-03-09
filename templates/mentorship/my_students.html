@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}My Students{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <h1 style="color:var(--text-light);font-size:2.2rem;font-weight:900;">My Students</h1>
+    <p style="color:rgba(255,255,255,0.65);margin-bottom:1rem;">Your active mentee list from accepted/completed mentorship engagements.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.9rem;">
+        {% for student in students %}
+        <article style="background:#0f1b2f;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1rem;">
+            <h3 style="color:#f6fbff;font-size:1.1rem;margin-bottom:0.2rem;">Student #{{ student.mentee }}</h3>
+            <p style="color:#9ec8dd;margin:0;">Relationship active</p>
+        </article>
+        {% empty %}
+        <p style="color:rgba(255,255,255,0.7);">No students to show yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

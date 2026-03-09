@@ -147,6 +147,40 @@
     color: #0db9f2;
     font-weight: 700;
   }
+  .role-selector {
+    width: 100%;
+    padding: 0.75rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .role-selector:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: #0db9f2;
+  }
+  .role-selector option {
+    background: #1a1a2e;
+    color: #fff;
+  }
+  .current-role-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: linear-gradient(135deg, #0db9f2, #a855f7);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    margin-left: 0.5rem;
+  }
+  .admin-section {
+    background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(168,85,247,0.1));
+    border: 1px solid rgba(239,68,68,0.3);
+  }
   .modal {
     display: none;
     position: fixed;
@@ -336,6 +370,65 @@
   </div>
 </div>
 
+{% if user.is_staff or user.is_superuser %}
+<div class="settings-section admin-section">
+  <h2 class="section-title">🔧 Admin Tools - Multi-Role Manager</h2>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>View As Role <span class="current-role-badge">{% if user.profile.admin_view_as_role %}{{ user.profile.admin_view_as_role }}{% else %}MODERATOR{% endif %}</span></h3>
+      <p>Impersonate any role instantly to preview UX and permissions without creating extra accounts.</p>
+    </div>
+    <select class="role-selector" onchange="switchRole(this.value)">
+      <option value="MODERATOR" {% if not user.profile.admin_view_as_role %}selected{% endif %}>🛡️ Moderator Mode</option>
+      <option value="VECTOR" {% if user.profile.admin_view_as_role == 'VECTOR' %}selected{% endif %}>🧭 Vector Member</option>
+      <option value="CREATOR" {% if user.profile.admin_view_as_role == 'CREATOR' %}selected{% endif %}>🎨 Creator</option>
+      <option value="DEVELOPER" {% if user.profile.admin_view_as_role == 'DEVELOPER' %}selected{% endif %}>💻 Developer</option>
+      <option value="RECRUITER" {% if user.profile.admin_view_as_role == 'RECRUITER' %}selected{% endif %}>💼 Recruiter</option>
+      <option value="MENTOR" {% if user.profile.admin_view_as_role == 'MENTOR' %}selected{% endif %}>🎓 Mentor</option>
+    </select>
+  </div>
+  <div style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 10px; border-left: 3px solid #0db9f2;">
+    <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; margin: 0;">
+      <strong>Multi-Role Ecosystem:</strong> Users can have multiple roles (e.g., Developer + Creator). The primary role determines the main dashboard, but all role features remain accessible. Switch to see different perspectives.
+    </p>
+  </div>
+</div>
+{% endif %}
+
+{% if not user.is_staff and not user.is_superuser %}
+<div class="settings-section">
+  <h2 class="section-title">Role Upgrades</h2>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Become a Creator</h3>
+      <p>Unlock My Assets, Sales, and creator analytics tools.</p>
+    </div>
+    <button class="btn btn-primary" onclick="upgradeRole('CREATOR')">Unlock</button>
+  </div>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Become a Developer</h3>
+      <p>Unlock My Games, builds, and game analytics tools.</p>
+    </div>
+    <button class="btn btn-primary" onclick="upgradeRole('DEVELOPER')">Unlock</button>
+  </div>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Become a Recruiter</h3>
+      <p>Unlock Post Job, applicants, and hiring tools.</p>
+    </div>
+    <button class="btn btn-primary" onclick="upgradeRole('RECRUITER')">Unlock</button>
+  </div>
+  <div class="setting-item">
+    <div class="setting-info">
+      <h3>Become a Mentor</h3>
+      <p>Unlock mentorship dashboard and student session tools.</p>
+    </div>
+    <button class="btn btn-primary" onclick="upgradeRole('MENTOR')">Unlock</button>
+  </div>
+</div>
+{% endif %}
+
 <div class="settings-section">
   <h2 class="section-title">Account Management</h2>
   <div class="setting-item">
@@ -484,6 +577,44 @@ function deleteAccount() {
       if(data.success) window.location.href = data.redirect;
     });
   }
+}
+
+function switchRole(role) {
+  if (!role) return;
+  
+  fetch('', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: `action=switch_role&role=${role}`
+  }).then(r => r.json()).then(data => {
+    if(data.success) {
+      alert(`Switched to ${role} role! Redirecting to dashboard...`);
+      window.location.href = '/dashboard/';
+    } else {
+      alert(data.message || 'Failed to switch role');
+    }
+  });
+}
+
+function upgradeRole(role) {
+  fetch('', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: `action=upgrade_role&role=${role}`
+  }).then(r => r.json()).then(data => {
+    if(data.success) {
+      alert(data.message || `${role} tools unlocked`);
+      window.location.href = '/dashboard/';
+    } else {
+      alert(data.message || 'Failed to upgrade role');
+    }
+  });
 }
 </script>
 {% endblock %}

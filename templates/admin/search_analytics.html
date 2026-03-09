@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Analytics{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1 style="color:var(--text-light);font-size:2.2rem;font-weight:900;">Search Analytics Console</h1>
+            <p style="color:rgba(255,255,255,0.65);">Last 30 days of marketplace discovery behavior.</p>
+        </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.9rem;margin-bottom:1rem;">
+        <div style="background:#0f1b2f;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1rem;">
+            <div style="color:#9ec8dd;">Total Searches</div>
+            <div style="color:#fff;font-size:1.7rem;font-weight:800;">{{ total_searches }}</div>
+        </div>
+        <div style="background:#0f1b2f;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1rem;">
+            <div style="color:#9ec8dd;">Click-Through Rate</div>
+            <div style="color:#67d8ff;font-size:1.7rem;font-weight:800;">{{ click_through_rate|floatformat:2 }}%</div>
+        </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:1rem;">
+        <section style="background:#0f1b2f;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1rem;">
+            <h3 style="color:#f6fbff;font-size:1.1rem;">Top Search Queries</h3>
+            <ul style="padding-left:1.2rem;color:#d8ecf8;">
+                {% for item in top_searches %}
+                <li>{{ item.query_text }} <span style="color:#8eb8cd;">({{ item.count }})</span></li>
+                {% empty %}
+                <li>No search query data yet.</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section style="background:#0f1b2f;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1rem;">
+            <h3 style="color:#f6fbff;font-size:1.1rem;">Daily Activity</h3>
+            <div style="max-height:320px;overflow:auto;">
+                {% for day in analytics %}
+                <div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,0.06);color:#d8ecf8;">
+                    <span>{{ day.date }}</span>
+                    <span>{{ day.total_searches }}</span>
+                </div>
+                {% empty %}
+                <p style="color:#9ec8dd;">No analytics records available.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

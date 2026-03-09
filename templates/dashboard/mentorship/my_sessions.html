@@ -1,0 +1,41 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}My Mentorship Sessions{% endblock %}
+
+{% block extra_css %}
+<style>
+.wrap { padding: 1.5rem; }
+.hero { background: radial-gradient(circle at top right, #144f76 0%, #101f35 55%, #0a1321 100%); border: 1px solid rgba(13,185,242,0.25); border-radius: 16px; padding: 1.1rem; margin-bottom: 1rem; }
+.hero h1 { color: #f6fbff; font-weight: 800; }
+.meta { color: #9ec8dd; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+.cardx { background: #0f1b2f; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1rem; }
+.title { color: #f6fbff; font-weight: 700; }
+@media (max-width: 700px) { .wrap { padding: 1rem; } }
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="wrap">
+    <div class="hero">
+        <h1>Mentor Session Hub</h1>
+        <p class="meta">Track upcoming and completed sessions, and jump into session details quickly.</p>
+        <a href="{% url 'dashboard:mentorship_sessions' %}" class="btn btn-outline-info btn-sm">Manage Sessions</a>
+    </div>
+
+    <div class="grid">
+        {% for session in sessions %}
+        <article class="cardx">
+            <h3 class="title">{{ session.request.topic }}</h3>
+            <p class="meta mb-1">Mentee: {{ session.request.mentee.username }}</p>
+            <p class="meta mb-1">When: {{ session.scheduled_at|date:'M d, Y H:i' }}</p>
+            <p class="meta mb-2">Duration: {{ session.duration_minutes }} min</p>
+            <p>{% if session.completed %}<span class="badge bg-success">Completed</span>{% else %}<span class="badge bg-warning text-dark">Scheduled</span>{% endif %}</p>
+            <a class="btn btn-info btn-sm" href="{% url 'dashboard:mentorship_session_detail' session.pk %}">View Details</a>
+        </article>
+        {% empty %}
+        <p class="meta">No sessions yet. Accept mentorship requests to start your calendar.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

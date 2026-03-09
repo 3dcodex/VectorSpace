@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.utils import timezone
 from datetime import timedelta
-from apps.marketplace.models import Asset, Purchase, Wishlist, Collection, CollectionItem, Review
+from apps.marketplace.models import Asset, Purchase, Wishlist, Collection, CollectionItem, Review, Wallet, Transaction
 from apps.marketplace.forms import AssetUploadForm
 from apps.users.models import User
 
@@ -148,6 +148,19 @@ def my_sales(request):
     """List sales of user's assets"""
     sales = Purchase.objects.filter(asset__seller=request.user).order_by('-purchased_at')
     return render(request, 'marketplace/my_sales.html', {'sales': sales})
+
+
+@login_required
+def payouts(request):
+    """Creator payouts and wallet summary."""
+    wallet, _ = Wallet.objects.get_or_create(user=request.user)
+    transactions = Transaction.objects.filter(user=request.user).order_by('-created_at')[:20]
+
+    context = {
+        'wallet': wallet,
+        'transactions': transactions,
+    }
+    return render(request, 'marketplace/payouts.html', context)
 
 @login_required
 def browse_marketplace(request):

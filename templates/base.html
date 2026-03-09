@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{% block title %}Vector Space | The Creator Ecosystem{% endblock %}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/theme.css' %}">
     <link rel="stylesheet" href="{% static 'css/loading.css' %}">
     {% block extra_css %}{% endblock %}
@@ -22,7 +23,7 @@
             <!-- Logo Section -->
             <div class="header-logo">
                 <a href="{% url 'home' %}" class="logo-link">
-                    <img src="{% static 'images/logo.png' %}" alt="Vector Space" class="logo-img">
+                    <img alt="Vector Space" src="{% static 'images/logo.png' %}" class="logo-img">
                     <span class="logo-text">Vector Space</span>
                 </a>
             </div>
@@ -154,7 +155,7 @@
             <div class="footer-top">
                 <div class="footer-brand">
                     <div class="footer-logo">
-                        <img src="{% static 'images/logo.png' %}" alt="Vector Space" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <img alt="Vector Space" src="{% static 'images/logo.png' %}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                         <div style="display: none; width: 50px; height: 50px; border-radius: 10px; background: linear-gradient(135deg, #0db9f2, #0a8fc7); align-items: center; justify-content: center; font-weight: 800; font-size: 1.5rem; color: white; box-shadow: 0 4px 12px rgba(13, 185, 242, 0.4);">VS</div>
                         <span>Vector Space</span>
                     </div>

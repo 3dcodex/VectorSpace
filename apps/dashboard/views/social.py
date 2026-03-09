@@ -303,6 +303,46 @@ def settings(request):
                 settings_obj.save()
                 return JsonResponse({'success': True})
         
+        elif action == 'switch_role':
+            # Admin-only feature to preview different role dashboards
+            if request.user.is_staff or request.user.is_superuser:
+                new_role = request.POST.get('role')
+                valid_roles = ['VECTOR', 'CREATOR', 'DEVELOPER', 'RECRUITER', 'MENTOR']
+                if new_role == 'MODERATOR':
+                    request.user.profile.admin_view_as_role = None
+                    request.user.profile.save(update_fields=['admin_view_as_role'])
+                    return JsonResponse({
+                        'success': True,
+                        'message': 'Switched to moderator mode',
+                        'role': 'MODERATOR'
+                    })
+                if new_role in valid_roles:
+                    request.user.profile.admin_view_as_role = new_role
+                    request.user.profile.save(update_fields=['admin_view_as_role'])
+                    return JsonResponse({
+                        'success': True, 
+                        'message': f'Now viewing as {new_role}',
+                        'role': new_role
+                    })
+                return JsonResponse({'success': False, 'message': 'Invalid role'})
+            return JsonResponse({'success': False, 'message': 'Admin access required'})
+
+        elif action == 'upgrade_role':
+            requested_role = request.POST.get('role')
+            valid_roles = ['CREATOR', 'DEVELOPER', 'RECRUITER', 'MENTOR']
+            if requested_role not in valid_roles:
+                return JsonResponse({'success': False, 'message': 'Invalid role request'})
+
+            profile = request.user.profile
+            secondary_roles = profile.secondary_roles or []
+            if requested_role == profile.primary_role or requested_role in secondary_roles:
+                return JsonResponse({'success': True, 'message': f'You already have {requested_role} access'})
+
+            secondary_roles.append(requested_role)
+            profile.secondary_roles = secondary_roles
+            profile.save(update_fields=['secondary_roles'])
+            return JsonResponse({'success': True, 'message': f'{requested_role} tools unlocked'})
+        
         elif action == 'deactivate':
             request.user.is_active = False
             request.user.save()

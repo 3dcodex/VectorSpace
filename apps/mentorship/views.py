@@ -178,3 +178,35 @@ def become_mentor(request):
         form = MentorProfileForm()
     
     return render(request, 'mentorship/become_mentor.html', {'form': form})
+
+
+@login_required
+def edit_mentor_profile(request):
+    """Edit mentor profile for dashboard"""
+    mentor_profile = get_object_or_404(MentorProfile, mentor=request.user)
+    if request.method == 'POST':
+        form = MentorProfileForm(request.POST, instance=mentor_profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Mentor profile updated!')
+            return redirect('mentorship:profile_edit')
+    else:
+        form = MentorProfileForm(instance=mentor_profile)
+    return render(request, 'mentorship/edit_profile.html', {'form': form})
+
+
+@login_required
+def mentorship_requests(request):
+    """View mentorship requests for dashboard"""
+    mentor_reqs = MentorshipRequest.objects.filter(mentor=request.user)
+    return render(request, 'dashboard/mentorship/requests.html', {'requests': mentor_reqs})
+
+
+@login_required
+def my_students(request):
+    """View list of students (for mentors)"""
+    students = MentorshipRequest.objects.filter(
+        mentor=request.user
+    ).values('mentee').distinct()
+    
+    return render(request, 'mentorship/my_students.html', {'students': students})

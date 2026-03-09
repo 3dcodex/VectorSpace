@@ -18,4 +18,7 @@ urlpatterns = [
     path('dashboard/save-search/', search_views.save_search, name='save_search'),
     path('dashboard/delete-search/<int:search_id>/', search_views.delete_saved_search, name='delete_saved_search'),
     path('dashboard/run-search/<int:search_id>/', search_views.run_saved_search, name='run_saved_search'),
+
+    # Staff analytics
+    path('admin/search-analytics/', search_views.search_analytics, name='search_analytics'),
 ]

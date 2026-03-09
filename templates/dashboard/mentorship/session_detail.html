@@ -1,0 +1,20 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Session Detail{% endblock %}
+
+{% block dashboard_content %}
+<div style="padding:1.5rem;max-width:900px;">
+    <div style="background:linear-gradient(135deg,#102746,#0a1424);border:1px solid rgba(13,185,242,0.25);border-radius:16px;padding:1.25rem;">
+        <h1 style="color:#f6fbff;font-weight:800;">{{ session.request.topic }}</h1>
+        <p style="color:#9ec8dd;">Mentee: {{ session.request.mentee.username }} | {{ session.scheduled_at|date:'M d, Y H:i' }} | {{ session.duration_minutes }} minutes</p>
+        <hr style="border-color:rgba(255,255,255,0.14)">
+        <h5 style="color:#f6fbff;">Session Notes</h5>
+        <p style="color:#d9ecf9;white-space:pre-wrap;">{{ session.notes|default:'No notes added yet.' }}</p>
+        <p>{% if session.completed %}<span class="badge bg-success">Completed</span>{% else %}<span class="badge bg-warning text-dark">Not completed</span>{% endif %}</p>
+        {% if not session.completed %}
+        <a href="{% url 'dashboard:mentorship_session_complete' session.pk %}" class="btn btn-info">Mark Complete</a>
+        {% endif %}
+        <a href="{% url 'dashboard:mentorship_my_sessions' %}" class="btn btn-outline-light">Back</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Mentor Profile{% endblock %}
+
+{% block content %}
+<div class="page-container" style="max-width:900px;">
+    <div style="background:linear-gradient(145deg,#132849,#0c1628);border:1px solid rgba(13,185,242,0.24);border-radius:18px;padding:1.4rem;">
+        <h1 style="color:#f6fbff;font-weight:900;">Mentor Profile Studio</h1>
+        <p style="color:#9ec8dd;">Refresh your positioning so mentees immediately understand your value and teaching style.</p>
+
+        <form method="post" style="margin-top:1rem;">
+            {% csrf_token %}
+            <div style="display:grid;gap:0.9rem;">
+                {{ form.as_p }}
+            </div>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                <button type="submit" class="btn-primary">Save Profile</button>
+                <a href="{% url 'mentorship:list' %}" class="btn-secondary" style="text-decoration:none;">Back to Mentors</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

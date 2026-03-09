@@ -13,7 +13,7 @@
         background: linear-gradient(180deg, #0a0e27 0%, #1a1f3a 100%);
     }
     .auth-card {
-        max-width: 500px;
+        max-width: 700px;
         width: 100%;
         background: rgba(255,255,255,0.03);
         border: 1px solid rgba(13,185,242,0.2);
@@ -45,6 +45,11 @@
     .form-group {
         margin-bottom: 1.5rem;
     }
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
     .form-group label {
         display: block;
         margin-bottom: 0.5rem;
@@ -53,7 +58,8 @@
         font-size: 0.875rem;
     }
     .form-group input,
-    .form-group select {
+    .form-group select,
+    .form-group textarea {
         width: 100%;
         padding: 0.875rem 1rem;
         background: rgba(255,255,255,0.05);
@@ -62,9 +68,11 @@
         color: white;
         font-size: 0.9375rem;
         transition: all 0.3s;
+        box-sizing: border-box;
     }
     .form-group input:focus,
-    .form-group select:focus {
+    .form-group select:focus,
+    .form-group textarea:focus {
         outline: none;
         border-color: #0db9f2;
         background: rgba(255,255,255,0.08);
@@ -79,12 +87,12 @@
     }
     .role-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
         margin-bottom: 1.5rem;
     }
     .role-card {
-        padding: 1rem;
+        padding: 1.5rem;
         background: rgba(255,255,255,0.03);
         border: 2px solid rgba(255,255,255,0.1);
         border-radius: 0.75rem;
@@ -95,22 +103,50 @@
     .role-card:hover {
         border-color: rgba(13,185,242,0.5);
         background: rgba(255,255,255,0.05);
+        transform: translateY(-2px);
     }
     .role-card.selected {
         border-color: #0db9f2;
         background: rgba(13,185,242,0.1);
+        box-shadow: 0 0 20px rgba(13,185,242,0.3);
     }
     .role-card input[type="radio"] {
         display: none;
     }
     .role-icon {
-        font-size: 2rem;
+        font-size: 2.5rem;
         margin-bottom: 0.5rem;
     }
     .role-name {
-        font-weight: 600;
+        font-weight: 700;
         color: white;
-        font-size: 0.875rem;
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+    }
+    .role-desc {
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.6);
+    }
+    .role-specific-fields {
+        display: none;
+        animation: fadeIn 0.3s ease;
+        padding: 1.5rem;
+        background: rgba(13,185,242,0.05);
+        border-radius: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+    .role-specific-fields.active {
+        display: block;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .role-specific-fields h3 {
+        color: #0db9f2;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
     }
     .btn-auth {
         width: 100%;
@@ -158,6 +194,10 @@
         color: rgba(255,255,255,0.5);
         margin-top: 0.25rem;
     }
+    .section-divider {
+        border-top: 1px solid rgba(255,255,255,0.1);
+        margin: 2rem 0;
+    }
 </style>
 {% endblock %}
 
@@ -166,7 +206,7 @@
     <div class="auth-card">
         <div class="auth-header">
             <h1>Join Vector Space</h1>
-            <p>Create your account and start building</p>
+            <p>Choose your role and start your journey</p>
         </div>
         
         {% if form.errors %}
@@ -179,56 +219,163 @@
             </div>
         {% endif %}
         
-        <form method="post">
+        <form method="post" id="signupForm">
             {% csrf_token %}
             
+            <!-- Role Selection -->
             <div class="form-group">
-                <label for="{{ form.username.id_for_label }}">Username</label>
-                {{ form.username }}
-                <div class="form-help">Choose a unique username</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="{{ form.email.id_for_label }}">Email Address</label>
-                {{ form.email }}
-                <div class="form-help">We'll never share your email</div>
-            </div>
-            
-            <div class="form-group">
-                <label>I am a</label>
+                <label>Choose Your Role</label>
                 <div class="role-grid">
-                    <label class="role-card" onclick="this.classList.add('selected'); document.querySelectorAll('.role-card').forEach(c => c !== this && c.classList.remove('selected'));">
-                        <input type="radio" name="user_type" value="creator" required>
+                    <label class="role-card" data-role="CREATOR">
+                        <input type="radio" name="role" value="CREATOR" required>
                         <div class="role-icon">🎨</div>
                         <div class="role-name">Creator</div>
+                        <div class="role-desc">Create and sell game assets</div>
                     </label>
-                    <label class="role-card" onclick="this.classList.add('selected'); document.querySelectorAll('.role-card').forEach(c => c !== this && c.classList.remove('selected'));">
-                        <input type="radio" name="user_type" value="developer" required>
+                    <label class="role-card" data-role="DEVELOPER">
+                        <input type="radio" name="role" value="DEVELOPER" required>
                         <div class="role-icon">👨‍💻</div>
                         <div class="role-name">Developer</div>
+                        <div class="role-desc">Build and publish games</div>
                     </label>
-                    <label class="role-card" onclick="this.classList.add('selected'); document.querySelectorAll('.role-card').forEach(c => c !== this && c.classList.remove('selected'));">
-                        <input type="radio" name="user_type" value="recruiter" required>
+                    <label class="role-card" data-role="RECRUITER">
+                        <input type="radio" name="role" value="RECRUITER" required>
                         <div class="role-icon">💼</div>
                         <div class="role-name">Recruiter</div>
+                        <div class="role-desc">Post jobs and find talent</div>
                     </label>
-                    <label class="role-card" onclick="this.classList.add('selected'); document.querySelectorAll('.role-card').forEach(c => c !== this && c.classList.remove('selected'));">
-                        <input type="radio" name="user_type" value="mentor" required>
+                    <label class="role-card" data-role="MENTOR">
+                        <input type="radio" name="role" value="MENTOR" required>
                         <div class="role-icon">🎓</div>
                         <div class="role-name">Mentor</div>
+                        <div class="role-desc">Teach and mentor students</div>
                     </label>
                 </div>
             </div>
             
-            <div class="form-group">
-                <label for="{{ form.password1.id_for_label }}">Password</label>
-                {{ form.password1 }}
-                <div class="form-help">At least 8 characters</div>
+            <div class="section-divider"></div>
+            
+            <!-- Basic Information -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="id_username">Username</label>
+                    {{ form.username }}
+                    <div class="form-help">Choose a unique username</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_email">Email Address</label>
+                    {{ form.email }}
+                    <div class="form-help">We'll never share your email</div>
+                </div>
             </div>
             
-            <div class="form-group">
-                <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
-                {{ form.password2 }}
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="id_password1">Password</label>
+                    {{ form.password1 }}
+                    <div class="form-help">At least 8 characters</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_password2">Confirm Password</label>
+                    {{ form.password2 }}
+                </div>
+            </div>
+            
+            <!-- Common Profile Fields -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="id_location">Location</label>
+                    {{ form.location }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_experience_years">Years of Experience</label>
+                    {{ form.experience_years }}
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="id_linkedin">LinkedIn Profile</label>
+                    {{ form.linkedin }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_github">GitHub Profile</label>
+                    {{ form.github }}
+                </div>
+            </div>
+            
+            <!-- Creator-Specific Fields -->
+            <div id="creator-fields" class="role-specific-fields">
+                <h3>Creator Details</h3>
+                <div class="form-group">
+                    <label for="id_specialization">Specialization</label>
+                    {{ form.specialization }}
+                    <div class="form-help">e.g., 3D Artist, VFX Designer, Sound Designer</div>
+                </div>
+                <div class="form-group">
+                    <label for="id_portfolio_url">Portfolio URL</label>
+                    {{ form.portfolio_url }}
+                    <div class="form-help">Link to your ArtStation, Behance, or personal site</div>
+                </div>
+            </div>
+            
+            <!-- Developer-Specific Fields -->
+            <div id="developer-fields" class="role-specific-fields">
+                <h3>Developer Details</h3>
+                <div class="form-group">
+                    <label for="id_programming_languages">Programming Languages</label>
+                    {{ form.programming_languages }}
+                    <div class="form-help">Comma-separated (e.g., C#, Python, C++)</div>
+                </div>
+                <div class="form-group">
+                    <label for="id_game_engines">Game Engines</label>
+                    {{ form.game_engines }}
+                    <div class="form-help">Comma-separated (e.g., Unity, Unreal, Godot)</div>
+                </div>
+                <div class="form-group">
+                    <label for="id_portfolio_url">Portfolio URL</label>
+                    {{ form.portfolio_url }}
+                    <div class="form-help">Link to your itch.io or game portfolio</div>
+                </div>
+            </div>
+            
+            <!-- Recruiter-Specific Fields -->
+            <div id="recruiter-fields" class="role-specific-fields">
+                <h3>Company Details</h3>
+                <div class="form-group">
+                    <label for="id_company_name">Company Name</label>
+                    {{ form.company_name }}
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_company_website">Company Website</label>
+                        {{ form.company_website }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_company_size">Company Size</label>
+                        {{ form.company_size }}
+                        <div class="form-help">e.g., 1-10, 11-50, 51-200</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mentor-Specific Fields -->
+            <div id="mentor-fields" class="role-specific-fields">
+                <h3>Mentorship Details</h3>
+                <div class="form-group">
+                    <label for="id_expertise_areas">Areas of Expertise</label>
+                    {{ form.expertise_areas }}
+                    <div class="form-help">Comma-separated (e.g., Game Design, Programming, Art)</div>
+                </div>
+                <div class="form-group">
+                    <label for="id_hourly_rate">Hourly Rate (USD)</label>
+                    {{ form.hourly_rate }}
+                    <div class="form-help">Optional - your hourly mentoring rate</div>
+                </div>
             </div>
             
             <button type="submit" class="btn-auth">Create Account</button>
@@ -239,4 +386,46 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleCards = document.querySelectorAll('.role-card');
+    const roleFields = {
+        'CREATOR': document.getElementById('creator-fields'),
+        'DEVELOPER': document.getElementById('developer-fields'),
+        'RECRUITER': document.getElementById('recruiter-fields'),
+        'MENTOR': document.getElementById('mentor-fields')
+    };
+    
+    roleCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const role = this.dataset.role;
+            const radio = this.querySelector('input[type="radio"]');
+            
+            // Update selected state
+            roleCards.forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            radio.checked = true;
+            
+            // Show/hide role-specific fields
+            Object.keys(roleFields).forEach(key => {
+                if (key === role) {
+                    roleFields[key].classList.add('active');
+                } else {
+                    roleFields[key].classList.remove('active');
+                }
+            });
+        });
+    });
+    
+    // Restore selection if form was submitted with errors
+    const checkedRadio = document.querySelector('input[name="role"]:checked');
+    if (checkedRadio) {
+        const selectedCard = document.querySelector(`.role-card[data-role="${checkedRadio.value}"]`);
+        if (selectedCard) {
+            selectedCard.click();
+        }
+    }
+});
+</script>
 {% endblock %}

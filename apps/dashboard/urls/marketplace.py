@@ -5,11 +5,13 @@ urlpatterns = [
     path('', marketplace.marketplace_dashboard, name='marketplace_dashboard'),
     path('browse/', marketplace.browse_marketplace, name='marketplace_browse'),
     path('assets/', marketplace.my_assets, name='marketplace_my_assets'),
+    path('assets/', marketplace.my_assets, name='marketplace_assets'),
     path('upload/', marketplace.upload_asset, name='marketplace_upload'),
     path('assets/<int:pk>/edit/', marketplace.edit_asset, name='marketplace_edit_asset'),
     path('assets/<int:pk>/delete/', marketplace.delete_asset, name='marketplace_delete_asset'),
     path('purchases/', marketplace.my_purchases, name='marketplace_purchases'),
     path('sales/', marketplace.my_sales, name='marketplace_sales'),
+    path('payouts/', marketplace.payouts, name='marketplace_payouts'),
     
         # Wishlist URLs
         path('wishlist/', marketplace.my_wishlist, name='marketplace_wishlist'),

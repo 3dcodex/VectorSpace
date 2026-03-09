@@ -15,4 +15,6 @@ urlpatterns = [
     path('social/', include('apps.dashboard.urls.social')),
     path('analytics/', include('apps.dashboard.urls.analytics')),
     path('notifications/', include('apps.dashboard.urls.notifications')),
+    path('mentorship/', include('apps.dashboard.urls.mentorship')),
+    path('resume/', include('apps.dashboard.urls.resume')),
 ]

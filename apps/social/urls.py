@@ -8,4 +8,5 @@ urlpatterns = [
     path('', views_public.community, name='community'),
     path('post/<int:pk>/', views_public.post_detail, name='post_detail'),
     path('profile/<int:user_id>/', views_public.user_profile, name='profile'),
+    path('post/<int:pk>/vote/<str:vote_type>/', views_public.vote_post, name='vote_post'),
 ]

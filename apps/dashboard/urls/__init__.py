@@ -13,7 +13,7 @@ urlpatterns = [
     path('jobs/', include('apps.dashboard.urls.jobs')),
     path('competitions/', include('apps.dashboard.urls.competitions')),
     path('social/', include('apps.dashboard.urls.social')),
-    path('mentorship/', include('apps.mentorship.dashboard_urls')),
+    path('mentorship/', include('apps.dashboard.urls.mentorship')),
     path('resume/', include('apps.dashboard.urls.resume')),
     path('analytics/', include('apps.dashboard.urls.analytics')),
     path('notifications/', include('apps.dashboard.urls.notifications')),

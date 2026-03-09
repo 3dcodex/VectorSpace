@@ -1,0 +1,22 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Request Detail{% endblock %}
+
+{% block dashboard_content %}
+<div style="padding:1.5rem;max-width:920px;">
+    <div style="background:linear-gradient(140deg,#122443,#0b1424);border:1px solid rgba(13,185,242,0.25);border-radius:16px;padding:1.2rem;">
+        <h1 style="color:#f6fbff;font-weight:800;">{{ request.topic }}</h1>
+        <p style="color:#9ec8dd;">From {{ request.mentee.username }} · {{ request.created_at|date:'M d, Y H:i' }}</p>
+        <p><span class="badge bg-secondary" style="text-transform:capitalize;">{{ request.status }}</span></p>
+        <hr style="border-color:rgba(255,255,255,0.12)">
+        <h5 style="color:#f6fbff;">Description</h5>
+        <div style="white-space:pre-wrap;color:#d7eaf8;line-height:1.6;">{{ request.description }}</div>
+        <div class="mt-3">
+            {% if request.status == 'pending' %}
+            <a href="{% url 'dashboard:mentorship_request_respond' request.pk %}" class="btn btn-info">Respond</a>
+            {% endif %}
+            <a href="{% url 'dashboard:mentorship_requests' %}" class="btn btn-outline-light">Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

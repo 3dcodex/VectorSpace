@@ -1,0 +1,17 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Complete Session{% endblock %}
+
+{% block dashboard_content %}
+<div style="padding:1.5rem;max-width:680px;">
+    <div style="background:#101b30;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:1.25rem;">
+        <h1 style="color:#f6fbff;font-weight:800;">Complete Session</h1>
+        <p style="color:#9ec8dd;">Confirm completion for <strong>{{ session.request.topic }}</strong> with {{ session.request.mentee.username }}.</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">Confirm Completion</button>
+            <a href="{% url 'dashboard:mentorship_session_detail' session.pk %}" class="btn btn-outline-light">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

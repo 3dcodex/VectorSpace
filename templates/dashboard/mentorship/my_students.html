@@ -1,0 +1,24 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}My Students{% endblock %}
+
+{% block dashboard_content %}
+<div style="padding:1.5rem;">
+    <h1 style="color:#f6fbff;font-weight:800;">My Students</h1>
+    <p style="color:#9ec8dd;">Learners you have supported through accepted or completed mentorship requests.</p>
+
+    <div class="row g-3">
+        {% for student in students %}
+        <div class="col-md-6 col-xl-4">
+            <div style="background:#0f1b2f;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1rem;">
+                <h5 style="color:#f6fbff;margin-bottom:0.25rem;">{{ student.mentee.username }}</h5>
+                <p style="color:#9ec8dd;margin-bottom:0.5rem;">{{ student.mentee.email }}</p>
+                <span class="badge bg-info text-dark">{{ student.requests_count }} request{{ student.requests_count|pluralize }}</span>
+            </div>
+        </div>
+        {% empty %}
+        <p style="color:#9ec8dd;">No students yet. Accept pending requests to start mentoring.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

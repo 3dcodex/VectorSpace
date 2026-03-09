@@ -148,3 +148,35 @@ def update_application_status(request, pk):
     return redirect('jobs_recruiter')
 
 
+@login_required
+def job_applicants_list(request, job_id):
+    """View applicants for a specific job (recruiter only)"""
+    job = get_object_or_404(Job, pk=job_id)
+    
+    #Only recruiter can view
+    if job.recruiter != request.user:
+        messages.error(request, 'You do not have permission to view these applicants.')
+        return redirect('dashboard:jobs_board')
+    
+    applications = job.applications.all().order_by('-applied_at')
+    return render(request, 'dashboard/jobs/applicants_list.html', {
+        'job': job,
+        'applications': applications
+    })
+
+
+@login_required  
+def application_detail(request, pk):
+    """View application details (recruiter only)"""
+    application = get_object_or_404(Application, pk=pk)
+    
+    # Only recruiter can view
+    if application.job.recruiter != request.user:
+        messages.error(request, 'You do not have permission to view this application.')
+        return redirect('dashboard:jobs_board')
+    
+    return render(request, 'dashboard/jobs/application_detail.html', {
+        'application': application
+    })
+
+
