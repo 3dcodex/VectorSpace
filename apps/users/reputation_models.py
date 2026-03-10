@@ -14,6 +14,7 @@ class RoleReputation(models.Model):
     """
     ROLE_CHOICES = [
         ('VECTOR', 'Vector Member'),
+        ('PLAYER', 'Player (Legacy)'),
         ('CREATOR', 'Creator'),
         ('DEVELOPER', 'Developer'),
         ('RECRUITER', 'Recruiter'),

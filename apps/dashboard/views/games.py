@@ -9,11 +9,15 @@ from apps.games.forms import GamePublishForm
 def my_games(request):
     """List user's published games"""
     games = Game.objects.filter(developer=request.user).order_by('-created_at')
-    return render(request, 'games/my_games.html', {'games': games})
+    return render(request, 'dashboard/games/my_games.html', {'games': games})
 
 @login_required
 def publish_game(request):
-    """Publish a new game"""
+    """Publish a new game (Developer only)"""
+    if not request.user.profile.is_developer():
+        messages.error(request, 'Developer role required to publish games.')
+        return redirect('dashboard:overview')
+    
     if request.method == 'POST':
         form = GamePublishForm(request.POST, request.FILES)
         if form.is_valid():
@@ -24,15 +28,19 @@ def publish_game(request):
             game.save()
             
             messages.success(request, f'Game "{game.title}" published successfully!')
-            return redirect('games:detail', pk=game.pk)
+            return redirect('dashboard:dashboard_games_my_games')
     else:
         form = GamePublishForm()
     
-    return render(request, 'games/publish.html', {'form': form})
+    return render(request, 'dashboard/games/publish.html', {'form': form})
 
 @login_required
 def edit_game(request, pk):
-    """Edit a published game"""
+    """Edit a published game (Developer only)"""
+    if not request.user.profile.is_developer():
+        messages.error(request, 'Developer role required to edit games.')
+        return redirect('dashboard:overview')
+    
     game = get_object_or_404(Game, pk=pk, developer=request.user)
     
     if request.method == 'POST':
@@ -40,10 +48,10 @@ def edit_game(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, f'Game "{game.title}" updated successfully!')
-            return redirect('games_my_games')
+            return redirect('dashboard:dashboard_games_my_games')
     else:
         form = GamePublishForm(instance=game)
     
-    return render(request, 'games/publish.html', {'form': form, 'game': game})
+    return render(request, 'dashboard/games/publish.html', {'form': form, 'game': game})
 
 

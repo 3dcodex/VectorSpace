@@ -603,8 +603,10 @@
             <div class="empty-state-icon">⭐</div>
             <h3>No Rated Assets Yet</h3>
             <p>Be the first to upload and get rated by the community</p>
-            {% if user.is_authenticated %}
+            {% if user.is_authenticated and user.profile.is_creator %}
                 <a href="{% url 'dashboard:marketplace_upload' %}" class="btn btn-primary">Upload Asset</a>
+            {% elif user.is_authenticated %}
+                <a href="{% url 'marketplace:list' %}" class="btn btn-primary">Browse Assets</a>
             {% else %}
                 <a href="{% url 'users:signup' %}" class="btn btn-primary">Join Now</a>
             {% endif %}

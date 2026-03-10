@@ -6,6 +6,7 @@ app_name = 'dashboard'
 urlpatterns = [
     # Main dashboard overview
     path('', overview.dashboard_overview, name='overview'),
+    path('', overview.dashboard_overview, name='dashboard_overview'),
     
     # Dashboard sections
     path('marketplace/', include('apps.dashboard.urls.marketplace')),
@@ -17,4 +18,5 @@ urlpatterns = [
     path('notifications/', include('apps.dashboard.urls.notifications')),
     path('mentorship/', include('apps.dashboard.urls.mentorship')),
     path('resume/', include('apps.dashboard.urls.resume')),
+    path('portfolio/', include('apps.dashboard.urls.portfolio')),
 ]

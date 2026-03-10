@@ -51,16 +51,16 @@
 <div class="quick-actions">
     <h2>Quick Actions</h2>
     <div class="action-buttons">
-        <a href="{% url 'dashboard:games_create' %}" class="btn btn-primary">
+        <a href="{% url 'dashboard:dashboard_games_create' %}" class="btn btn-primary">
             <span>➕</span> Create New Game
         </a>
-        <a href="{% url 'dashboard:games_list' %}" class="btn btn-secondary">
+        <a href="{% url 'dashboard:dashboard_games_list' %}" class="btn btn-secondary">
             <span>🎮</span> Manage Games
         </a>
-        <a href="{% url 'competitions:browse' %}" class="btn btn-secondary">
-            <span>🏆</span> Join Competition
+        <a href="{% url 'dashboard:dashboard_competitions_my_competitions' %}" class="btn btn-secondary">
+            <span>🏆</span> My Competitions
         </a>
-        <a href="{% url 'dashboard:analytics' %}" class="btn btn-secondary">
+        <a href="{% url 'dashboard:dashboard_analytics' %}" class="btn btn-secondary">
             <span>📈</span> Analytics
         </a>
     </div>
@@ -88,7 +88,7 @@
                 <span><strong>Rating:</strong> ⭐ {{ top_game.rating|floatformat:1 }}</span>
             </div>
             <div class="game-actions">
-                <a href="{% url 'dashboard:games_edit' top_game.id %}" class="btn btn-sm btn-primary">Edit</a>
+                <a href="{% url 'dashboard:dashboard_games_edit' top_game.id %}" class="btn btn-sm btn-primary">Edit</a>
                 <a href="{% url 'games:detail' top_game.id %}" class="btn btn-sm btn-secondary">View Page</a>
             </div>
         </div>
@@ -156,7 +156,7 @@
                         <span class="tag">{{ game.genre }}</span>
                         <span class="tag">{{ game.get_engine_display }}</span>
                     </div>
-                    <a href="{% url 'dashboard:games_edit' game.id %}" class="btn btn-sm">Edit</a>
+                    <a href="{% url 'dashboard:dashboard_games_edit' game.id %}" class="btn btn-sm">Edit</a>
                 </div>
             </div>
             {% endfor %}

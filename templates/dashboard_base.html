@@ -56,49 +56,42 @@
                 <div class="nav-divider"></div>
                 <div style="padding: 0.5rem 1rem; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.45);">Core</div>
                 <a href="{% url 'dashboard:overview' %}" class="nav-item {% if request.path == '/dashboard/' %}active{% endif %}"><span>Dashboard</span></a>
-                <a href="{% url 'marketplace:list' %}" class="nav-item {% if '/marketplace/' in request.path and '/dashboard/' not in request.path %}active{% endif %}"><span>Marketplace</span></a>
-                <a href="{% url 'games:list' %}" class="nav-item {% if '/games/' in request.path and '/dashboard/' not in request.path %}active{% endif %}"><span>Games</span></a>
-                <a href="{% url 'social:community' %}" class="nav-item {% if '/community/' in request.path %}active{% endif %}"><span>Community</span></a>
-                <a href="{% url 'competitions:list' %}" class="nav-item {% if '/competitions/' in request.path and '/dashboard/' not in request.path %}active{% endif %}"><span>Competitions</span></a>
-                <a href="{% url 'jobs:list' %}" class="nav-item {% if '/jobs/' in request.path and '/dashboard/' not in request.path %}active{% endif %}"><span>Jobs</span></a>
-                <a href="{% url 'mentorship:list' %}" class="nav-item {% if '/mentorship/' in request.path and '/dashboard/' not in request.path %}active{% endif %}"><span>Mentorship</span></a>
+                <a href="{% url 'dashboard:marketplace_browse' %}" class="nav-item {% if '/dashboard/marketplace/' in request.path %}active{% endif %}"><span>Marketplace</span></a>
+                <a href="{% url 'dashboard:games_my_games' %}" class="nav-item {% if '/dashboard/games/' in request.path %}active{% endif %}"><span>Games</span></a>
+                <a href="{% url 'dashboard:social_feed' %}" class="nav-item {% if '/dashboard/social/' in request.path %}active{% endif %}"><span>Community</span></a>
+                <a href="{% url 'dashboard:competitions_my_competitions' %}" class="nav-item {% if '/dashboard/competitions/' in request.path %}active{% endif %}"><span>Competitions</span></a>
+                <a href="{% url 'dashboard:jobs_board' %}" class="nav-item {% if '/dashboard/jobs/' in request.path %}active{% endif %}"><span>Jobs</span></a>
+                <a href="{% url 'dashboard:mentorship_my_sessions' %}" class="nav-item {% if '/dashboard/mentorship/' in request.path %}active{% endif %}"><span>Mentorship</span></a>
 
                 {% if user.profile.is_creator or user.profile.is_developer or user.profile.is_recruiter or user.profile.is_mentor %}
                 <div class="nav-divider"></div>
                 <div style="padding: 0.5rem 1rem; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.45);">Professional Tools</div>
                 {% if user.profile.is_creator %}
-                <a href="{% url 'dashboard:marketplace_assets' %}" class="nav-item {% if '/dashboard/marketplace/assets/' in request.path %}active{% endif %}"><span>My Assets</span></a>
+                <a href="{% url 'dashboard:marketplace_assets' %}" class="nav-item {% if '/dashboard/marketplace/' in request.path %}active{% endif %}"><span>My Assets</span></a>
                 <a href="{% url 'dashboard:marketplace_upload' %}" class="nav-item"><span>Upload Asset</span></a>
-                <a href="{% url 'dashboard:marketplace_assets' %}?status=draft" class="nav-item"><span>Draft Assets</span></a>
-                <a href="{% url 'dashboard:marketplace_assets' %}?status=pending" class="nav-item"><span>Pending Approval</span></a>
                 <a href="{% url 'dashboard:marketplace_sales' %}" class="nav-item {% if '/dashboard/marketplace/sales/' in request.path %}active{% endif %}"><span>Sales</span></a>
                 <a href="{% url 'dashboard:marketplace_payouts' %}" class="nav-item"><span>Revenue Summary</span></a>
+                <a href="{% url 'dashboard:analytics' %}" class="nav-item"><span>Sales Analytics</span></a>
                 {% endif %}
                 {% if user.profile.is_developer %}
                 <a href="{% url 'dashboard:games_my_games' %}" class="nav-item {% if '/dashboard/games/' in request.path %}active{% endif %}"><span>My Games</span></a>
-                <a href="{% url 'dashboard:games_create' %}" class="nav-item"><span>Create Game</span></a>
-                <a href="{% url 'dashboard:games_create' %}" class="nav-item"><span>Upload Build</span></a>
-                <a href="{% url 'dashboard:games_my_games' %}?tab=analytics" class="nav-item"><span>Game Analytics</span></a>
-                <a href="{% url 'dashboard:games_my_games' %}?tab=versions" class="nav-item"><span>Version History</span></a>
+                <a href="{% url 'dashboard:games_create' %}" class="nav-item"><span>Publish Game</span></a>
+                <a href="{% url 'dashboard:analytics' %}" class="nav-item"><span>Game Analytics</span></a>
                 {% endif %}
                 {% if user.profile.is_recruiter %}
-                <a href="{% url 'dashboard:jobs_board' %}" class="nav-item {% if '/dashboard/jobs/' in request.path %}active{% endif %}"><span>Jobs</span></a>
+                <a href="{% url 'dashboard:jobs_board' %}" class="nav-item {% if '/dashboard/jobs/' in request.path %}active{% endif %}"><span>My Jobs</span></a>
                 <a href="{% url 'dashboard:jobs_post' %}" class="nav-item"><span>Post Job</span></a>
-                <a href="{% url 'dashboard:jobs_manage' %}" class="nav-item"><span>Manage Jobs</span></a>
                 <a href="{% url 'dashboard:jobs_applicants' %}" class="nav-item"><span>Applicants</span></a>
-                <a href="{% url 'social:community' %}" class="nav-item"><span>Talent Search</span></a>
+                <a href="{% url 'dashboard:social_feed' %}" class="nav-item"><span>Talent Search</span></a>
                 <a href="{% url 'dashboard:analytics' %}" class="nav-item"><span>Hiring Analytics</span></a>
                 <a href="{% url 'dashboard:social_edit_profile' %}" class="nav-item"><span>Company Profile</span></a>
                 {% endif %}
                 {% if user.profile.is_mentor %}
-                <a href="{% url 'dashboard:mentorship_sessions' %}" class="nav-item {% if '/dashboard/mentorship/' in request.path %}active{% endif %}"><span>Mentorship Dashboard</span></a>
+                <a href="{% url 'dashboard:mentorship_sessions' %}" class="nav-item {% if '/dashboard/mentorship/' in request.path %}active{% endif %}"><span>My Sessions</span></a>
                 <a href="{% url 'dashboard:mentorship_requests' %}" class="nav-item"><span>Student Requests</span></a>
-                <a href="{% url 'dashboard:mentorship_my_sessions' %}" class="nav-item"><span>My Sessions</span></a>
-                <a href="{% url 'dashboard:mentorship_manage_sessions' %}" class="nav-item"><span>Schedule Session</span></a>
-                <a href="{% url 'dashboard:mentorship_sessions' %}?tab=history" class="nav-item"><span>Session History</span></a>
+                <a href="{% url 'dashboard:mentorship_students' %}" class="nav-item"><span>My Students</span></a>
                 <a href="{% url 'dashboard:analytics' %}" class="nav-item"><span>Mentor Analytics</span></a>
                 {% endif %}
-                <a href="{% url 'dashboard:analytics' %}" class="nav-item {% if 'analytics' in request.path %}active{% endif %}"><span>Analytics</span></a>
                 {% endif %}
 
                 <div class="nav-divider"></div>

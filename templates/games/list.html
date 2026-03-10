@@ -692,7 +692,9 @@
           <div class="step-text">Publish to the community</div>
         </div>
       </div>
+        {% if user.is_authenticated and user.profile.is_developer %}
       <a href="{% url 'dashboard:games_publish' %}" class="cta-btn">Publish Your Game</a>
+        {% endif %}
     </div>
   </section>
 </div>

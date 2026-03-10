@@ -11,7 +11,7 @@ from apps.competitions.models import Competition, Submission
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'user_type', 'bio', 'avatar', 'rating', 'email_verified']
+        fields = ['id', 'username', 'email', 'bio', 'avatar', 'rating', 'email_verified']
         read_only_fields = ['id', 'email_verified']
 
 class UserProfileSerializer(serializers.ModelSerializer):

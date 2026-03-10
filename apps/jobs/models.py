@@ -22,12 +22,18 @@ class Job(models.Model):
 
 class Application(models.Model):
     STATUS = [('pending', 'Pending'), ('reviewed', 'Reviewed'), ('accepted', 'Accepted'), ('rejected', 'Rejected')]
-    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='applications')
-    applicant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applications')
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='applications', db_index=True)
+    applicant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applications', db_index=True)
     cover_letter = models.TextField()
     resume = models.FileField(upload_to='resumes/')
     status = models.CharField(max_length=20, choices=STATUS, default='pending')
     applied_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['job', '-applied_at']),
+            models.Index(fields=['applicant', '-applied_at']),
+        ]
 
 class SavedJob(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved_jobs')

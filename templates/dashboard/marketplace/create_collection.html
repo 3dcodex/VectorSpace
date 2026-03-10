@@ -1,0 +1,25 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Create Collection{% endblock %}
+
+{% block dashboard_content %}
+<div class="container py-4" style="max-width: 800px;">
+    <h2 class="h4 mb-3">Create Collection</h2>
+    <form method="post" class="card card-body">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" name="name" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" name="description" rows="4"></textarea>
+        </div>
+        <div class="form-check mb-3">
+            <input type="checkbox" class="form-check-input" name="is_public" id="isPublic">
+            <label class="form-check-label" for="isPublic">Public collection</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+</div>
+{% endblock %}

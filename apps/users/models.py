@@ -15,12 +15,22 @@ class User(AbstractUser):
 
 class UserProfile(models.Model):
     ROLE_CHOICES = [
-        ('VECTOR', 'Vector Member'),  # Base member role in the ecosystem
+        ('VECTOR', 'Vector'),  # Primary consumer role in the ecosystem
         ('CREATOR', 'Creator'),  # Provides: assets, templates, sound effects
         ('DEVELOPER', 'Developer'),  # Provides: games, tools, consumes: assets
         ('RECRUITER', 'Recruiter'),  # Provides: jobs, hire talent
         ('MENTOR', 'Mentor'),  # Provides: teaching, mentorship sessions
     ]
+    
+    # Role progression tiers
+    ROLE_TIERS = [
+        ('novice', 'Novice'),
+        ('apprentice', 'Apprentice'),
+        ('professional', 'Professional'),
+        ('expert', 'Expert'),
+        ('elite', 'Elite'),
+    ]
+    
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     
     # Multi-role system: Primary role defines main dashboard
@@ -35,6 +45,18 @@ class UserProfile(models.Model):
     
     # Legacy field for backward compatibility
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='VECTOR')
+    
+    # Role progression tiers (for gamification)
+    creator_tier = models.CharField(max_length=20, choices=ROLE_TIERS, default='novice')
+    developer_tier = models.CharField(max_length=20, choices=ROLE_TIERS, default='novice')
+    recruiter_tier = models.CharField(max_length=20, choices=ROLE_TIERS, default='novice')
+    mentor_tier = models.CharField(max_length=20, choices=ROLE_TIERS, default='novice')
+    
+    # Role verification status
+    creator_verified = models.BooleanField(default=False, help_text="Portfolio verified")
+    developer_verified = models.BooleanField(default=False, help_text="Game published + verified")
+    recruiter_verified = models.BooleanField(default=False, help_text="Company verified + licensed")
+    mentor_verified = models.BooleanField(default=False, help_text="Credentials verified")
     
     # Common fields
     location = models.CharField(max_length=100, blank=True)
@@ -103,24 +125,37 @@ class UserProfile(models.Model):
     # Role checker methods - check both primary and secondary roles
     def has_role(self, role_name):
         """Check if user has a specific role (primary or secondary)"""
-        # Admin impersonation mode: preview one role exactly as that user type.
-        if (self.user.is_staff or self.user.is_superuser) and self.admin_view_as_role:
-            return role_name == self.admin_view_as_role
+        def normalize_role(value):
+            # Backward compatibility: PLAYER and VECTOR are the same consumer role.
+            return 'VECTOR' if value == 'PLAYER' else value
 
-        if self.primary_role == role_name:
+        normalized_role = normalize_role(role_name)
+
+        # Admin impersonation mode: preview one role exactly as that user type.
+        if self.user.is_staff or self.user.is_superuser:
+            if self.admin_view_as_role:
+                # When viewing as a specific role, ONLY that role is active
+                return normalized_role == normalize_role(self.admin_view_as_role)
+            else:
+                # When admin_view_as_role is None, user is in Moderator mode
+                # In Moderator mode, don't show any provider role features
+                return False
+
+        if normalize_role(self.primary_role) == normalized_role:
             return True
-        if self.secondary_roles and role_name in self.secondary_roles:
+        if self.secondary_roles and normalized_role in [normalize_role(r) for r in self.secondary_roles]:
             return True
         # Backward compatibility for legacy role field
-        if self.role == role_name:
-            return True
-        # Admin compatibility
-        if role_name == 'CREATOR' and self.role == 'ADMIN':
+        if normalize_role(self.role) == normalized_role:
             return True
         return False
     
+    def is_player(self):
+        """Backward-compatible alias for consumer role"""
+        return self.is_vector()
+
     def is_vector(self):
-        """Base ecosystem member role"""
+        """Primary consumer role in ecosystem"""
         return self.has_role('VECTOR')
 
     def is_user(self):

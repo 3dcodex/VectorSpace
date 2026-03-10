@@ -32,7 +32,7 @@ def jobs_board(request):
     if sort in ['-created_at', '-salary_max']:
         jobs = jobs.order_by(sort)
 
-    return render(request, 'jobs/list.html', {'jobs': jobs})
+    return render(request, 'dashboard/jobs/list.html', {'jobs': jobs})
 
 
 @login_required
@@ -40,7 +40,7 @@ def dashboard_job_detail(request, pk):
     """Dashboard-only job detail view"""
     job = get_object_or_404(Job, pk=pk)
     has_applied = Application.objects.filter(job=job, applicant=request.user).exists()
-    return render(request, 'jobs/dashboard_detail.html', {
+    return render(request, 'dashboard/jobs/detail.html', {
         'job': job,
         'has_applied': has_applied,
     })
@@ -53,7 +53,7 @@ def dashboard_apply_job(request, pk):
 
     if Application.objects.filter(job=job, applicant=request.user).exists():
         messages.info(request, 'You have already applied to this job.')
-        return redirect('jobs_detail', pk=pk)
+        return redirect('dashboard:dashboard_jobs_detail', pk=pk)
 
     if request.method == 'POST':
         form = ApplicationForm(request.POST, request.FILES)
@@ -72,21 +72,25 @@ def dashboard_apply_job(request, pk):
             )
 
             messages.success(request, 'Application submitted successfully!')
-            return redirect('jobs_detail', pk=pk)
+            return redirect('dashboard:dashboard_jobs_detail', pk=pk)
     else:
         form = ApplicationForm()
 
-    return render(request, 'jobs/dashboard_apply.html', {'form': form, 'job': job})
+    return render(request, 'dashboard/jobs/apply.html', {'form': form, 'job': job})
 
 @login_required
 def my_applications(request):
     """List user's job applications"""
     applications = Application.objects.filter(applicant=request.user).order_by('-applied_at')
-    return render(request, 'jobs/my_applications.html', {'applications': applications})
+    return render(request, 'dashboard/jobs/my_applications.html', {'applications': applications})
 
 @login_required
 def post_job(request):
-    """Post a new job listing"""
+    """Post a new job listing (Recruiter only)"""
+    if not request.user.profile.is_recruiter():
+        messages.error(request, 'Recruiter role required to post jobs.')
+        return redirect('dashboard:overview')
+    
     if request.method == 'POST':
         form = JobPostForm(request.POST)
         if form.is_valid():
@@ -95,25 +99,33 @@ def post_job(request):
             job.save()
             
             messages.success(request, f'Job "{job.title}" posted successfully!')
-            return redirect('jobs_detail', pk=job.pk)
+            return redirect('dashboard:dashboard_jobs_postings')
     else:
         form = JobPostForm()
     
-    return render(request, 'jobs/post.html', {'form': form})
+    return render(request, 'dashboard/jobs/post.html', {'form': form})
 
 @login_required
 def my_job_postings(request):
-    """List recruiter's job postings"""
+    """List recruiter's job postings (Recruiter only)"""
+    if not request.user.profile.is_recruiter():
+        messages.error(request, 'Recruiter role required.')
+        return redirect('dashboard:overview')
+    
     jobs = Job.objects.filter(recruiter=request.user).order_by('-created_at')
-    return render(request, 'jobs/my_postings.html', {'jobs': jobs})
+    return render(request, 'dashboard/jobs/my_postings.html', {'jobs': jobs})
 
 @login_required
 def recruiter_dashboard(request):
-    """Recruiter dashboard with jobs and applications"""
+    """Recruiter dashboard with jobs and applications (Recruiter only)"""
+    if not request.user.profile.is_recruiter():
+        messages.error(request, 'Recruiter role required.')
+        return redirect('dashboard:overview')
+    
     jobs = Job.objects.filter(recruiter=request.user).order_by('-created_at')
     applications = Application.objects.filter(job__recruiter=request.user).order_by('-applied_at')
     
-    return render(request, 'jobs/recruiter_dashboard.html', {
+    return render(request, 'dashboard/jobs/recruiter_dashboard.html', {
         'jobs': jobs,
         'applications': applications
     })
@@ -126,7 +138,7 @@ def update_application_status(request, pk):
     # Only recruiter can update status
     if application.job.recruiter != request.user:
         messages.error(request, 'You do not have permission to update this application.')
-        return redirect('jobs_recruiter')
+        return redirect('dashboard:dashboard_jobs_recruiter')
     
     if request.method == 'POST':
         form = ApplicationStatusForm(request.POST, instance=application)
@@ -143,9 +155,9 @@ def update_application_status(request, pk):
             )
             
             messages.success(request, 'Application status updated!')
-            return redirect('jobs_recruiter')
+            return redirect('dashboard:dashboard_jobs_recruiter')
     
-    return redirect('jobs_recruiter')
+    return redirect('dashboard:dashboard_jobs_recruiter')
 
 
 @login_required
@@ -156,7 +168,7 @@ def job_applicants_list(request, job_id):
     #Only recruiter can view
     if job.recruiter != request.user:
         messages.error(request, 'You do not have permission to view these applicants.')
-        return redirect('dashboard:jobs_board')
+        return redirect('dashboard:dashboard_jobs_board')
     
     applications = job.applications.all().order_by('-applied_at')
     return render(request, 'dashboard/jobs/applicants_list.html', {
@@ -173,7 +185,7 @@ def application_detail(request, pk):
     # Only recruiter can view
     if application.job.recruiter != request.user:
         messages.error(request, 'You do not have permission to view this application.')
-        return redirect('dashboard:jobs_board')
+        return redirect('dashboard:dashboard_jobs_board')
     
     return render(request, 'dashboard/jobs/application_detail.html', {
         'application': application

@@ -1,0 +1,15 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Buyer Marketplace{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid py-4">
+    <h2 class="h4 mb-3">Buyer Marketplace Dashboard</h2>
+    <p class="text-muted">Curated assets and quick access to your purchases and wishlist.</p>
+    <div class="row g-3 mb-3">
+        <div class="col-md-6"><div class="card card-body"><strong>{{ my_purchases }}</strong><span>Purchases</span></div></div>
+        <div class="col-md-6"><div class="card card-body"><strong>{{ wishlist_count }}</strong><span>Wishlist Items</span></div></div>
+    </div>
+    <a href="{% url 'dashboard:dashboard_marketplace_browse' %}" class="btn btn-primary">Browse Assets</a>
+</div>
+{% endblock %}

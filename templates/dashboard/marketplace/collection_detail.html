@@ -1,0 +1,17 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Collection Detail{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid py-4">
+    <h2 class="h4 mb-2">{{ collection.name }}</h2>
+    <p class="text-muted">{{ collection.description }}</p>
+    <ul class="list-group">
+        {% for item in collection_items %}
+        <li class="list-group-item">{{ item.asset.title }}</li>
+        {% empty %}
+        <li class="list-group-item text-muted">No assets in this collection.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

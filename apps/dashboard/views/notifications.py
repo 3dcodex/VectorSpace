@@ -17,13 +17,13 @@ def notifications(request):
         page_number = request.GET.get('page')
         notifications = paginator.get_page(page_number)
         
-        return render(request, 'core/notifications.html', {
+        return render(request, 'dashboard/notifications.html', {
             'notifications': notifications,
             'unread_count': unread_count
         })
     except Exception as e:
         messages.error(request, 'Error loading notifications. Please try again.')
-        return render(request, 'core/notifications.html', {
+        return render(request, 'dashboard/notifications.html', {
             'notifications': [],
             'unread_count': 0
         })
@@ -40,10 +40,10 @@ def mark_notification_read(request, notification_id):
         # Redirect to link if available, otherwise back to notifications
         if notification.link:
             return redirect(notification.link)
-        return redirect('dashboard:notifications')
+        return redirect('dashboard:dashboard_notifications')
     except Exception as e:
         messages.error(request, 'Error marking notification as read.')
-        return redirect('dashboard:notifications')
+        return redirect('dashboard:dashboard_notifications')
 
 @login_required
 def mark_all_read(request):
@@ -77,9 +77,9 @@ def mark_all_read(request):
                 return JsonResponse({'success': True, 'count': 0})
             messages.info(request, 'No unread notifications to mark.')
         
-        return redirect('dashboard:notifications')
+        return redirect('dashboard:dashboard_notifications')
     except Exception as e:
         if request.headers.get('Content-Type') == 'application/json':
             return JsonResponse({'success': False, 'error': str(e)})
         messages.error(request, 'Error marking notifications as read.')
-        return redirect('dashboard:notifications')
+        return redirect('dashboard:dashboard_notifications')

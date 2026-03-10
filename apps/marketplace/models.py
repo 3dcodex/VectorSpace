@@ -68,10 +68,16 @@ class Asset(models.Model):
         return self.title
 
 class Purchase(models.Model):
-    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='purchases')
-    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='purchases', db_index=True)
+    asset = models.ForeignKey(Asset, on_delete=models.CASCADE, db_index=True)
     price_paid = models.DecimalField(max_digits=10, decimal_places=2)
     purchased_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['buyer', '-purchased_at']),
+            models.Index(fields=['asset', '-purchased_at']),
+        ]
 
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

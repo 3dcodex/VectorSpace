@@ -1,0 +1,23 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Payouts{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid py-4">
+    <h2 class="h4 mb-3">Wallet and Payouts</h2>
+    <div class="card card-body mb-3">
+        <strong>Balance:</strong> ${{ wallet.balance }}
+    </div>
+    <h3 class="h6">Recent Transactions</h3>
+    <ul class="list-group">
+        {% for tx in transactions %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ tx.get_transaction_type_display }}</span>
+            <span>${{ tx.amount }}</span>
+        </li>
+        {% empty %}
+        <li class="list-group-item text-muted">No transactions yet.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

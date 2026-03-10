@@ -229,7 +229,6 @@ def edit_profile(request):
         user = request.user
         user.bio = request.POST.get('bio', '')
         user.portfolio_url = request.POST.get('portfolio_url', '')
-        user.user_type = request.POST.get('user_type', user.user_type)
         
         # Handle skills
         skills_str = request.POST.get('skills', '')
@@ -246,6 +245,19 @@ def edit_profile(request):
         
         # Update profile
         profile = user.profile
+        requested_user_type = request.POST.get('user_type', '').strip().lower()
+        role_map = {
+            'artist': 'CREATOR',
+            'vfx': 'CREATOR',
+            'developer': 'DEVELOPER',
+            'recruiter': 'RECRUITER',
+            'mentor': 'MENTOR',
+            'gamer': 'VECTOR',
+            'player': 'VECTOR',
+            'vector': 'VECTOR',
+        }
+        if requested_user_type in role_map:
+            profile.primary_role = role_map[requested_user_type]
         profile.location = request.POST.get('location', '')
         profile.experience_years = int(request.POST.get('experience_years', 0))
         profile.github = request.POST.get('github', '')

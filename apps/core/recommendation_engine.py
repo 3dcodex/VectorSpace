@@ -24,6 +24,21 @@ class BaseRecommendationEngine:
     def __init__(self, user: User):
         self.user = user
         self.user_prefs = self._get_or_create_preferences()
+
+    def _get_user_type(self) -> str:
+        """Backward-compatible user type derived from profile roles."""
+        profile = getattr(self.user, 'profile', None)
+        if not profile:
+            return 'vector'
+        if profile.is_developer():
+            return 'developer'
+        if profile.is_creator():
+            return 'artist'
+        if profile.is_recruiter():
+            return 'recruiter'
+        if profile.is_mentor():
+            return 'mentor'
+        return 'vector'
         
     def _get_or_create_preferences(self) -> UserPreference:
         """Get or create user preferences with defaults based on profile"""
@@ -41,11 +56,12 @@ class BaseRecommendationEngine:
     def _infer_asset_preferences(self) -> List[str]:
         """Infer asset type preferences from user profile and purchase history"""
         preferences = []
+        user_type = self._get_user_type()
         
         # Based on user type
-        if self.user.user_type in ['artist', 'vfx']:
+        if user_type in ['artist', 'vfx']:
             preferences.extend(['3d_model', 'texture', 'vfx', 'material'])
-        elif self.user.user_type == 'developer':
+        elif user_type == 'developer':
             preferences.extend(['plugin', 'script', 'sound', 'animation'])
             
         # Based on purchase history
@@ -136,7 +152,7 @@ class BaseRecommendationEngine:
                 score += 0.5
                 
             # Platform preference (assume user prefers PC if they're developers/artists)
-            if self.user.user_type in ['developer', 'artist'] and content_metadata.get('platform') == 'pc':
+            if self._get_user_type() in ['developer', 'artist'] and content_metadata.get('platform') == 'pc':
                 score += 0.2
                 
             # Engine preference

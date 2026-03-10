@@ -1,0 +1,22 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Collections{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 mb-0">My Collections</h2>
+        <a href="{% url 'dashboard:dashboard_marketplace_create_collection' %}" class="btn btn-primary">Create Collection</a>
+    </div>
+    <ul class="list-group">
+        {% for collection in collections %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ collection.name }}</span>
+            <a href="{% url 'dashboard:dashboard_marketplace_collection_detail' request.user.username collection.slug %}" class="btn btn-sm btn-outline-secondary">Open</a>
+        </li>
+        {% empty %}
+        <li class="list-group-item text-muted">No collections yet.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

@@ -8,13 +8,19 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from .models import Asset, Purchase, Wishlist
 from .payment import payment_processor
+from apps.core.security import sanitize_search_input
+import logging
+
+logger = logging.getLogger(__name__)
 
 def marketplace_list(request):
     """Public: Browse all marketplace assets"""
-    assets = Asset.objects.filter(is_active=True).select_related('seller', 'category')
+    assets = Asset.objects.filter(is_active=True).select_related(
+        'seller', 'seller__profile', 'category'
+    )
     
-    # Search
-    search_query = request.GET.get('q', '').strip()
+    # Search with sanitization
+    search_query = sanitize_search_input(request.GET.get('q', ''))
     if search_query:
         assets = assets.filter(
             Q(title__icontains=search_query) | 
@@ -79,8 +85,12 @@ def marketplace_list(request):
 
 def asset_detail(request, pk):
     """Public: View asset details"""
-    asset = get_object_or_404(Asset, pk=pk)
-    reviews = asset.reviews.all().order_by('-created_at')
+    asset = get_object_or_404(Asset.objects.select_related('seller', 'seller__profile', 'category'), pk=pk)
+    reviews = asset.reviews.all().select_related('user').order_by('-created_at')
+    
+    # Increment view count
+    asset.view_count += 1
+    asset.save(update_fields=['view_count'])
     
     return render(request, 'marketplace/detail.html', {
         'asset': asset,
@@ -92,7 +102,7 @@ def purchase_asset(request, pk):
     """Purchase an asset (requires login)"""
     from apps.core.notifications import send_notification
     
-    asset = get_object_or_404(Asset, pk=pk)
+    asset = get_object_or_404(Asset.objects.select_related('seller'), pk=pk)
 
     # Check if already purchased
     if Purchase.objects.filter(buyer=request.user, asset=asset).exists():
@@ -101,41 +111,48 @@ def purchase_asset(request, pk):
 
     # Check if free asset
     if asset.is_free or asset.price == 0:
-        purchase = Purchase.objects.create(
-            buyer=request.user,
-            asset=asset,
-            price_paid=0
-        )
-        asset.downloads += 1
-        asset.save()
-        
-        # Send notification to asset seller
-        send_notification(
-            user=asset.seller,
-            notification_type='purchase',
-            title='Free Asset Downloaded!',
-            message=f'{request.user.username} downloaded your asset "{asset.title}"',
-            link=f'/marketplace/{asset.id}/',
-            priority='normal',
-            related_object_id=asset.id,
-            related_object_type='asset',
-            action_url=f'/dashboard/marketplace/analytics/'
-        )
-        
-        # Send confirmation to buyer
-        send_notification(
-            user=request.user,
-            notification_type='purchase',
-            title='Asset Downloaded Successfully!',
-            message=f'You have successfully downloaded "{asset.title}" by {asset.seller.username}',
-            link=f'/marketplace/{asset.id}/',
-            priority='normal',
-            related_object_id=asset.id,
-            related_object_type='asset'
-        )
-        
-        messages.success(request, f'Successfully downloaded "{asset.title}"!')
-        return redirect('marketplace:detail', pk=pk)
+        try:
+            purchase = Purchase.objects.create(
+                buyer=request.user,
+                asset=asset,
+                price_paid=0
+            )
+            asset.downloads += 1
+            asset.save(update_fields=['downloads'])
+            
+            logger.info(f'User {request.user.id} downloaded free asset {asset.id}')
+            
+            # Send notification to asset seller
+            send_notification(
+                user=asset.seller,
+                notification_type='purchase',
+                title='Free Asset Downloaded!',
+                message=f'{request.user.username} downloaded your asset "{asset.title}"',
+                link=f'/marketplace/{asset.id}/',
+                priority='normal',
+                related_object_id=asset.id,
+                related_object_type='asset',
+                action_url=f'/dashboard/marketplace/analytics/'
+            )
+            
+            # Send confirmation to buyer
+            send_notification(
+                user=request.user,
+                notification_type='purchase',
+                title='Asset Downloaded Successfully!',
+                message=f'You have successfully downloaded "{asset.title}" by {asset.seller.username}',
+                link=f'/marketplace/{asset.id}/',
+                priority='normal',
+                related_object_id=asset.id,
+                related_object_type='asset'
+            )
+            
+            messages.success(request, f'Successfully downloaded "{asset.title}"!')
+            return redirect('marketplace:detail', pk=pk)
+        except Exception as e:
+            logger.error(f'Free asset download failed: {e}', exc_info=True)
+            messages.error(request, 'Download failed. Please try again.')
+            return redirect('marketplace:detail', pk=pk)
 
     # For paid assets, initiate payment
     payment_intent = payment_processor.process_asset_purchase(request.user, asset)

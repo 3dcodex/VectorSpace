@@ -57,9 +57,17 @@
         <div class="card-icon">🎨</div>
         <h3 class="card-title">3D Marketplace</h3>
         <p class="card-text">Your Uploads: <strong style="background: linear-gradient(135deg, var(--primary), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ user.assets.count }}</strong></p>
+        {% if user.profile.is_creator %}
         <a href="{% url 'dashboard:marketplace_upload' %}" class="card-link">Upload Asset</a>
+        {% else %}
+        <a href="{% url 'dashboard:marketplace_browse' %}" class="card-link">Browse Assets</a>
+        {% endif %}
         <br>
+        {% if user.profile.is_creator %}
         <a href="/dashboard/assets/" class="card-link">My Assets</a>
+        {% else %}
+        <a href="{% url 'dashboard:marketplace_purchases' %}" class="card-link">My Purchases</a>
+        {% endif %}
     </div>
     
     <div class="card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(20, 24, 41, 0.8));">
@@ -67,8 +75,10 @@
         <h3 class="card-title">Job Board</h3>
         <p class="card-text">Applications: <strong style="background: linear-gradient(135deg, var(--success), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ user.applications.count }}</strong></p>
         <a href="/dashboard/jobs/applications/" class="card-link">My Applications</a>
+        {% if user.profile.is_recruiter %}
         <br>
         <a href="{% url 'dashboard:jobs_post' %}" class="card-link">Post Job</a>
+        {% endif %}
     </div>
     
     <div class="card" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(20, 24, 41, 0.8));">
@@ -79,7 +89,11 @@
         {% else %}
             <p class="card-text">Learn from industry experts</p>
         {% endif %}
+        {% if user.profile.is_mentor %}
         <a href="/dashboard/mentorship/" class="card-link">My Sessions</a>
+        {% else %}
+        <a href="{% url 'mentorship:list' %}" class="card-link">Find Mentor</a>
+        {% endif %}
         {% if not user.mentor_profile %}
         <br>
         <a href="{% url 'mentorship:become_mentor' %}" class="card-link">Become Mentor</a>
@@ -97,9 +111,17 @@
         <div class="card-icon">🎮</div>
         <h3 class="card-title">Game Publishing</h3>
         <p class="card-text">Published Games: <strong style="background: linear-gradient(135deg, var(--primary), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ user.games.count }}</strong></p>
+        {% if user.profile.is_developer %}
         <a href="{% url 'dashboard:games_publish' %}" class="card-link">Publish Game</a>
+        {% else %}
+        <a href="{% url 'dashboard:games_list' %}" class="card-link">Browse Games</a>
+        {% endif %}
         <br>
+        {% if user.profile.is_developer %}
         <a href="/dashboard/games/" class="card-link">My Games</a>
+        {% else %}
+        <a href="{% url 'dashboard:dashboard_games_list' %}" class="card-link">My Downloads</a>
+        {% endif %}
     </div>
     
     <div class="card" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(20, 24, 41, 0.8));">
@@ -107,8 +129,10 @@
         <h3 class="card-title">Competitions</h3>
         <p class="card-text">Your Submissions: <strong style="background: linear-gradient(135deg, var(--purple), var(--pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ user.competition_submissions.count }}</strong></p>
         <a href="{% url 'competitions:list' %}" class="card-link">Browse</a>
+        {% if user.profile.has_professional_role %}
         <br>
         <a href="{% url 'dashboard:competitions_create' %}" class="card-link">Create</a>
+        {% endif %}
     </div>
     
     <div class="card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(20, 24, 41, 0.8));">

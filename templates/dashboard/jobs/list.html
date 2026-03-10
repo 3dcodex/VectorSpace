@@ -1,0 +1,30 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Jobs Board{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 mb-0">Dashboard Jobs Board</h2>
+        <a href="{% url 'dashboard:dashboard_jobs_post' %}" class="btn btn-primary">Post Job</a>
+    </div>
+
+    {% if jobs %}
+    <div class="row g-3">
+        {% for job in jobs %}
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ job.title }}</h5>
+                    <p class="text-muted mb-2">{{ job.location }} | {{ job.get_job_type_display }}</p>
+                    <a href="{% url 'dashboard:dashboard_jobs_detail' job.pk %}" class="btn btn-sm btn-outline-primary">View</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">No active jobs found.</div>
+    {% endif %}
+</div>
+{% endblock %}

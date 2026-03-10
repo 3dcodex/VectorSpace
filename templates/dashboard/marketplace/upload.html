@@ -1,0 +1,14 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Upload Asset{% endblock %}
+
+{% block dashboard_content %}
+<div class="container py-4" style="max-width: 900px;">
+    <h2 class="h4 mb-3">Upload New Asset</h2>
+    <form method="post" enctype="multipart/form-data" class="card card-body">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+</div>
+{% endblock %}

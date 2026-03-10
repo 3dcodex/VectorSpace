@@ -9,11 +9,16 @@ from apps.competitions.forms import CompetitionForm, SubmissionForm, VoteForm
 def my_competitions(request):
     """List competitions created by user"""
     competitions = Competition.objects.filter(organizer=request.user).order_by('-start_date')
-    return render(request, 'competitions/my_competitions.html', {'competitions': competitions})
+    return render(request, 'dashboard/competitions/my_competitions.html', {'competitions': competitions})
 
 @login_required
 def create_competition(request):
     """Create a new competition"""
+    # Vector-only users can participate but cannot create competitions.
+    if not (request.user.is_staff or request.user.profile.has_professional_role()):
+        messages.error(request, 'Professional role required to create competitions.')
+        return redirect('dashboard:overview')
+
     if request.method == 'POST':
         form = CompetitionForm(request.POST)
         if form.is_valid():
@@ -21,17 +26,17 @@ def create_competition(request):
             competition.organizer = request.user
             competition.save()
             messages.success(request, 'Competition created!')
-            return redirect('competitions:detail', pk=competition.pk)
+            return redirect('dashboard:dashboard_competitions_my_competitions')
     else:
         form = CompetitionForm()
     
-    return render(request, 'competitions/create.html', {'form': form})
+    return render(request, 'dashboard/competitions/create.html', {'form': form})
 
 @login_required
 def my_submissions(request):
     """List user's competition submissions"""
     submissions = Submission.objects.filter(participant=request.user).order_by('-submitted_at')
-    return render(request, 'competitions/my_submissions.html', {'submissions': submissions})
+    return render(request, 'dashboard/competitions/my_submissions.html', {'submissions': submissions})
 
 @login_required
 def submit_entry(request, pk):
@@ -41,7 +46,7 @@ def submit_entry(request, pk):
     # Check if already submitted
     if Submission.objects.filter(competition=competition, participant=request.user).exists():
         messages.info(request, 'You have already submitted to this competition.')
-        return redirect('competitions:detail', pk=pk)
+        return redirect('dashboard:dashboard_competitions_my_submissions')
     
     if request.method == 'POST':
         form = SubmissionForm(request.POST, request.FILES)
@@ -51,11 +56,11 @@ def submit_entry(request, pk):
             submission.participant = request.user
             submission.save()
             messages.success(request, 'Submission successful!')
-            return redirect('competitions:detail', pk=pk)
+            return redirect('dashboard:dashboard_competitions_my_submissions')
     else:
         form = SubmissionForm()
     
-    return render(request, 'competitions/submit.html', {
+    return render(request, 'dashboard/competitions/submit.html', {
         'form': form,
         'competition': competition
     })

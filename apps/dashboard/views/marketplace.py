@@ -15,7 +15,7 @@ from apps.users.models import User
 def marketplace_dashboard(request):
     """Role-based marketplace view - Creator dashboard or Buyer storefront"""
     user = request.user
-    is_creator = user.profile.role in ['CREATOR', 'ADMIN']
+    is_creator = user.profile.is_creator()
     
     if is_creator:
         # Creator Dashboard
@@ -62,7 +62,7 @@ def marketplace_dashboard(request):
             'my_purchases': my_purchases,
             'wishlist_count': wishlist_count,
         }
-        return render(request, 'marketplace/buyer_storefront.html', context)
+        return render(request, 'dashboard/marketplace/buyer_storefront.html', context)
 
 @login_required
 def my_assets(request):
@@ -85,13 +85,13 @@ def my_assets(request):
         'avg_rating': avg_rating,
     }
     
-    return render(request, 'marketplace/my_assets.html', context)
+    return render(request, 'dashboard/marketplace/my_assets.html', context)
 
 @login_required
 def upload_asset(request):
     """Upload a new asset"""
-    if request.user.profile.role not in ['CREATOR', 'ADMIN']:
-        messages.info(request, 'You need to be a Creator to upload assets. Contact support to upgrade your account.')
+    if not request.user.profile.is_creator():
+        messages.error(request, 'Creator role required to upload assets.')
         return redirect('dashboard:overview')
     
     if request.method == 'POST':
@@ -102,15 +102,19 @@ def upload_asset(request):
             asset.save()
             
             messages.success(request, f'"{asset.title}" uploaded successfully and is now live!')
-            return redirect('dashboard:marketplace_my_assets')
+            return redirect('dashboard:dashboard_marketplace_my_assets')
     else:
         form = AssetUploadForm()
     
-    return render(request, 'marketplace/upload.html', {'form': form})
+    return render(request, 'dashboard/marketplace/upload.html', {'form': form})
 
 @login_required
 def edit_asset(request, pk):
     """Edit an existing asset"""
+    if not request.user.profile.is_creator():
+        messages.error(request, 'Creator role required to edit assets.')
+        return redirect('dashboard:overview')
+    
     asset = get_object_or_404(Asset, pk=pk, seller=request.user)
     
     if request.method == 'POST':
@@ -118,36 +122,40 @@ def edit_asset(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, f'"{asset.title}" updated successfully!')
-            return redirect('dashboard:marketplace_my_assets')
+            return redirect('dashboard:dashboard_marketplace_my_assets')
     else:
         form = AssetUploadForm(instance=asset)
     
-    return render(request, 'marketplace/edit_asset.html', {'form': form, 'asset': asset})
+    return render(request, 'dashboard/marketplace/edit_asset.html', {'form': form, 'asset': asset})
 
 @login_required
 def delete_asset(request, pk):
     """Delete an asset"""
+    if not request.user.profile.is_creator():
+        messages.error(request, 'Creator role required to delete assets.')
+        return redirect('dashboard:overview')
+    
     asset = get_object_or_404(Asset, pk=pk, seller=request.user)
     
     if request.method == 'POST':
         title = asset.title
         asset.delete()
         messages.success(request, f'"{title}" deleted successfully!')
-        return redirect('dashboard:marketplace_my_assets')
+        return redirect('dashboard:dashboard_marketplace_my_assets')
     
-    return render(request, 'marketplace/delete_confirm.html', {'asset': asset})
+    return render(request, 'dashboard/marketplace/delete_confirm.html', {'asset': asset})
 
 @login_required
 def my_purchases(request):
     """List user's purchased assets"""
     purchases = Purchase.objects.filter(buyer=request.user).order_by('-purchased_at')
-    return render(request, 'marketplace/my_purchases.html', {'purchases': purchases})
+    return render(request, 'dashboard/marketplace/my_purchases.html', {'purchases': purchases})
 
 @login_required
 def my_sales(request):
     """List sales of user's assets"""
     sales = Purchase.objects.filter(asset__seller=request.user).order_by('-purchased_at')
-    return render(request, 'marketplace/my_sales.html', {'sales': sales})
+    return render(request, 'dashboard/marketplace/my_sales.html', {'sales': sales})
 
 
 @login_required
@@ -160,7 +168,7 @@ def payouts(request):
         'wallet': wallet,
         'transactions': transactions,
     }
-    return render(request, 'marketplace/payouts.html', context)
+    return render(request, 'dashboard/marketplace/payouts.html', context)
 
 @login_required
 def browse_marketplace(request):
@@ -266,7 +274,7 @@ def my_wishlist(request):
             'sort': sort,
         },
     }
-    return render(request, 'marketplace/wishlist.html', context)
+    return render(request, 'dashboard/marketplace/wishlist.html', context)
 
 
 @require_POST
@@ -359,7 +367,7 @@ def my_collections(request):
         'collections': collections,
         'search_query': search_query,
     }
-    return render(request, 'marketplace/collections.html', context)
+    return render(request, 'dashboard/marketplace/collections.html', context)
 
 
 @login_required
@@ -372,12 +380,12 @@ def create_collection(request):
         
         if not name:
             messages.error(request, 'Collection name is required.')
-            return redirect('marketplace_create_collection')
+            return redirect('dashboard:dashboard_marketplace_create_collection')
         
         # Check if user already has a collection with this name
         if Collection.objects.filter(owner=request.user, name__iexact=name).exists():
             messages.error(request, f'You already have a collection named "{name}". Please choose a different name.')
-            return redirect('marketplace_create_collection')
+            return redirect('dashboard:dashboard_marketplace_create_collection')
         
         try:
             collection = Collection.objects.create(
@@ -388,13 +396,13 @@ def create_collection(request):
             )
             
             messages.success(request, f'Collection "{collection.name}" created successfully!')
-            return redirect('marketplace_collection_detail', username=request.user.username, slug=collection.slug)
+            return redirect('dashboard:dashboard_marketplace_collection_detail', username=request.user.username, slug=collection.slug)
             
         except Exception as e:
             messages.error(request, f'Failed to create collection: {str(e)}')
-            return redirect('marketplace_create_collection')
+            return redirect('dashboard:dashboard_marketplace_create_collection')
     
-    return render(request, 'marketplace/create_collection.html')
+    return render(request, 'dashboard/marketplace/create_collection.html')
 
 
 @login_required
@@ -407,7 +415,7 @@ def collection_detail(request, username, slug):
     # Privacy check - only owner can view private collections
     if not collection.is_public and collection.owner != request.user:
         messages.error(request, 'This collection is private.')
-        return redirect('marketplace_my_collections')
+        return redirect('dashboard:dashboard_marketplace_my_collections')
     
     # Get collection items with related data
     collection_items = CollectionItem.objects.filter(collection=collection)\
@@ -438,7 +446,7 @@ def collection_detail(request, username, slug):
         'is_owner': is_owner,
         'search_query': search_query,
     }
-    return render(request, 'marketplace/collection_detail.html', context)
+    return render(request, 'dashboard/marketplace/collection_detail.html', context)
 
 
 @login_required 
@@ -466,7 +474,7 @@ def edit_collection(request, username, slug):
                     collection.save()  # This will regenerate slug if needed
                     
                     messages.success(request, 'Collection updated successfully!')
-                    return redirect('marketplace_collection_detail', username=request.user.username, slug=collection.slug)
+                    return redirect('dashboard:dashboard_marketplace_collection_detail', username=request.user.username, slug=collection.slug)
                     
                 except Exception as e:
                     messages.error(request, f'Failed to update collection: {str(e)}')
@@ -474,7 +482,7 @@ def edit_collection(request, username, slug):
     context = {
         'collection': collection,
     }
-    return render(request, 'marketplace/edit_collection.html', context)
+    return render(request, 'dashboard/marketplace/edit_collection.html', context)
 
 
 @login_required
@@ -486,7 +494,7 @@ def delete_collection(request, username, slug):
         name = collection.name
         collection.delete()
         messages.success(request, f'Collection "{name}" deleted successfully!')
-        return redirect('marketplace_my_collections')
+        return redirect('dashboard:dashboard_marketplace_my_collections')
     
     # Count items for confirmation message
     item_count = CollectionItem.objects.filter(collection=collection).count()
@@ -495,7 +503,7 @@ def delete_collection(request, username, slug):
         'collection': collection,
         'item_count': item_count,
     }
-    return render(request, 'marketplace/delete_collection_confirm.html', context)
+    return render(request, 'dashboard/marketplace/delete_collection_confirm.html', context)
 
 
 @require_POST

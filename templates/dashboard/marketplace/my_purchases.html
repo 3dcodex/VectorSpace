@@ -1,0 +1,21 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}My Purchases{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid py-4">
+    <h2 class="h4 mb-3">My Purchased Assets</h2>
+    {% if purchases %}
+    <ul class="list-group">
+        {% for purchase in purchases %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ purchase.asset.title }}</span>
+            <small class="text-muted">{{ purchase.purchased_at|date:'M d, Y' }}</small>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="alert alert-info">No purchases yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

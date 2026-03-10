@@ -1,0 +1,21 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}My Applications{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid py-4">
+    <h2 class="h4 mb-3">My Job Applications</h2>
+    {% if applications %}
+    <ul class="list-group">
+        {% for application in applications %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ application.job.title }}</span>
+            <span class="badge bg-secondary">{{ application.get_status_display }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="alert alert-info">No applications yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

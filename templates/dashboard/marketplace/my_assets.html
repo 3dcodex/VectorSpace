@@ -1,0 +1,32 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}My Assets{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 mb-0">Creator Assets Dashboard</h2>
+        <a href="{% url 'dashboard:dashboard_marketplace_upload' %}" class="btn btn-primary">Upload Asset</a>
+    </div>
+    <div class="row g-3 mb-3">
+        <div class="col-md-3"><div class="card card-body"><strong>{{ total_assets }}</strong><span>Total Assets</span></div></div>
+        <div class="col-md-3"><div class="card card-body"><strong>{{ total_downloads }}</strong><span>Downloads</span></div></div>
+        <div class="col-md-3"><div class="card card-body"><strong>{{ total_sales }}</strong><span>Sales</span></div></div>
+        <div class="col-md-3"><div class="card card-body"><strong>${{ total_revenue }}</strong><span>Revenue</span></div></div>
+    </div>
+    {% if assets %}
+    <ul class="list-group">
+        {% for asset in assets %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ asset.title }}</span>
+            <span>
+                <a href="{% url 'dashboard:dashboard_marketplace_edit_asset' asset.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+            </span>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="alert alert-info">No assets uploaded yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

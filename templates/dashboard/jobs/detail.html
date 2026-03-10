@@ -1,0 +1,21 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Job Detail{% endblock %}
+
+{% block dashboard_content %}
+<div class="container py-4" style="max-width: 900px;">
+    <a href="{% url 'dashboard:dashboard_jobs_board' %}" class="btn btn-link px-0">Back to Jobs</a>
+    <div class="card">
+        <div class="card-body">
+            <h2 class="h4">{{ job.title }}</h2>
+            <p class="text-muted">{{ job.location }} | {{ job.get_job_type_display }}</p>
+            <div class="mb-3">{{ job.description|linebreaks }}</div>
+            {% if not has_applied %}
+            <a href="{% url 'dashboard:dashboard_jobs_apply' job.pk %}" class="btn btn-primary">Apply</a>
+            {% else %}
+            <span class="badge bg-success">Already Applied</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

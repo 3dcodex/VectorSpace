@@ -1,0 +1,21 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}My Submissions{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid py-4">
+    <h2 class="h4 mb-3">My Competition Submissions</h2>
+    {% if submissions %}
+    <ul class="list-group">
+        {% for submission in submissions %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ submission.competition.title }}</span>
+            <span class="badge bg-secondary">Score: {{ submission.score|default:'0' }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="alert alert-info">No submissions yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

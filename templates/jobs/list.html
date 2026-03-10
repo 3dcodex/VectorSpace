@@ -34,7 +34,9 @@
 <h1>Discover Career Opportunities in Game & 3D Industries</h1>
 <p>Connect with studios, startups, and creative teams hiring talented developers and artists.</p>
 <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+{% if user.is_authenticated and user.profile.is_recruiter %}
 <a href="{% url 'dashboard:jobs_post' %}" class="btn-primary">➥ Post a Job</a>
+{% endif %}
 <a href="{% url 'dashboard:jobs_applications' %}" class="btn-secondary">📄 My Applications</a>
 </div>
 </div>
@@ -100,7 +102,9 @@
 <div class="empty-state-icon">💼</div>
 <h3>No Jobs Found</h3>
 <p>Try adjusting your filters or be the first to post a job</p>
+{% if user.is_authenticated and user.profile.is_recruiter %}
 <a href="{% url 'dashboard:jobs_post' %}" class="btn-primary">Post a Job</a>
+{% endif %}
 </div>
 {% endfor %}
 </div>

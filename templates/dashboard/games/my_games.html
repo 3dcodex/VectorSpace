@@ -1,0 +1,41 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}My Games{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 mb-0">My Games Dashboard</h2>
+        <a href="{% url 'dashboard:dashboard_games_create' %}" class="btn btn-primary">Publish Game</a>
+    </div>
+
+    {% if games %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for game in games %}
+                <tr>
+                    <td>{{ game.title }}</td>
+                    <td>{{ game.get_status_display }}</td>
+                    <td>{{ game.created_at|date:'M d, Y' }}</td>
+                    <td>
+                        <a href="{% url 'dashboard:dashboard_games_edit' game.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">No games published yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

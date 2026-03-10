@@ -1,0 +1,26 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}My Competitions{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 mb-0">My Competitions</h2>
+        {% if user.profile.has_professional_role %}
+        <a href="{% url 'dashboard:dashboard_competitions_create' %}" class="btn btn-primary">Create Competition</a>
+        {% endif %}
+    </div>
+    {% if competitions %}
+    <ul class="list-group">
+        {% for competition in competitions %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ competition.title }}</span>
+            <small class="text-muted">{{ competition.start_date|date:'M d, Y' }}</small>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="alert alert-info">No competitions created yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

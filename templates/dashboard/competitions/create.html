@@ -1,0 +1,14 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Create Competition{% endblock %}
+
+{% block dashboard_content %}
+<div class="container py-4" style="max-width: 900px;">
+    <h2 class="h4 mb-3">Create Competition</h2>
+    <form method="post" class="card card-body">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+</div>
+{% endblock %}

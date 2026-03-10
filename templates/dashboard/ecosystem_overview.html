@@ -490,8 +490,8 @@
       </div>
     </div>
     <div class="quick-actions">
-      <a href="{% url 'dashboard:marketplace_dashboard' %}" class="action-btn">Upload Asset</a>
-      <a href="{% url 'dashboard:marketplace_dashboard' %}" class="action-btn secondary">View Sales</a>
+      <a href="{% url 'dashboard:dashboard_marketplace_upload' %}" class="action-btn">Upload Asset</a>
+      <a href="{% url 'dashboard:dashboard_marketplace_sales' %}" class="action-btn secondary">View Sales</a>
     </div>
   </div>
   {% endif %}
@@ -519,8 +519,8 @@
       </div>
     </div>
     <div class="quick-actions">
-      <a href="{% url 'dashboard:games_create' %}" class="action-btn">Upload Game</a>
-      <a href="{% url 'dashboard:games_my_games' %}" class="action-btn secondary">View Stats</a>
+      <a href="{% url 'dashboard:dashboard_games_create' %}" class="action-btn">Upload Game</a>
+      <a href="{% url 'dashboard:dashboard_games_my_games' %}" class="action-btn secondary">View Stats</a>
     </div>
   </div>
   {% endif %}
@@ -548,8 +548,8 @@
       </div>
     </div>
     <div class="quick-actions">
-      <a href="{% url 'dashboard:jobs_post' %}" class="action-btn">Post Job</a>
-      <a href="{% url 'dashboard:jobs_postings' %}" class="action-btn secondary">View Applications</a>
+      <a href="{% url 'dashboard:dashboard_jobs_post' %}" class="action-btn">Post Job</a>
+      <a href="{% url 'dashboard:dashboard_jobs_postings' %}" class="action-btn secondary">View Applications</a>
     </div>
   </div>
   {% endif %}
@@ -577,8 +577,8 @@
       </div>
     </div>
     <div class="quick-actions">
-      <a href="{% url 'dashboard:mentorship_manage_sessions' %}" class="action-btn">Schedule Session</a>
-      <a href="{% url 'dashboard:mentorship_students' %}" class="action-btn secondary">View Students</a>
+      <a href="{% url 'dashboard:dashboard_mentorship_manage_sessions' %}" class="action-btn">Schedule Session</a>
+      <a href="{% url 'dashboard:dashboard_mentorship_students' %}" class="action-btn secondary">View Students</a>
     </div>
   </div>
   {% endif %}
@@ -611,7 +611,7 @@
       </div>
     </div>
     <div class="quick-actions">
-      <a href="{% url 'marketplace:list' %}" class="action-btn secondary">Browse Assets</a>
+      <a href="{% url 'dashboard:dashboard_marketplace_dashboard' %}" class="action-btn secondary">Browse Assets</a>
     </div>
   </div>
 
@@ -637,7 +637,7 @@
       </div>
     </div>
     <div class="quick-actions">
-      <a href="{% url 'games:list' %}" class="action-btn secondary">Discover Games</a>
+      <a href="{% url 'dashboard:dashboard_games_list' %}" class="action-btn secondary">Discover Games</a>
     </div>
   </div>
 
@@ -663,7 +663,7 @@
       </div>
     </div>
     <div class="quick-actions">
-      <a href="{% url 'jobs:list' %}" class="action-btn secondary">Find Jobs</a>
+      <a href="{% url 'dashboard:dashboard_jobs_board' %}" class="action-btn secondary">Find Jobs</a>
     </div>
   </div>
 

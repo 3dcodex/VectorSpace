@@ -30,8 +30,8 @@ class GameVersion(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class GameReview(models.Model):
-    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='reviews')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='game_reviews')
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='reviews', db_index=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='game_reviews', db_index=True)
     rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
     comment = models.TextField()
     helpful_count = models.IntegerField(default=0)
@@ -40,6 +40,10 @@ class GameReview(models.Model):
     
     class Meta:
         unique_together = ('game', 'user')
+        indexes = [
+            models.Index(fields=['user', '-created_at']),
+            models.Index(fields=['game', '-created_at']),
+        ]
 
 class GameComment(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='comments')

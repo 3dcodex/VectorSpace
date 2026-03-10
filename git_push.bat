@@ -6,6 +6,13 @@ echo   VECTOR SPACE - GIT PUSH SCRIPT
 echo ========================================
 echo.
 
+REM Ensure git is available.
+git --version >nul 2>&1
+if errorlevel 1 (
+    echo Git is not installed or not in PATH.
+    goto :error
+)
+
 REM Initialize git if needed.
 if not exist .git (
     echo Initializing git repository...
@@ -62,6 +69,16 @@ if errorlevel 1 goto :error
 REM Push to the current branch safely (no force push).
 for /f "delims=" %%b in ('git rev-parse --abbrev-ref HEAD 2^>nul') do set current_branch=%%b
 if "%current_branch%"=="" set current_branch=main
+if /I "%current_branch%"=="HEAD" set current_branch=main
+
+REM Ensure the target branch exists locally when HEAD was detached.
+git show-ref --verify --quiet refs/heads/%current_branch%
+if errorlevel 1 (
+    echo.
+    echo Creating local branch %current_branch%...
+    git checkout -b %current_branch%
+    if errorlevel 1 goto :error
+)
 
 echo.
 echo Pushing to branch %current_branch%...

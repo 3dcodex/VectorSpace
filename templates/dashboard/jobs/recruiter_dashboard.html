@@ -1,0 +1,23 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Recruiter Dashboard{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid py-4">
+    <h2 class="h4 mb-3">Recruiter Dashboard</h2>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card card-body">
+                <h5>{{ jobs|length }}</h5>
+                <p class="mb-0">Active Job Postings</p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card card-body">
+                <h5>{{ applications|length }}</h5>
+                <p class="mb-0">Applications Received</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
