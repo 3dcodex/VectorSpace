@@ -206,10 +206,20 @@ python -m venv venv
 .\venv\Scripts\Activate.ps1
 # macOS/Linux
 source venv/bin/activate
+python -m pip install --upgrade pip setuptools wheel
+pip install "Django>=4.2,<5.0"
 pip install -r requirements.txt
+python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver
 ```
+
+macOS notes:
+
+- If Python 3.12 is not installed: `brew install python@3.12`
+- For Pillow support: `brew install libjpeg libpng`
+- For PostgreSQL support and migration tooling: `brew install postgresql libpq`
+- The default local database is SQLite, so `python manage.py migrate` is enough for a fresh dev setup unless you intentionally switch databases.
 
 ### 8.2 Docker Compose
 

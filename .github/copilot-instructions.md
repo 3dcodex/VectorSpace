@@ -132,7 +132,7 @@ if form.is_valid():
 
 ## Scripts and Utilities
 
-- `git_push.bat`: Git helper with deletion warnings
+- `push_sjeff.bat`: Git helper with deletion warnings and a `sjeff` branch default
 - `make_admin.py`: Quick admin user creation
 - `check_errors.py`: Check for common issues
 - `scripts/setup/`: Setup automation scripts

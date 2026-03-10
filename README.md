@@ -86,13 +86,24 @@ brew install python@3.12
 ```bash
 python3 -m venv venv
 source venv/bin/activate
+python -m pip install --upgrade pip setuptools wheel
+pip install "Django>=4.2,<5.0"
 pip install -r requirements.txt
 ```
+
+**Database migration setup**:
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+The default development database is SQLite, so no separate database server is required for local development. If you switch to PostgreSQL, install the local database dependencies first and then run the same migration commands.
 
 **macOS-specific notes**:
 - If you encounter SSL certificate errors, run: `/Applications/Python\ 3.12/Install\ Certificates.command`
 - For Pillow installation issues, install image libraries: `brew install libjpeg libpng`
-- For PostgreSQL support (optional), install: `brew install postgresql`
+- For PostgreSQL support and migration tooling (optional), install: `brew install postgresql libpq`
 
 #### Linux
 
@@ -107,6 +118,11 @@ pip install -r requirements.txt
 - For PostgreSQL support: `sudo apt-get install libpq-dev`
 
 ### 3. Apply migrations
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
 
 ```bash
 python manage.py migrate

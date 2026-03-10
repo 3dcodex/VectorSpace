@@ -1,8 +1,10 @@
 @echo off
 setlocal EnableExtensions DisableDelayedExpansion
 
+set "default_branch=sjeff"
+
 echo ========================================
-echo   VECTOR SPACE - GIT PUSH SCRIPT
+echo   VECTOR SPACE - SJEFF PUSH SCRIPT
 echo ========================================
 echo.
 
@@ -26,6 +28,19 @@ if errorlevel 1 (
     echo Setting remote origin...
     git remote add origin https://github.com/3dcodex/VectorSpace.git
     if errorlevel 1 goto :error
+)
+
+for /f "delims=" %%b in ('git rev-parse --abbrev-ref HEAD 2^>nul') do set "current_branch=%%b"
+if "%current_branch%"=="" set "current_branch=%default_branch%"
+if /I "%current_branch%"=="HEAD" set "current_branch=%default_branch%"
+
+if /I not "%current_branch%"=="%default_branch%" (
+    echo You are currently on branch %current_branch%.
+    set /p continue_push=Push this branch instead of %default_branch%? (y/N): 
+    if /I not "%continue_push%"=="Y" (
+        echo Push aborted. Switch to %default_branch% and run the script again.
+        goto :done
+    )
 )
 
 echo.
@@ -59,17 +74,12 @@ goto :done
 :has_changes
 echo.
 set /p commit_msg=Enter commit message (or press Enter for default): 
-if "%commit_msg%"=="" set commit_msg=Update project files
+if "%commit_msg%"=="" set "commit_msg=Update %current_branch% branch"
 
 echo.
-echo Creating commit...
+echo Creating commit on %current_branch%...
 git commit -m "%commit_msg%"
 if errorlevel 1 goto :error
-
-REM Push to the current branch safely (no force push).
-for /f "delims=" %%b in ('git rev-parse --abbrev-ref HEAD 2^>nul') do set current_branch=%%b
-if "%current_branch%"=="" set current_branch=main
-if /I "%current_branch%"=="HEAD" set current_branch=main
 
 REM Ensure the target branch exists locally when HEAD was detached.
 git show-ref --verify --quiet refs/heads/%current_branch%

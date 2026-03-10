@@ -51,7 +51,7 @@ echo Cleanup Complete!
 echo ========================================
 echo.
 echo Kept in root:
-echo - git_push.bat (useful for git automation)
+echo - push_sjeff.bat (useful for git automation)
 echo - setup_db.bat (useful for database setup)
 echo.
 echo Moved to scripts/:
